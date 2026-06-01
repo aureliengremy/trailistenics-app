@@ -1,0 +1,24 @@
+# Postgres local pour le développement.
+# La bascule vers Neon plus tard ne touchera QUE DATABASE_URL — ce service n'est
+# utilisé qu'en local.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: plantrail-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: traildev
+      POSTGRES_PASSWORD: traildev
+      POSTGRES_DB: plantrail
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U traildev -d plantrail"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

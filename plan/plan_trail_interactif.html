@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Trail · 20 km / 740 D+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#16140f; --bg2:#1f1c14; --panel:#26221a; --panel2:#2e2920;
+    --line:#3a342a; --ink:#f2ede0; --muted:#a99e88;
+    --moss:#7ba05b; --moss-d:#5c7d3f;
+    --ocre:#d98a3d; --ocre-d:#b4691f;
+    --rust:#c2562e;
+    --sky:#6fa8c4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Archivo',sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(123,160,91,.07), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(217,138,61,.06), transparent 45%);
+  }
+  /* topographic line texture */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+    background-image:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(255,255,255,.012) 38px,rgba(255,255,255,.012) 39px);
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
+  h1,h2,h3{font-family:'Fraunces',serif;line-height:1.05;letter-spacing:-.01em}
+
+  /* HERO */
+  header{padding:70px 0 40px;position:relative}
+  .kicker{font-family:'Archivo';font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+    font-size:12px;color:var(--ocre);margin-bottom:18px}
+  h1{font-size:clamp(44px,8vw,92px);font-weight:900;color:var(--ink)}
+  h1 .em{font-style:italic;color:var(--moss)}
+  .sub{margin-top:18px;font-size:18px;color:var(--muted);max-width:620px}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 22px;min-width:120px}
+  .stat .n{font-family:'Fraunces';font-weight:900;font-size:30px;color:var(--ocre);line-height:1}
+  .stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+
+  section{padding:46px 0;position:relative}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-num{font-family:'Fraunces';font-weight:900;font-size:20px;color:var(--moss-d)}
+  h2{font-size:clamp(28px,4vw,42px);font-weight:900}
+  .sec-intro{color:var(--muted);max-width:680px;margin:14px 0 30px;font-size:16px}
+
+  /* CHART CARD */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 26px 18px}
+  .chart-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{background:var(--bg2);border:1px solid var(--line);color:var(--muted);
+    padding:9px 16px;border-radius:30px;cursor:pointer;font-family:'Archivo';font-weight:600;
+    font-size:13px;transition:.2s}
+  .tab:hover{color:var(--ink);border-color:var(--moss-d)}
+  .tab.active{background:var(--moss);color:#16140f;border-color:var(--moss)}
+  canvas{display:block;width:100%;height:auto}
+  .chart-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
+  .chart-legend span{display:inline-flex;align-items:center;gap:7px}
+  .dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* TIMELINE */
+  .tl-track{display:flex;gap:6px;overflow-x:auto;padding:8px 2px 18px;scroll-snap-type:x mandatory}
+  .tl-track::-webkit-scrollbar{height:8px}
+  .tl-track::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+  .week{flex:0 0 auto;width:86px;scroll-snap-align:start;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);border-radius:13px;
+    padding:12px 8px;text-align:center;transition:.18s;position:relative}
+  .week:hover{transform:translateY(-4px);border-color:var(--moss)}
+  .week.active{border-color:var(--ocre);background:var(--panel2);box-shadow:0 8px 26px rgba(0,0,0,.4)}
+  .week .wn{font-family:'Fraunces';font-weight:900;font-size:22px}
+  .week .wb{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:3px;min-height:22px}
+  .week .bar{height:5px;border-radius:4px;margin-top:8px;background:var(--moss)}
+  .week[data-bloc="pic"] .bar,.week[data-bloc="simul"] .bar{background:var(--rust)}
+  .week[data-bloc="affut"] .bar{background:var(--sky)}
+  .week[data-bloc="allege"] .bar{background:var(--muted);opacity:.6}
+  .week .race{position:absolute;top:-9px;right:-6px;font-size:15px}
+
+  .detail{margin-top:22px;background:var(--panel2);border:1px solid var(--line);
+    border-left:5px solid var(--ocre);border-radius:14px;padding:24px 26px;
+    animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .detail h3{font-size:26px}
+  .detail .dtag{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.12em;padding:4px 12px;border-radius:20px;margin-bottom:10px}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:16px}
+  .dbox{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .dbox .k{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--moss);font-weight:700}
+  .dbox .v{font-size:15px;margin-top:5px}
+  .dnote{margin-top:18px;color:var(--muted);font-size:15px;font-style:italic}
+
+  /* CIRCUIT */
+  .circuit{display:grid;gap:12px}
+  .ex{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
+    display:grid;grid-template-columns:42px 1fr auto;gap:16px;align-items:center;transition:.2s}
+  .ex:hover{border-color:var(--moss-d);background:var(--panel2)}
+  .ex .idx{font-family:'Fraunces';font-weight:900;font-size:26px;color:var(--moss-d)}
+  .ex .name{font-weight:700;font-size:16px}
+  .ex .why{font-size:13.5px;color:var(--muted);margin-top:3px;max-width:560px}
+  .ex .vol{font-family:'Fraunces';font-weight:600;font-size:15px;color:var(--ocre);
+    white-space:nowrap;text-align:right}
+  .chip{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+    padding:3px 9px;border-radius:20px;background:rgba(123,160,91,.16);color:var(--moss);margin-left:8px}
+
+  /* ACCORDION */
+  .acc{border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;background:var(--panel)}
+  .acc summary{cursor:pointer;padding:20px 24px;font-family:'Fraunces';font-weight:600;font-size:20px;
+    list-style:none;display:flex;justify-content:space-between;align-items:center;transition:.2s}
+  .acc summary::-webkit-details-marker{display:none}
+  .acc summary:hover{background:var(--panel2)}
+  .acc summary .plus{font-family:'Archivo';font-weight:400;color:var(--ocre);font-size:26px;transition:.3s}
+  .acc[open] summary .plus{transform:rotate(45deg)}
+  .acc .body{padding:0 24px 22px;color:var(--ink)}
+  .acc .body li{margin:0 0 10px 18px;color:var(--ink)}
+  .acc .body li b{color:var(--moss)}
+  .acc .body p{color:var(--muted);margin-bottom:10px}
+  .warn{border-left:4px solid var(--ocre);background:var(--bg2);padding:14px 18px;border-radius:8px;
+    margin-top:14px;font-size:14px;color:var(--muted)}
+  .warn b{color:var(--ocre)}
+
+  footer{padding:50px 0 70px;color:var(--muted);font-size:14px;font-style:italic;
+    border-top:1px solid var(--line);margin-top:30px}
+
+  @media(max-width:560px){
+    .ex{grid-template-columns:36px 1fr;gap:12px}
+    .ex .vol{grid-column:2;text-align:left;margin-top:6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Préparation · 13 semaines · Juin → Septembre</div>
+    <h1>Trail <span class="em">20 km</span><br>740 m de D+</h1>
+    <p class="sub">Plan fusionné course + calisthénie. Construit autour de deux idées : ne jamais empiler le travail quadriceps, et entraîner la descente — celle qui détruit les cuisses si on l'ignore.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">13</div><div class="l">semaines</div></div>
+      <div class="stat"><div class="n">740 m</div><div class="l">D+ visé</div></div>
+      <div class="stat"><div class="n">2→4</div><div class="l">séances / sem</div></div>
+      <div class="stat"><div class="n">2h15</div><div class="l">longue max</div></div>
+    </div>
+  </header>
+
+  <!-- CHARTS -->
+  <section id="charts">
+    <div class="sec-head"><span class="sec-num">01</span><h2>La courbe de charge</h2></div>
+    <p class="sec-intro">Le volume monte par paliers avec deux semaines allégées (4 et 8) pour assimiler — c'est là que le corps progresse. La sortie « choc » de la semaine 11 simule le D+ de la course, puis l'affûtage te laisse arriver frais.</p>
+    <div class="card">
+      <div class="chart-tabs">
+        <div class="tab active" data-chart="duree">Durée longue</div>
+        <div class="tab" data-chart="denivele">Dénivelé D+</div>
+        <div class="tab" data-chart="seances">Volume hebdo</div>
+      </div>
+      <canvas id="chart" width="1040" height="420"></canvas>
+      <div class="chart-legend" id="legend"></div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="timeline">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Semaine par semaine</h2></div>
+    <p class="sec-intro">Clique sur une semaine pour voir le détail. Tu démarres à 2 sorties/semaine : la montée vers 4 est progressive pour éviter la blessure de reprise.</p>
+    <div class="tl-track" id="tl"></div>
+    <div id="detail"></div>
+  </section>
+
+  <!-- CIRCUIT -->
+  <section id="circuit">
+    <div class="sec-head"><span class="sec-num">03</span><h2>La séance renfo · calisthénie × trail</h2></div>
+    <p class="sec-intro">Le mardi, en circuit avant un footing court. 2–3 tours, 1–2 min de récup. Axé chaîne postérieure et descente pour rééquilibrer ton profil calisthénie (déjà très quadriceps). C'est la seule séance lourde de jambes de la semaine.</p>
+    <div class="circuit" id="circuit-list"></div>
+    <div class="warn"><b>Garde tes pistols / airborne squats</b> 1× par semaine si tu y tiens — mais pas le même jour que les step-downs, sinon double dose de quadriceps.</div>
+  </section>
+
+  <!-- TECHNIQUE -->
+  <section id="technique">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Technique & stratégie</h2></div>
+    <p class="sec-intro">Ce que les plans classiques oublient — et qui fait la différence à l'arrivée.</p>
+
+    <details class="acc" open>
+      <summary>La descente — ta priorité cachée <span class="plus">+</span></summary>
+      <div class="body">
+        <p>Sur 740 D+, tu descends autant que tu montes. À partir de la semaine 5, sur chaque sortie longue :</p>
+        <ul>
+          <li><b>Choisis volontairement</b> des sentiers en pente pour courir la descente, pas juste y survivre.</li>
+          <li><b>Regarde 4–5 m devant</b> toi, pas tes pieds. Foulée courte, fréquence haute, bras un peu écartés.</li>
+          <li><b>Relâche</b> : crispé = freinage = cuisses détruites. On lâche les freins en confiance.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Montée — le power hiking <span class="plus">+</span></summary>
+      <div class="body">
+        <p>Marcher dans le raide n'est pas un échec, c'est une technique. Mains sur les cuisses, on pousse. Souvent plus économe qu'un trottinement laborieux à 15 %.</p>
+        <ul>
+          <li><b>Teste les deux</b> sur tes longues pour trouver ton seuil de bascule marche/course.</li>
+          <li><b>Applique-le</b> en course : décidé à l'avance, pas découvert le jour J.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Le jour J — gestion de course <span class="plus">+</span></summary>
+      <div class="body">
+        <ul>
+          <li><b>Pars prudent</b> : le piège du 20 km est de cramer dans les premières montées. Découpe en tiers, garde du jus pour le dernier.</li>
+          <li><b>Nutrition</b> : une gorgée toutes les 10–15 min, un gel/barre toutes les 45 min. À tester dès le pic de charge.</li>
+          <li><b>Repère le parcours</b> : profil, ravitos, sections techniques.</li>
+        </ul>
+        <div class="warn"><b>Matériel — à valider en août, pas la veille :</b> chaussures de trail rodées (jamais neuves) et système d'hydratation testés sur les longues du pic de charge.</div>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    Écoute les signaux : une douleur articulaire qui persiste prime sur le plan. Mieux vaut arriver un peu sous-entraîné et frais que cuit ou blessé.
+  </footer>
+
+</div>
+
+<script>
+// ---------- DATA ----------
+const weeks = [
+  {n:1,date:"2 juin",bloc:"Reprise",blocKey:"base",duree:70,dpos:250,sea:3,longue:"1h10 · ~11 km · 250 m D+",qual:"Côtes : 6×1 min",focus:"Réveil en douceur. Endurance facile, on marche dès que ça monte raide."},
+  {n:2,date:"9 juin",bloc:"Reprise",blocKey:"base",duree:75,dpos:300,sea:3,longue:"1h15 · ~12 km · 300 m D+",qual:"Seuil : 2×12 min",focus:"On installe la routine. Footing du seuil sur faux-plat."},
+  {n:3,date:"16 juin",bloc:"Base",blocKey:"base",duree:80,dpos:350,sea:3,longue:"1h20 · ~13 km · 350 m D+",qual:"Côtes : 8×1 min",focus:"Passage vers 4 séances selon la forme. Le renfo du mardi devient régulier."},
+  {n:4,date:"23 juin",bloc:"Allégée",blocKey:"allege",duree:60,dpos:250,sea:3,longue:"1h00 · ~10 km · 250 m D+",qual:"Seuil : 2×10 min",focus:"Semaine de récup. Le corps assimile — ne la saute pas."},
+  {n:5,date:"30 juin",bloc:"Base",blocKey:"base",duree:90,dpos:400,sea:4,longue:"1h30 · ~14 km · 400 m D+",qual:"Côtes 8×1 min + descente",focus:"On commence le travail de descente sur la longue. Sentiers en pente choisis exprès."},
+  {n:6,date:"7 juil.",bloc:"Développement",blocKey:"base",duree:100,dpos:450,sea:4,longue:"1h40 · ~15 km · 450 m D+",qual:"Seuil : 3×10 min",focus:"Le volume grimpe. Teste ta nutrition sur la longue."},
+  {n:7,date:"14 juil.",bloc:"Développement",blocKey:"base",duree:110,dpos:500,sea:4,longue:"1h50 · ~16 km · 500 m D+",qual:"Côtes : 10×1 min",focus:"Première vraie longue. Power hiking dans les passages raides."},
+  {n:8,date:"21 juil.",bloc:"Allégée",blocKey:"allege",duree:75,dpos:300,sea:3,longue:"1h15 · ~12 km · 300 m D+",qual:"Seuil : 2×12 min",focus:"Deuxième coupure. Tu encaisses la charge avant le gros bloc."},
+  {n:9,date:"28 juil.",bloc:"Pic de charge",blocKey:"pic",duree:120,dpos:550,sea:4,longue:"2h00 · ~17 km · 550 m D+",qual:"Côtes longues : 5×2 min",focus:"Le bloc clé. Matériel testé en conditions réelles."},
+  {n:10,date:"4 août",bloc:"Pic de charge",blocKey:"pic",duree:135,dpos:600,sea:4,longue:"2h15 · ~18 km · 600 m D+",qual:"Seuil : 3×12 min",focus:"Volume maximal. Gère la fatigue, dors bien."},
+  {n:11,date:"11 août",bloc:"Simulateur",blocKey:"simul",duree:150,dpos:700,sea:4,longue:"2h30 · ~15 km · ~700 m D+ (choc)",qual:"Côtes : 6×2 min (léger)",focus:"Sortie choc à J-3 sem : le D+ max que tu trouves. Évalue ton rythme en descente technique."},
+  {n:12,date:"18 août",bloc:"Affûtage",blocKey:"affut",duree:75,dpos:350,sea:3,longue:"1h15 · ~12 km · 350 m D+",qual:"Côtes : 5×1 min vif",focus:"Réduction ~50 % du volume. On garde du tonus, pas de fatigue."},
+  {n:13,date:"25 août",bloc:"Affûtage",blocKey:"affut",duree:45,dpos:120,sea:2,longue:"45 min relâché + lignes → COURSE",qual:"Repos / 20 min footing",focus:"Dernière ligne droite. Jambes fraîches, frais mental. La course t'attend.",race:true},
+];
+
+const blocColors={base:"#7ba05b",allege:"#a99e88",pic:"#c2562e",simul:"#c2562e",affut:"#6fa8c4"};
+const blocTag={base:"Construction",allege:"Récupération",pic:"Pic de charge",simul:"Simulateur",affut:"Affûtage"};
+
+// ---------- TIMELINE ----------
+const tl=document.getElementById('tl');
+weeks.forEach(w=>{
+  const el=document.createElement('div');
+  el.className='week';el.dataset.bloc=w.blocKey;el.dataset.n=w.n;
+  el.innerHTML=`${w.race?'<span class="race">🏁</span>':''}
+    <div class="wn">${w.n}</div>
+    <div class="wb">${w.bloc}</div>
+    <div class="bar" style="width:${30+w.duree/2}%"></div>`;
+  el.onclick=()=>showWeek(w.n);
+  tl.appendChild(el);
+});
+function showWeek(n){
+  document.querySelectorAll('.week').forEach(e=>e.classList.toggle('active',+e.dataset.n===n));
+  const w=weeks.find(x=>x.n===n);
+  const c=blocColors[w.blocKey];
+  const d=document.getElementById('detail');
+  d.innerHTML=`<div class="detail" style="border-left-color:${c}">
+    <span class="dtag" style="background:${c}22;color:${c}">Semaine ${w.n} · ${w.date} · ${blocTag[w.blocKey]}</span>
+    <h3>${w.bloc}</h3>
+    <div class="dgrid">
+      <div class="dbox"><div class="k">Sortie longue · dimanche</div><div class="v">${w.longue}</div></div>
+      <div class="dbox"><div class="k">Qualité · jeudi</div><div class="v">${w.qual}</div></div>
+      <div class="dbox"><div class="k">Séances / semaine</div><div class="v">${w.sea}</div></div>
+    </div>
+    <p class="dnote">${w.focus}</p>
+  </div>`;
+}
+showWeek(1);
+
+// ---------- CIRCUIT ----------
+const ex=[
+  {name:"Single-Leg RDL",vol:"3 × 10 / jambe",chip:"Postérieur",why:"Soulevé roumain sur une jambe. Cible ischios + fessiers : ce qui te propulse en montée et rééquilibre ton profil quadriceps."},
+  {name:"Step-downs lents",vol:"3 × 8 / jambe",chip:"Descente",why:"Descendre d'une marche en 4–5 s, contrôlé. LE geste de la descente : excentrique qui blinde les cuisses."},
+  {name:"Nordic Hamstring Curls",vol:"3 × 6",chip:"Genou",why:"Assistés au besoin. Protègent le genou au freinage, sécurisent la descente."},
+  {name:"Pont fessier 1 jambe",vol:"3 × 12 / jambe",chip:"Fessiers",why:"Renforce les fessiers sans recharger des quadriceps déjà bien sollicités ailleurs."},
+  {name:"Tibial + Calf raises",vol:"3 × 15",chip:"Cheville",why:"Sur une marche. Cheville solide = pas d'entorse au km 12 sur terrain instable."},
+  {name:"Planche latérale + levé jambe",vol:"3 × 40 s / côté",chip:"Gainage",why:"Stabilité du bassin dans la foulée. Ton point fort calisthénie, à entretenir."},
+];
+const cl=document.getElementById('circuit-list');
+ex.forEach((e,i)=>{
+  const el=document.createElement('div');el.className='ex';
+  el.innerHTML=`<div class="idx">${i+1}</div>
+    <div><div class="name">${e.name}<span class="chip">${e.chip}</span></div>
+    <div class="why">${e.why}</div></div>
+    <div class="vol">${e.vol}</div>`;
+  cl.appendChild(el);
+});
+
+// ---------- CANVAS CHART ----------
+const cv=document.getElementById('chart');const ctx=cv.getContext('2d');
+const legend=document.getElementById('legend');
+let current='duree';
+const charts={
+  duree:{label:"Durée de la sortie longue",unit:"min",color:"#7ba05b",vals:weeks.map(w=>w.duree),max:160},
+  denivele:{label:"Dénivelé positif sur la longue",unit:"m D+",color:"#d98a3d",vals:weeks.map(w=>w.dpos),max:780},
+  seances:{label:"Nombre de séances",unit:"séances",color:"#6fa8c4",vals:weeks.map(w=>w.sea),max:5},
+};
+function resize(){
+  const w=cv.parentElement.clientWidth-52;
+  cv.width=w*devicePixelRatio;cv.height=420*devicePixelRatio;
+  cv.style.width=w+'px';cv.style.height='420px';
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  draw(current,1);
+}
+function draw(key,prog){
+  const C=charts[key];const W=cv.width/devicePixelRatio,H=420;
+  const padL=48,padR=18,padT=24,padB=46;
+  const cw=W-padL-padR,ch=H-padT-padB;
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle="#3a342a";ctx.fillStyle="#a99e88";ctx.lineWidth=1;
+  ctx.font="11px Archivo";ctx.textAlign="right";ctx.textBaseline="middle";
+  for(let i=0;i<=4;i++){
+    const y=padT+ch-(ch*i/4);
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+    ctx.fillText(Math.round(C.max*i/4),padL-8,y);
+  }
+  const n=C.vals.length;const step=cw/(n-1);
+  // bloc background bands for pic/simul
+  weeks.forEach((w,i)=>{
+    if(w.blocKey==='pic'||w.blocKey==='simul'){
+      const x=padL+step*i;
+      ctx.fillStyle="rgba(194,86,46,.07)";
+      ctx.fillRect(x-step/2,padT,step,ch);
+    }
+  });
+  // area + line
+  const pts=C.vals.map((v,i)=>({x:padL+step*i,y:padT+ch-(ch*Math.min(v,C.max)/C.max)*prog}));
+  const grad=ctx.createLinearGradient(0,padT,0,padT+ch);
+  grad.addColorStop(0,C.color+"44");grad.addColorStop(1,C.color+"05");
+  ctx.beginPath();ctx.moveTo(pts[0].x,padT+ch);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.lineTo(pts[n-1].x,padT+ch);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+  ctx.strokeStyle=C.color;ctx.lineWidth=3;ctx.lineJoin="round";ctx.stroke();
+  // points + x labels
+  ctx.textAlign="center";
+  pts.forEach((p,i)=>{
+    const w=weeks[i];
+    ctx.beginPath();ctx.arc(p.x,p.y,w.race?6:4.5,0,7);
+    ctx.fillStyle=w.race?"#c2562e":(blocColors[w.blocKey]);
+    ctx.fill();ctx.strokeStyle="#16140f";ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle="#a99e88";ctx.font="10px Archivo";
+    ctx.fillText("S"+w.n,p.x,H-padB+18);
+  });
+  legend.innerHTML=`<span><i class="dot" style="background:${C.color}"></i>${C.label} (${C.unit})</span>
+    <span><i class="dot" style="background:#c2562e"></i>Pic / simulateur</span>
+    <span><i class="dot" style="background:#6fa8c4"></i>Affûtage</span>`;
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');current=t.dataset.chart;
+    // animate
+    let s=0;const anim=()=>{s+=.08;draw(current,Math.min(s,1));if(s<1)requestAnimationFrame(anim);};anim();
+  };
+});
+window.addEventListener('resize',resize);
+resize();
+// entry animation
+let s0=0;const a0=()=>{s0+=.06;draw('duree',Math.min(s0,1));if(s0<1)requestAnimationFrame(a0);};a0();
+</script>
+</body>
+</html>
