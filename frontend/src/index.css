@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-line;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans;
+    line-height: 1.55;
+    overflow-x: hidden;
+    /* Halos terre/mousse repris du prototype. */
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(123, 160, 91, 0.07), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(217, 138, 61, 0.06), transparent 45%);
+    background-attachment: fixed;
+  }
+
+  /* Texture topographique en fond (lignes de niveau). */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 38px,
+      rgba(255, 255, 255, 0.012) 38px,
+      rgba(255, 255, 255, 0.012) 39px
+    );
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Masque la flèche native du marker shadcn ; on gère l'icône nous-mêmes. */
+.tl-track::-webkit-scrollbar {
+  height: 8px;
+}
+.tl-track::-webkit-scrollbar-thumb {
+  @apply bg-line;
+  border-radius: 8px;
+}
