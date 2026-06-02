@@ -3,10 +3,12 @@ import { MobileApp } from "@/components/mobile/MobileApp"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { usePlan } from "@/hooks/usePlan"
 import { useProgress } from "@/hooks/useProgress"
+import { useTheme } from "@/hooks/useTheme"
 
 export default function App() {
   const plan = usePlan()
   const prog = useProgress()
+  const { theme, toggle } = useTheme()
   const isDesktop = useMediaQuery("(min-width: 860px)")
 
   if (plan.loading) {
@@ -32,7 +34,11 @@ export default function App() {
     )
   }
 
-  return isDesktop ? <DesktopApp plan={plan} prog={prog} /> : <MobileApp plan={plan} prog={prog} />
+  return isDesktop ? (
+    <DesktopApp plan={plan} prog={prog} theme={theme} onToggleTheme={toggle} />
+  ) : (
+    <MobileApp plan={plan} prog={prog} theme={theme} onToggleTheme={toggle} />
+  )
 }
 
 function Centered({ children }: { children: React.ReactNode }) {

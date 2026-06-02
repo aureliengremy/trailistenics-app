@@ -18,6 +18,39 @@
   --rust: #c2562e;
   --sky: #6fa8c4;
   --accent: #d98a3d;
+  --accent-d: #b4691f;
+}
+
+/* Thème clair — palette du design system (html.theme-light). */
+html.theme-light {
+  --bg: #efe7d6;
+  --bg2: #e8dfca;
+  --panel: #fbf6ea;
+  --panel2: #f3ebd9;
+  --line: #d9cdb2;
+  --ink: #2a2519;
+  --muted: #7d7256;
+  --moss: #5c7d3f;
+  --moss-d: #46612e;
+  --ocre: #bd7322;
+  --ocre-d: #9a5a15;
+  --rust: #b04a24;
+  --sky: #3f86a6;
+  --accent: #bd7322;
+  --accent-d: #9a5a15;
+}
+
+/* Transition douce appliquée uniquement le temps d'une bascule de thème. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    fill 0.35s ease,
+    stroke 0.35s ease !important;
 }
 
 * {
@@ -932,14 +965,21 @@ button {
   line-height: 1.5;
 }
 .m-topbar {
-  padding: max(54px, env(safe-area-inset-top)) 20px 12px;
+  padding: max(54px, env(safe-area-inset-top)) 18px 12px 20px;
   position: sticky;
   top: 0;
   z-index: 6;
   background: linear-gradient(to bottom, var(--bg) 72%, transparent);
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.m-topbar-l {
+  display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 .m-brand {
   font-size: 10px;
@@ -1628,4 +1668,41 @@ button {
 }
 .recharts-surface {
   overflow: visible;
+}
+
+/* ===========================================================================
+   Toggle thème clair/sombre (commun desktop & mobile)
+   =========================================================================== */
+.d-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  transition: color 0.16s, border-color 0.16s, background 0.16s;
+}
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--moss);
+}
+.theme-toggle:active {
+  transform: scale(0.94);
+}
+.d-theme-toggle {
+  width: 40px;
+  height: 40px;
+}
+.m-theme-toggle {
+  width: 38px;
+  height: 38px;
+  background: var(--panel);
 }

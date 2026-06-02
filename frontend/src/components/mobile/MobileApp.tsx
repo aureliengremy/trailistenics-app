@@ -5,8 +5,10 @@ import { NavIcon, type TabId } from "@/components/common/Icons"
 import { LoadChart } from "@/components/common/LoadChart"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
+import { ThemeToggle } from "@/components/common/ThemeToggle"
 import type { PlanData } from "@/hooks/usePlan"
 import type { ProgressApi } from "@/hooks/useProgress"
+import type { Theme } from "@/hooks/useTheme"
 import {
   CHART_METRICS,
   currentWeek,
@@ -24,7 +26,17 @@ const TABS: { id: TabId; label: string; title: string }[] = [
   { id: "progres", label: "Progrès", title: "Progrès" },
 ]
 
-export function MobileApp({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
+export function MobileApp({
+  plan,
+  prog,
+  theme,
+  onToggleTheme,
+}: {
+  plan: PlanData
+  prog: ProgressApi
+  theme: Theme
+  onToggleTheme: () => void
+}) {
   const [tab, setTab] = useState<TabId>("today")
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -35,8 +47,11 @@ export function MobileApp({ plan, prog }: { plan: PlanData; prog: ProgressApi })
   return (
     <div className="m-app">
       <div className="m-topbar">
-        <div className="m-brand">TRAILISTENICS</div>
-        <div className="m-title">{title}</div>
+        <div className="m-topbar-l">
+          <div className="m-brand">TRAILISTENICS</div>
+          <div className="m-title">{title}</div>
+        </div>
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="m" />
       </div>
       <div className="m-scroll" ref={scrollRef}>
         {tab === "today" && <Today plan={plan} prog={prog} go={setTab} />}

@@ -5,8 +5,10 @@ import { NavIcon, type TabId } from "@/components/common/Icons"
 import { LoadChart } from "@/components/common/LoadChart"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
+import { ThemeToggle } from "@/components/common/ThemeToggle"
 import type { ProgressApi } from "@/hooks/useProgress"
 import type { PlanData } from "@/hooks/usePlan"
+import type { Theme } from "@/hooks/useTheme"
 import {
   CHART_METRICS,
   currentWeek,
@@ -36,7 +38,17 @@ const TITLES: Record<TabId, string> = {
   progres: "Progrès",
 }
 
-export function DesktopApp({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
+export function DesktopApp({
+  plan,
+  prog,
+  theme,
+  onToggleTheme,
+}: {
+  plan: PlanData
+  prog: ProgressApi
+  theme: Theme
+  onToggleTheme: () => void
+}) {
   const [tab, setTab] = useState<TabId>("today")
   const today = new Date()
   const cur = currentWeek(today)
@@ -85,11 +97,14 @@ export function DesktopApp({ plan, prog }: { plan: PlanData; prog: ProgressApi }
               {DAY_NAMES[dow]} {today.getDate()} {MONTHS_LONG[today.getMonth()]} {today.getFullYear()}
             </div>
           </div>
-          <div className="d-wpill" style={{ borderColor: w.color }}>
-            <span className="d-wpill-n">S{cur}</span>
-            <span className="d-wpill-b" style={{ color: w.color }}>
-              {w.bloc}
-            </span>
+          <div className="d-header-actions">
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="d" />
+            <div className="d-wpill" style={{ borderColor: w.color }}>
+              <span className="d-wpill-n">S{cur}</span>
+              <span className="d-wpill-b" style={{ color: w.color }}>
+                {w.bloc}
+              </span>
+            </div>
           </div>
         </header>
         <div className="d-content">
