@@ -25,10 +25,14 @@ validées, exercices cochés, séances clés terminées. La semaine "en cours" e
 la date réelle (début S1 = 2 juin 2026).
 
 **Thème clair/sombre** : toggle (soleil/lune) dans le header desktop et la topbar mobile.
-Défaut **sombre** (design system), choix persisté en `localStorage` (`planTrail.theme.v1`),
-classe `theme-light` posée sur `<html>`. Un script inline dans `index.html` applique le thème
-**avant** le rendu React (anti-flash). Palette claire = celle du prototype éditorial. Les couleurs
-de bloc/graphique restent en hex fixe (fidèle au design : `BLOC_COLORS` non thématisées).
+- **Premier chargement** : suit la préférence système (`prefers-color-scheme`) tant qu'aucun
+  choix n'est enregistré — et la suit même **en live** si le système bascule en cours de session.
+- **Au premier clic** du toggle, le choix est figé en `localStorage` (`planTrail.theme.v1`) et
+  **prime** désormais sur le système (l'écoute live cesse).
+- Classe `theme-light` posée sur `<html>`. Un script inline dans `index.html` applique le thème
+  (choix stocké, sinon `prefers-color-scheme`) **avant** le rendu React → aucun flash.
+- Palette claire = celle du prototype éditorial. Les couleurs de bloc/graphique restent en hex
+  fixe (fidèle au design : `BLOC_COLORS` non thématisées).
 
 Le plan fusionne course à pied et renforcement issu de la calisthénie, autour de deux
 principes : **ne jamais empiler le travail quadriceps** et **entraîner la descente**.

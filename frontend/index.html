@@ -11,13 +11,19 @@
       rel="stylesheet"
     />
     <script>
-      // Applique le thème stocké AVANT le premier rendu (évite tout flash).
+      // Applique le thème AVANT le premier rendu (évite tout flash) :
+      // choix enregistré s'il existe, sinon préférence système (prefers-color-scheme).
       try {
-        if (localStorage.getItem("planTrail.theme.v1") === "light") {
-          document.documentElement.classList.add("theme-light")
+        var t = localStorage.getItem("planTrail.theme.v1")
+        if (t !== "light" && t !== "dark") {
+          t =
+            window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark"
         }
+        if (t === "light") document.documentElement.classList.add("theme-light")
       } catch (e) {
-        /* localStorage indisponible — thème sombre par défaut */
+        /* localStorage/matchMedia indisponible — thème sombre par défaut */
       }
     </script>
   </head>
