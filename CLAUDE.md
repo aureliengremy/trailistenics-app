@@ -8,27 +8,45 @@ Document de référence du projet. Toute session future doit pouvoir comprendre 
 ## 1. Objectif du projet
 
 Application web full-stack qui transforme un plan d'entraînement trail
-(**20 km / 740 m D+**, préparation sur **13 semaines**, juin → septembre) en une app
-consultable, interactive et responsive (utilisable en mobile pendant les sorties).
+(**20 km / 740 m D+**, préparation sur **13 semaines**, juin → septembre) en une **app de
+suivi d'entraînement** ("Suivi"), responsive et adaptée à un usage mobile sur le terrain.
+
+L'app a **deux expériences distinctes** (pas seulement du responsive), commutées par media
+query (`min-width: 860px`) :
+
+- **Desktop** — dashboard à **sidebar** : 4 sections `Aujourd'hui / Le plan / Renfo / Progrès`,
+  pill de la semaine en cours, side cards, minuteur de récup, grand graphe de charge à tooltip.
+- **Mobile** — app à **barre d'onglets** en bas : écran `Aujourd'hui` sensible au jour de la
+  semaine (séance du jour), `Plan` (semaines → détail paginé), `Renfo` (barre de progression +
+  minuteur), `Progrès` (anneau, stats cumulées, mini-graphe).
+
+**Suivi de progression** persisté en `localStorage` (clé `planTrail.progress.v1`) : semaines
+validées, exercices cochés, séances clés terminées. La semaine "en cours" est calculée d'après
+la date réelle (début S1 = 2 juin 2026).
 
 Le plan fusionne course à pied et renforcement issu de la calisthénie, autour de deux
 principes : **ne jamais empiler le travail quadriceps** et **entraîner la descente**.
 
 ## 2. Source de vérité (NE PAS CONTREDIRE)
 
-Deux fichiers dans `plan/` font foi. Tout le contenu et le design en découlent :
+**Contenu** (`plan/`) :
+- **`plan/plan_trail_descriptif.md`** — source de vérité du **contenu** : les 13 semaines,
+  la séance renfo (6 exercices), la technique & stratégie. Le seed de la DB en découle.
+- **`plan/plan_trail_interactif.html`** — premier prototype éditorial : palette, typo, données
+  structurées en JS (référence pour le seed et les valeurs de D+ des graphiques).
 
-- **`plan/plan_trail_descriptif.md`** — source de vérité du **contenu** : les 13 semaines
-  (tableau), la séance renfo (6 exercices), la technique & stratégie. Le seed de la DB
-  est peuplé à partir de ce fichier.
-- **`plan/plan_trail_interactif.html`** — source de vérité du **design et du comportement** :
-  palette, typographie, interactions (timeline cliquable, charts commutables, accordéons),
-  animations. Contient aussi les données déjà structurées en JS (objet `weeks`, `ex`,
-  `blocColors`) — utiles comme référence directe pour le seed et pour la visualisation
-  (ex. valeurs de D+ par semaine pour les graphiques).
+**Design system de l'app Suivi** (`plan/Trailistenics/Plan Trail/`) — source de vérité du
+**design et du comportement** de l'app desktop + mobile actuelle :
+- `App Suivi Desktop.html` + `app-desktop.jsx` → CSS `.d-*` et logique du dashboard desktop.
+- `App Suivi.html` + `app-mobile.jsx` → CSS `.m-*` et logique de l'app mobile à onglets.
+- `data.js` → données/constantes de référence (`WEEKS`, `BLOC_COLORS`, `CHARTS`, `EXERCISES`).
+- `tweaks-panel.jsx` est un **outil de design-time** (protocole d'éditeur, blocs EDITMODE) —
+  **ne pas porter** dans l'app. Les valeurs par défaut résolues (thème **sombre**, accent **ocre
+  `#d98a3d`**, **Fraunces**, densité **regular**) constituent le design final appliqué.
 
-En cas de divergence : le `.md` prime pour le **texte/contenu**, le `.html` prime pour le
-**rendu visuel et les valeurs numériques des graphiques**.
+Le CSS `.d-*` / `.m-*` est porté fidèlement dans `frontend/src/index.css`. En cas de divergence :
+le `.md` prime pour le **texte/contenu**, les fichiers `Trailistenics/` priment pour le
+**rendu visuel et le comportement** de l'app.
 
 ## 3. Stack technique
 
@@ -69,8 +87,9 @@ trailistenics-app/
 ├── .env.example               # gabarit des variables d'env (JAMAIS de secret réel)
 ├── docker-compose.yml         # Postgres local
 ├── plan/                      # SOURCE DE VÉRITÉ (ne pas modifier sans raison)
-│   ├── plan_trail_descriptif.md
-│   └── plan_trail_interactif.html
+│   ├── plan_trail_descriptif.md       # contenu
+│   ├── plan_trail_interactif.html     # 1er prototype éditorial
+│   └── Trailistenics/Plan Trail/      # design system de l'app Suivi (desktop + mobile)
 ├── backend/
 │   ├── app/
 │   │   ├── main.py            # instance FastAPI, montage routers, CORS
@@ -87,25 +106,29 @@ trailistenics-app/
 └── frontend/
     ├── src/
     │   ├── main.tsx
-    │   ├── App.tsx
-    │   ├── index.css         # directives Tailwind + variables CSS du thème
+    │   ├── App.tsx           # switch desktop/mobile + états chargement/erreur
+    │   ├── index.css         # design system porté : vars + CSS .d-* (desktop) & .m-* (mobile)
     │   ├── lib/
     │   │   ├── api.ts        # client fetch typé (VITE_API_URL)
-    │   │   └── utils.ts      # cn() shadcn
-    │   ├── types/            # types TS partagés (Week, Bloc, Exercise)
-    │   ├── components/
-    │   │   ├── ui/           # composants shadcn générés
-    │   │   ├── Hero.tsx
-    │   │   ├── LoadChart.tsx        # graphiques Recharts commutables
-    │   │   ├── Timeline.tsx         # timeline + panneau détail
-    │   │   ├── Circuit.tsx          # cartes du circuit renfo
-    │   │   └── Technique.tsx        # accordéons technique/stratégie
-    │   └── hooks/
-    ├── tailwind.config.ts    # thème : palette + fonts du prototype
+    │   │   └── plan.ts       # adaptateur API→PlanWeek, constantes charts, dates, sessionForDay
+    │   ├── types/            # types TS de l'API (Week, Bloc, Exercise)
+    │   ├── hooks/
+    │   │   ├── usePlan.ts        # fetch weeks+blocs+exercises → forme « plan »
+    │   │   ├── useProgress.ts    # suivi persisté localStorage (weeks/ex/sessions)
+    │   │   └── useMediaQuery.ts  # commutation desktop/mobile
+    │   └── components/
+    │       ├── common/      # Ring, Check, Icons, RestTimer, LoadChart (Recharts)
+    │       ├── desktop/DesktopApp.tsx   # dashboard sidebar (Today/Plan/Renfo/Progres)
+    │       └── mobile/MobileApp.tsx     # app à onglets (Today/Plan/Renfo/Progres)
+    ├── tailwind.config.ts    # config conservée (le design Suivi est en CSS porté)
     ├── vite.config.ts
     ├── tsconfig.json         # strict: true
     └── .env                  # local, gitignoré (VITE_API_URL)
 ```
+
+> Note : les graphiques restent en **Recharts** (stack imposée), stylés pour correspondre au
+> design (aire + dégradé + bande pic/simulateur + tooltip). Le contenu « Technique & stratégie »
+> du prototype éditorial n'est pas surfacé dans l'app Suivi (choix du design system).
 
 ## 6. Modèle de données
 
