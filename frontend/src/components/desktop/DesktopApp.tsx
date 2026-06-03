@@ -1,10 +1,14 @@
 import { useState } from "react"
 
-import { Check, CheckMark } from "@/components/common/Check"
+import { CheckMark } from "@/components/common/Check"
+import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
+import { ExerciseLinks, ExerciseThumb } from "@/components/common/ExerciseMedia"
 import { NavIcon, type TabId } from "@/components/common/Icons"
+import { KmField } from "@/components/common/KmField"
 import { LoadChart } from "@/components/common/LoadChart"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
+import { SessionCard } from "@/components/common/SessionCard"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import type { ProgressApi } from "@/hooks/useProgress"
 import type { PlanData } from "@/hooks/usePlan"
@@ -13,6 +17,7 @@ import {
   CHART_METRICS,
   currentWeek,
   DAY_NAMES,
+  keySessions,
   MONTHS_LONG,
   type MetricKey,
   sessionForDay,
@@ -127,12 +132,8 @@ function Today({ plan, prog, go }: ScreenProps) {
   const sess = sessionForDay(dow, w)
   const todayKey = cur + "-" + sess.key
   const isRest = sess.key === "repos"
-  const planned = [
-    { d: "Mardi", label: "Renfo + footing", detail: "Circuit 6 exos, chaîne postérieure", k: cur + "-renfo", col: "var(--sky)" },
-    { d: "Jeudi", label: "Séance qualité", detail: w.qual, k: cur + "-qual", col: "var(--accent)" },
-    { d: "Dimanche", label: "Sortie longue", detail: w.longue, k: cur + "-longue", col: "var(--moss)" },
-  ]
-  const doneCount = planned.filter((p) => prog.s.sessions[p.k]).length
+  const sessions = keySessions(w)
+  const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
 
   return (
     <div className="d-grid-2">
@@ -162,19 +163,35 @@ function Today({ plan, prog, go }: ScreenProps) {
         </div>
 
         <div className="d-label">Les 3 séances clés de la semaine</div>
-        <div className="d-list">
-          {planned.map((p) => (
-            <button key={p.k} className="d-row" onClick={() => prog.toggleSession(p.k)}>
-              <span className="d-row-dot" style={{ background: p.col }} />
-              <div className="d-row-mid">
-                <div className="d-row-t">
-                  {p.d} · {p.label}
-                </div>
-                <div className="d-row-d">{p.detail}</div>
-              </div>
-              <Check on={!!prog.s.sessions[p.k]} col={p.col} size={26} variant="d" />
-            </button>
-          ))}
+        <div className="sess-list">
+          {sessions.map((s) => {
+            const sk = `${cur}-${s.key}`
+            return (
+              <SessionCard
+                key={s.key}
+                color={s.col}
+                day={s.day}
+                label={s.label}
+                summary={s.summary}
+                done={!!prog.s.sessions[sk]}
+                onToggleDone={() => prog.toggleSession(sk)}
+                defaultOpen={sess.key === s.key}
+              >
+                {s.kind === "renfo" ? (
+                  <ExerciseChecklist exercises={plan.exercises} prog={prog} />
+                ) : (
+                  <>
+                    <KmField
+                      planned={s.planned}
+                      value={prog.s.km[sk]}
+                      onChange={(v) => prog.setKm(sk, v)}
+                    />
+                    <div className="sess-body-note">{s.detail}</div>
+                  </>
+                )}
+              </SessionCard>
+            )
+          })}
         </div>
       </div>
 
@@ -325,16 +342,20 @@ function Renfo({ plan, prog }: ScreenProps) {
           {plan.exercises.map((e, i) => {
             const on = !!prog.s.ex[i]
             return (
-              <button key={i} className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
-                <span className="d-ex-idx">{on ? <CheckMark size={16} color="var(--bg)" /> : i + 1}</span>
-                <div className="d-ex-mid">
-                  <div className="d-ex-t">
-                    {e.name} <span className="d-chip">{e.chip}</span>
+              <div key={i} className="d-ex-row">
+                <button className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
+                  <span className="d-ex-idx">{on ? <CheckMark size={16} color="var(--bg)" /> : i + 1}</span>
+                  <ExerciseThumb order={i + 1} variant="d" />
+                  <div className="d-ex-mid">
+                    <div className="d-ex-t">
+                      {e.name} <span className="d-chip">{e.chip}</span>
+                    </div>
+                    <div className="d-ex-d">{e.why}</div>
                   </div>
-                  <div className="d-ex-d">{e.why}</div>
-                </div>
-                <div className="d-ex-vol">{e.vol}</div>
-              </button>
+                  <div className="d-ex-vol">{e.vol}</div>
+                </button>
+                <ExerciseLinks order={i + 1} variant="d" />
+              </div>
             )
           })}
         </div>

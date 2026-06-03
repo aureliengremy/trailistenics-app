@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Check, CheckMark } from "@/components/common/Check"
+import { CheckMark } from "@/components/common/Check"
+import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
+import { ExerciseLinks, ExerciseThumb } from "@/components/common/ExerciseMedia"
 import { NavIcon, type TabId } from "@/components/common/Icons"
+import { KmField } from "@/components/common/KmField"
 import { LoadChart } from "@/components/common/LoadChart"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
+import { SessionCard } from "@/components/common/SessionCard"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import type { PlanData } from "@/hooks/usePlan"
 import type { ProgressApi } from "@/hooks/useProgress"
@@ -13,6 +17,7 @@ import {
   CHART_METRICS,
   currentWeek,
   DAY_NAMES,
+  keySessions,
   MONTHS_SHORT,
   type MetricKey,
   sessionForDay,
@@ -84,12 +89,8 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
   const sess = sessionForDay(dow, w)
   const todayKey = cur + "-" + sess.key
   const isRest = sess.key === "repos"
-  const planned = [
-    { d: "Mardi", label: "Renfo + footing", detail: "Circuit 6 exos", k: cur + "-renfo", col: "var(--sky)" },
-    { d: "Jeudi", label: "Qualité", detail: w.qual, k: cur + "-qual", col: "var(--accent)" },
-    { d: "Dimanche", label: "Sortie longue", detail: w.longue, k: cur + "-longue", col: "var(--moss)" },
-  ]
-  const doneCount = planned.filter((p) => prog.s.sessions[p.k]).length
+  const sessions = keySessions(w)
+  const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
 
   return (
     <div className="m-screen">
@@ -137,19 +138,31 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
       </div>
 
       <div className="m-label">Les 3 séances clés de la semaine</div>
-      <div className="m-list">
-        {planned.map((p) => (
-          <button key={p.k} className="m-row" onClick={() => prog.toggleSession(p.k)}>
-            <span className="m-row-dot" style={{ background: p.col }} />
-            <div className="m-row-mid">
-              <div className="m-row-t">
-                {p.d} · {p.label}
-              </div>
-              <div className="m-row-d">{p.detail}</div>
-            </div>
-            <Check on={!!prog.s.sessions[p.k]} col={p.col} variant="m" />
-          </button>
-        ))}
+      <div className="sess-list">
+        {sessions.map((s) => {
+          const sk = `${cur}-${s.key}`
+          return (
+            <SessionCard
+              key={s.key}
+              color={s.col}
+              day={s.day}
+              label={s.label}
+              summary={s.summary}
+              done={!!prog.s.sessions[sk]}
+              onToggleDone={() => prog.toggleSession(sk)}
+              defaultOpen={sess.key === s.key}
+            >
+              {s.kind === "renfo" ? (
+                <ExerciseChecklist exercises={plan.exercises} prog={prog} />
+              ) : (
+                <>
+                  <KmField planned={s.planned} value={prog.s.km[sk]} onChange={(v) => prog.setKm(sk, v)} />
+                  <div className="sess-body-note">{s.detail}</div>
+                </>
+              )}
+            </SessionCard>
+          )
+        })}
       </div>
 
       <p className="m-note">{w.focus}</p>
@@ -292,16 +305,20 @@ function Renfo({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
         {plan.exercises.map((e, i) => {
           const on = !!prog.s.ex[i]
           return (
-            <button key={i} className={"m-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
-              <span className="m-ex-idx">{on ? <CheckMark size={15} color="var(--bg)" /> : i + 1}</span>
-              <div className="m-ex-mid">
-                <div className="m-ex-t">
-                  {e.name} <span className="m-chip">{e.chip}</span>
+            <div key={i} className="m-ex-row">
+              <button className={"m-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
+                <span className="m-ex-idx">{on ? <CheckMark size={15} color="var(--bg)" /> : i + 1}</span>
+                <ExerciseThumb order={i + 1} variant="m" />
+                <div className="m-ex-mid">
+                  <div className="m-ex-t">
+                    {e.name} <span className="m-chip">{e.chip}</span>
+                  </div>
+                  <div className="m-ex-d">{e.why}</div>
                 </div>
-                <div className="m-ex-d">{e.why}</div>
-              </div>
-              <div className="m-ex-vol">{e.vol}</div>
-            </button>
+                <div className="m-ex-vol">{e.vol}</div>
+              </button>
+              <ExerciseLinks order={i + 1} variant="m" />
+            </div>
           )
         })}
       </div>

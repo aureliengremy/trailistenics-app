@@ -10,6 +10,8 @@ export interface PlanWeek {
   blocKey: string
   duree: number
   dpos: number
+  /** Distance prévue de la sortie longue (km), si renseignée. */
+  dist: number | null
   sea: number
   longue: string
   qual: string
@@ -34,6 +36,7 @@ export function adaptWeek(w: Week): PlanWeek {
     blocKey: w.bloc.color_key,
     duree: w.long_run_duration_min,
     dpos: w.long_run_dplus_m,
+    dist: w.long_run_distance_km,
     sea: w.sessions_per_week,
     longue: w.long_run_label,
     qual: w.quality_session,
@@ -140,4 +143,51 @@ export function sessionForDay(d: number, w: PlanWeek): DaySession {
 /** Teinte translucide d'une couleur (hex ou var()), pour les fonds de tags. */
 export function tint(col: string): string {
   return `color-mix(in oklab, ${col} 14%, transparent)`
+}
+
+/** Les 3 séances clés de la semaine (cartes dépliables de l'écran Aujourd'hui). */
+export interface KeySession {
+  key: "renfo" | "qual" | "longue"
+  day: string
+  label: string
+  summary: string
+  col: string
+  kind: "renfo" | "run"
+  detail: string
+  planned: number | null
+}
+
+export function keySessions(w: PlanWeek): KeySession[] {
+  return [
+    {
+      key: "renfo",
+      day: "Mardi",
+      label: "Renfo + footing",
+      summary: "Circuit calisthénie × trail, puis footing court",
+      col: "var(--sky)",
+      kind: "renfo",
+      detail: "",
+      planned: null,
+    },
+    {
+      key: "qual",
+      day: "Jeudi",
+      label: "Séance qualité",
+      summary: "La séance intense de la semaine",
+      col: "var(--accent)",
+      kind: "run",
+      detail: w.qual,
+      planned: null,
+    },
+    {
+      key: "longue",
+      day: "Dimanche",
+      label: "Sortie longue",
+      summary: "Le cœur de la prépa — volume & D+",
+      col: "var(--moss)",
+      kind: "run",
+      detail: w.longue,
+      planned: w.dist,
+    },
+  ]
 }
