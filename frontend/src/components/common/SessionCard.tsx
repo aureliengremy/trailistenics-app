@@ -7,19 +7,20 @@ interface SessionCardProps {
   day: string
   label: string
   summary: string
-  done: boolean
-  onToggleDone: () => void
+  /** Si `onToggleDone` est absent, la carte est purement informative (pas de coche). */
+  done?: boolean
+  onToggleDone?: () => void
   defaultOpen?: boolean
   children: ReactNode
 }
 
-/** Carte de séance dépliable (écran Aujourd'hui), commune desktop & mobile. */
+/** Carte de séance dépliable (accordéon), commune desktop & mobile. */
 export function SessionCard({
   color,
   day,
   label,
   summary,
-  done,
+  done = false,
   onToggleDone,
   defaultOpen = false,
   children,
@@ -45,15 +46,17 @@ export function SessionCard({
             <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <button
-          type="button"
-          className="sess-checkbtn"
-          onClick={onToggleDone}
-          aria-label={done ? "Marquer la séance comme non faite" : "Marquer la séance comme faite"}
-          aria-pressed={done}
-        >
-          <Check on={done} col={color} size={24} variant="m" />
-        </button>
+        {onToggleDone && (
+          <button
+            type="button"
+            className="sess-checkbtn"
+            onClick={onToggleDone}
+            aria-label={done ? "Marquer la séance comme non faite" : "Marquer la séance comme faite"}
+            aria-pressed={done}
+          >
+            <Check on={done} col={color} size={24} variant="m" />
+          </button>
+        )}
       </div>
       {open && <div className="sess-body">{children}</div>}
     </div>

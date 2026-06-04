@@ -1,16 +1,20 @@
 import { useState } from "react"
 
 import { CheckMark } from "@/components/common/Check"
+import { DaySelector } from "@/components/common/DaySelector"
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
 import { ExerciseLinks } from "@/components/common/ExerciseMedia"
 import { NavIcon, type TabId } from "@/components/common/Icons"
 import { KmField } from "@/components/common/KmField"
 import { LoadChart } from "@/components/common/LoadChart"
+import { RealizedBars } from "@/components/common/RealizedBars"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
 import { SessionCard } from "@/components/common/SessionCard"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
+import { WeekDays } from "@/components/common/WeekDays"
 import type { ProgressApi } from "@/hooks/useProgress"
+import { exKey } from "@/hooks/useProgress"
 import type { PlanData } from "@/hooks/usePlan"
 import type { Theme } from "@/hooks/useTheme"
 import {
@@ -20,9 +24,18 @@ import {
   keySessions,
   MONTHS_LONG,
   type MetricKey,
+  RENFO_DOW,
   sessionForDay,
   tint,
 } from "@/lib/plan"
+import {
+  exPerWeek,
+  realizedStats,
+  type Scope,
+  scopeLabel,
+  SCOPES,
+  scopeWeeks,
+} from "@/lib/stats"
 
 interface ScreenProps {
   plan: PlanData
@@ -178,7 +191,20 @@ function Today({ plan, prog, go }: ScreenProps) {
                 defaultOpen={sess.key === s.key}
               >
                 {s.kind === "renfo" ? (
-                  <ExerciseChecklist exercises={plan.exercises} prog={prog} />
+                  <>
+                    <ExerciseChecklist exercises={plan.exercises} prog={prog} week={cur} />
+                    {s.footing && (
+                      <div className="sess-footing">
+                        <div className="sess-footing-h">Puis · footing court</div>
+                        <div className="sess-body-note">{s.footing}</div>
+                        <KmField
+                          planned={5}
+                          value={prog.s.km[`${cur}-renfoRun`]}
+                          onChange={(v) => prog.setKm(`${cur}-renfoRun`, v)}
+                        />
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <>
                     <KmField
@@ -241,6 +267,7 @@ function Today({ plan, prog, go }: ScreenProps) {
 /* ---------- PLAN ---------- */
 function Plan({ plan, prog }: ScreenProps) {
   const cur = currentWeek()
+  const dow = new Date().getDay()
   const [sel, setSel] = useState(cur)
   const w = plan.weeks.find((x) => x.n === sel) ?? plan.weeks[0]
   const done = !!prog.s.weeks[w.n]
@@ -309,6 +336,10 @@ function Plan({ plan, prog }: ScreenProps) {
           </div>
         </div>
         <p className="d-detail-focus">{w.focus}</p>
+        <div className="d-label" style={{ marginTop: 4 }}>
+          La semaine jour par jour
+        </div>
+        <WeekDays w={w} exercises={plan.exercises} openDow={w.n === cur ? dow : RENFO_DOW} />
         <div className="d-detail-foot">
           <button className={"d-btn" + (done ? " done" : "")} onClick={() => prog.toggleWeek(w.n)}>
             {done ? "✓ Semaine validée" : "Marquer la semaine comme faite"}
@@ -329,66 +360,119 @@ function Plan({ plan, prog }: ScreenProps) {
 
 /* ---------- RENFO ---------- */
 function Renfo({ plan, prog }: ScreenProps) {
-  const done = plan.exercises.filter((_, i) => prog.s.ex[i]).length
+  const cur = currentWeek()
+  const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
+  const todayDow = new Date().getDay()
+  const [day, setDay] = useState(todayDow)
+  const isRenfoDay = day === RENFO_DOW
+  const sess = sessionForDay(day, w)
+  const done = plan.exercises.filter((_, i) => prog.s.ex[exKey(cur, i)]).length
   const total = plan.exercises.length
+
   return (
     <div className="d-grid-2">
       <div>
-        <p className="d-intro">
-          Le mardi · circuit avant footing court. 2–3 tours, 1–2 min de récup. Axé chaîne postérieure
-          &amp; descente pour rééquilibrer un profil calisthénie déjà très quadriceps.
-        </p>
-        <div className="d-list">
-          {plan.exercises.map((e, i) => {
-            const on = !!prog.s.ex[i]
-            return (
-              <div key={i} className="d-ex-row">
-                <button className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
-                  <span className="d-ex-idx">{on ? <CheckMark size={16} color="var(--bg)" /> : i + 1}</span>
-                  <div className="d-ex-mid">
-                    <div className="d-ex-t">
-                      {e.name} <span className="d-chip">{e.chip}</span>
-                    </div>
-                    <div className="d-ex-d">{e.why}</div>
+        <DaySelector value={day} onChange={setDay} today={todayDow} variant="d" />
+        {isRenfoDay ? (
+          <>
+            <p className="d-intro">
+              Le mardi · circuit avant footing court. 2–3 tours, 1–2 min de récup. Axé chaîne
+              postérieure &amp; descente pour rééquilibrer un profil calisthénie déjà très quadriceps.
+            </p>
+            <div className="d-list">
+              {plan.exercises.map((e, i) => {
+                const on = !!prog.s.ex[exKey(cur, i)]
+                return (
+                  <div key={i} className="d-ex-row">
+                    <button className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(cur, i)}>
+                      <span className="d-ex-idx">{on ? <CheckMark size={16} color="var(--bg)" /> : i + 1}</span>
+                      <div className="d-ex-mid">
+                        <div className="d-ex-t">
+                          {e.name} <span className="d-chip">{e.chip}</span>
+                        </div>
+                        <div className="d-ex-d">{e.why}</div>
+                      </div>
+                      <div className="d-ex-vol">{e.vol}</div>
+                    </button>
+                    <ExerciseLinks order={i + 1} name={e.name} variant="d" />
                   </div>
-                  <div className="d-ex-vol">{e.vol}</div>
-                </button>
-                <ExerciseLinks order={i + 1} name={e.name} variant="d" />
-              </div>
-            )
-          })}
-        </div>
+                )
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="d-intro">
+              Le circuit renfo se fait <b>le mardi</b>. {DAY_NAMES[day]}, voici la séance prévue.
+            </p>
+            <div className={"d-today" + (sess.key === "repos" ? " rest" : "")}>
+              <span className="d-tag" style={{ background: tint(sess.col), color: sess.col }}>
+                {sess.tag}
+              </span>
+              <div className="d-today-type">{sess.type}</div>
+              <div className="d-today-detail">{sess.detail}</div>
+              {sess.key !== "repos" && (
+                <div style={{ marginTop: 14 }}>
+                  <KmField
+                    planned={sess.key === "longue" ? w.dist : null}
+                    value={prog.s.km[`${cur}-${sess.key}`]}
+                    onChange={(v) => prog.setKm(`${cur}-${sess.key}`, v)}
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
       <aside className="d-side-card">
-        <div className="d-sc-head">
-          <div>
-            <div className="d-sc-k">Circuit du jour</div>
-            <div className="d-sc-n">
-              {done} <span>/ {total}</span>
+        {isRenfoDay ? (
+          <>
+            <div className="d-sc-head">
+              <div>
+                <div className="d-sc-k">Circuit · semaine {cur}</div>
+                <div className="d-sc-n">
+                  {done} <span>/ {total}</span>
+                </div>
+                <div className="d-sc-bloc" style={{ color: "var(--moss)" }}>
+                  exercices validés
+                </div>
+              </div>
+              <Ring pct={total ? done / total : 0} size={76}>
+                <div className="d-ring-n">
+                  {total ? Math.round((done / total) * 100) : 0}
+                  <span>%</span>
+                </div>
+              </Ring>
             </div>
-            <div className="d-sc-bloc" style={{ color: "var(--moss)" }}>
-              exercices validés
+            <div className="d-sc-k" style={{ marginTop: 18 }}>
+              Minuteur de récupération
             </div>
-          </div>
-          <Ring pct={total ? done / total : 0} size={76}>
-            <div className="d-ring-n">
-              {total ? Math.round((done / total) * 100) : 0}
-              <span>%</span>
+            <RestTimer variant="d" />
+            <div className="d-warn">
+              <b>Pistols / airborne squats</b> 1×/sem max — jamais le même jour que les step-downs,
+              sinon double dose de quadriceps.
             </div>
-          </Ring>
-        </div>
-        <div className="d-sc-k" style={{ marginTop: 18 }}>
-          Minuteur de récupération
-        </div>
-        <RestTimer variant="d" />
-        <div className="d-warn">
-          <b>Pistols / airborne squats</b> 1×/sem max — jamais le même jour que les step-downs, sinon
-          double dose de quadriceps.
-        </div>
-        {done > 0 && (
-          <button className="d-link" onClick={prog.resetEx}>
-            Réinitialiser le circuit
-          </button>
+            {done > 0 && (
+              <button className="d-link" onClick={() => prog.resetEx(cur)}>
+                Réinitialiser le circuit
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="d-sc-k">Renfo de la semaine</div>
+            <p className="d-sc-focus">
+              Le circuit chaîne postérieure &amp; descente se place le mardi, jamais collé à la sortie
+              longue ou aux côtes.
+            </p>
+            <button className="d-btn" onClick={() => setDay(RENFO_DOW)}>
+              Voir le circuit du mardi ›
+            </button>
+            <div className="d-sc-k" style={{ marginTop: 18 }}>
+              Minuteur de récupération
+            </div>
+            <RestTimer variant="d" />
+          </>
         )}
       </aside>
     </div>
@@ -398,16 +482,20 @@ function Renfo({ plan, prog }: ScreenProps) {
 /* ---------- PROGRÈS ---------- */
 function Progres({ plan, prog }: ScreenProps) {
   const [metricKey, setMetricKey] = useState<MetricKey>("denivele")
+  const [scope, setScope] = useState<Scope>("global")
   const metric = CHART_METRICS.find((m) => m.key === metricKey)!
-  const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
-  const totalD = plan.weeks.reduce((a, w) => a + w.dpos, 0)
-  const totalT = plan.weeks.reduce((a, w) => a + w.duree, 0)
   const cur = currentWeek()
-  const tiles = [
-    { n: (totalD / 1000).toFixed(1), u: " k", l: "m D+ cumulés (longues)" },
-    { n: String(Math.round(totalT / 60)), u: " h", l: "de sorties longues" },
-    { n: "740", u: " m", l: "D+ le jour de la course" },
-    { n: String(13 - cur), u: "", l: "semaines avant la course" },
+  const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
+
+  const weekNums = scopeWeeks(scope, plan.weeks)
+  const st = realizedStats(plan.weeks, prog.s, weekNums)
+  const bars = exPerWeek(plan.weeks, prog.s)
+  const scopeSet = new Set(weekNums)
+  const realized = [
+    { n: String(st.sessionsDone), u: ` /${st.sessionsTotal}`, l: "séances clés faites" },
+    { n: String(st.exDone), u: ` /${st.exTotal}`, l: "exercices renfo cochés" },
+    { n: st.km.toFixed(st.km % 1 ? 1 : 0), u: " km", l: "parcourus (saisis)" },
+    { n: String(st.dplusDone), u: " m", l: "D+ validé (longues)" },
   ]
 
   return (
@@ -424,24 +512,46 @@ function Progres({ plan, prog }: ScreenProps) {
             <div className="d-ph-k">Semaines validées</div>
             <div className="d-ph-v">{Math.round((weeksDone / 13) * 100)}% du plan accompli</div>
             <div className="d-ph-s">
-              Tu es en semaine {cur} · {13 - cur} restantes
+              Tu es en semaine {cur} · {13 - cur} restantes · jour J : 740 m D+
             </div>
           </div>
         </div>
-        <div className="d-tiles">
-          {tiles.map((t, i) => (
-            <div className="d-tile" key={i}>
-              <div className="d-tile-n">
-                {t.n}
-                <span>{t.u}</span>
-              </div>
-              <div className="d-tile-l">{t.l}</div>
-            </div>
+      </div>
+
+      <div className="d-prog-head">
+        <div className="d-label" style={{ margin: 0 }}>
+          Réalisé · {scopeLabel(scope, plan.weeks)}
+        </div>
+        <div className="d-seg">
+          {SCOPES.map((sc) => (
+            <button key={sc.key} className={sc.key === scope ? "on" : ""} onClick={() => setScope(sc.key)}>
+              {sc.label}
+            </button>
           ))}
         </div>
       </div>
+      <div className="d-tiles">
+        {realized.map((t, i) => (
+          <div className="d-tile" key={i}>
+            <div className="d-tile-n">
+              {t.n}
+              <span>{t.u}</span>
+            </div>
+            <div className="d-tile-l">{t.l}</div>
+          </div>
+        ))}
+      </div>
+      <div className="d-reste">
+        Reste sur ce périmètre : <b>{st.sessionsTotal - st.sessionsDone}</b> séances ·{" "}
+        <b>{st.weeksTotal - st.weeksValidated}</b> semaines à valider.
+      </div>
 
-      <div className="d-label">Courbe de charge — survole les points</div>
+      <div className="d-label">Exercices renfo réalisés par semaine</div>
+      <div className="d-card">
+        <RealizedBars data={bars} scope={scopeSet} cur={cur} />
+      </div>
+
+      <div className="d-label">Charge planifiée — survole les points</div>
       <div className="d-card">
         <div className="d-card-head">
           <div className="d-seg">

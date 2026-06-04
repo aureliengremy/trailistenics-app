@@ -112,6 +112,19 @@ export function currentWeek(today: Date = new Date()): number {
   return Math.max(1, Math.min(13, diff + 1))
 }
 
+/** Date du lundi de la semaine n du plan (S1 commence le lundi 2 juin 2026). */
+export function weekStartDate(n: number): Date {
+  return new Date(PLAN_START.getTime() + (n - 1) * 7 * 864e5)
+}
+
+/** Mois (0–11) de la semaine n. */
+export function weekMonth(n: number): number {
+  return weekStartDate(n).getMonth()
+}
+
+/** Jour de la semaine du renfo (mardi). */
+export const RENFO_DOW = 2
+
 export interface DaySession {
   type: string
   detail: string
@@ -140,6 +153,20 @@ export function sessionForDay(d: number, w: PlanWeek): DaySession {
   }
 }
 
+/** Ordre d'affichage des jours d'une semaine d'entraînement : lundi → dimanche. */
+const WEEK_DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
+
+export interface WeekDay {
+  dow: number
+  name: string
+  sess: DaySession
+}
+
+/** Les 7 jours d'une semaine, ordonnés lundi → dimanche, avec leur séance type. */
+export function weekDays(w: PlanWeek): WeekDay[] {
+  return WEEK_DAY_ORDER.map((d) => ({ dow: d, name: DAY_NAMES[d], sess: sessionForDay(d, w) }))
+}
+
 /** Teinte translucide d'une couleur (hex ou var()), pour les fonds de tags. */
 export function tint(col: string): string {
   return `color-mix(in oklab, ${col} 14%, transparent)`
@@ -155,6 +182,8 @@ export interface KeySession {
   kind: "renfo" | "run"
   detail: string
   planned: number | null
+  /** Pour le mardi : le footing facile qui suit le circuit. */
+  footing?: string
 }
 
 export function keySessions(w: PlanWeek): KeySession[] {
@@ -168,6 +197,7 @@ export function keySessions(w: PlanWeek): KeySession[] {
       kind: "renfo",
       detail: "",
       planned: null,
+      footing: "Puis 20–30 min de footing facile, sur jambes fatiguées — pas de côtes, allure conversation.",
     },
     {
       key: "qual",

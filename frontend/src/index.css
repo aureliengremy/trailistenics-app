@@ -2083,3 +2083,201 @@ button {
   font-size: 13px;
   color: var(--muted);
 }
+
+/* ============================================================= */
+/* Cohérence : sélecteur de jour, accordéon jour, stats réalisées */
+/* ============================================================= */
+
+/* --- Sélecteur de jour (Renfo) --- */
+.d-daysel,
+.m-daysel {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.m-daysel {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin-bottom: 14px;
+}
+.m-daysel::-webkit-scrollbar {
+  display: none;
+}
+.d-daysel-b,
+.m-daysel-b {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 10px 4px;
+  color: var(--muted);
+  font-family: "Archivo";
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.16s;
+}
+.m-daysel-b {
+  flex: 0 0 auto;
+  min-width: 52px;
+  padding: 9px 12px;
+}
+.d-daysel-b:hover {
+  border-color: var(--moss-d);
+  color: var(--ink);
+}
+.d-daysel-b.today,
+.m-daysel-b.today {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.d-daysel-b.on,
+.m-daysel-b.on {
+  background: var(--moss);
+  border-color: var(--moss);
+  color: var(--bg);
+}
+
+/* --- Bloc footing dans la carte de séance (mardi) --- */
+.sess-footing {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+.sess-footing-h {
+  font-family: "Fraunces";
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--sky);
+  margin-bottom: 2px;
+}
+
+/* --- Liste d'exercices dans l'accordéon « Le plan » --- */
+.day-ex {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.day-ex li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+}
+.day-ex-dot {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces";
+  font-weight: 700;
+  font-size: 12px;
+}
+.day-ex-n {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+}
+.day-ex-vol {
+  flex: 0 0 auto;
+  font-family: "Fraunces";
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+/* --- Progrès : en-tête réalisé + reste à faire --- */
+.d-prog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 24px 0 14px;
+}
+.d-reste,
+.m-reste {
+  margin-top: 12px;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.d-reste b,
+.m-reste b {
+  color: var(--ink);
+  font-family: "Fraunces";
+}
+.m-reste {
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* --- Graphe à barres : exercices renfo réalisés par semaine --- */
+.rb {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 150px;
+  padding: 6px 2px 0;
+}
+.rb-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+.rb-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.rb-fill {
+  width: 100%;
+  max-width: 30px;
+  min-height: 3px;
+  border-radius: 5px 5px 2px 2px;
+  background: var(--line);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  transition: height 0.25s ease;
+}
+.rb-col.in .rb-fill {
+  background: var(--moss);
+}
+.rb-col.cur .rb-fill {
+  background: var(--accent);
+}
+.rb-val {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--bg);
+  margin-top: 3px;
+  line-height: 1;
+}
+.rb-col:not(.in) .rb-val {
+  color: var(--muted);
+}
+.rb-x {
+  margin-top: 6px;
+  font-size: 10.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.rb-col.cur .rb-x {
+  color: var(--accent);
+  font-weight: 700;
+}

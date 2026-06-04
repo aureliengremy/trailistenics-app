@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 /** État de progression persisté en localStorage (semaines, exos, séances, km). */
 export interface ProgressState {
   weeks: Record<number, boolean>
-  ex: Record<number, boolean>
+  /** Exercices renfo cochés, clé `${semaine}-${index}` (ex. "3-0"). */
+  ex: Record<string, boolean>
   sessions: Record<string, boolean>
   /** Kilomètres réalisés, clé `${semaine}-${séance}` (ex. "1-longue"). */
   km: Record<string, number>
@@ -12,10 +13,10 @@ export interface ProgressState {
 export interface ProgressApi {
   s: ProgressState
   toggleWeek: (n: number) => void
-  toggleEx: (i: number) => void
+  toggleEx: (week: number, i: number) => void
   toggleSession: (k: string) => void
   setKm: (k: string, val: number | null) => void
-  resetEx: () => void
+  resetEx: (week: number) => void
   reset: () => void
 }
 
@@ -28,6 +29,11 @@ function load(): ProgressState {
   } catch {
     return { weeks: {}, ex: {}, sessions: {}, km: {} }
   }
+}
+
+/** Clé d'un exercice renfo dans l'état (par semaine). */
+export function exKey(week: number, i: number): string {
+  return `${week}-${i}`
 }
 
 export function useProgress(): ProgressApi {
@@ -44,7 +50,11 @@ export function useProgress(): ProgressApi {
   return {
     s,
     toggleWeek: (n) => setS((p) => ({ ...p, weeks: { ...p.weeks, [n]: !p.weeks[n] } })),
-    toggleEx: (i) => setS((p) => ({ ...p, ex: { ...p.ex, [i]: !p.ex[i] } })),
+    toggleEx: (week, i) =>
+      setS((p) => {
+        const k = exKey(week, i)
+        return { ...p, ex: { ...p.ex, [k]: !p.ex[k] } }
+      }),
     toggleSession: (k) => setS((p) => ({ ...p, sessions: { ...p.sessions, [k]: !p.sessions[k] } })),
     setKm: (k, val) =>
       setS((p) => {
@@ -53,7 +63,12 @@ export function useProgress(): ProgressApi {
         else km[k] = val
         return { ...p, km }
       }),
-    resetEx: () => setS((p) => ({ ...p, ex: {} })),
+    resetEx: (week) =>
+      setS((p) => {
+        const ex = { ...p.ex }
+        for (let i = 0; i < 6; i++) delete ex[exKey(week, i)]
+        return { ...p, ex }
+      }),
     reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {} }),
   }
 }
