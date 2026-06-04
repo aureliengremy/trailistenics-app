@@ -2,7 +2,7 @@ import { useState } from "react"
 
 import { CheckMark } from "@/components/common/Check"
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
-import { ExerciseLinks, ExerciseThumb } from "@/components/common/ExerciseMedia"
+import { ExerciseLinks } from "@/components/common/ExerciseMedia"
 import { NavIcon, type TabId } from "@/components/common/Icons"
 import { KmField } from "@/components/common/KmField"
 import { LoadChart } from "@/components/common/LoadChart"
@@ -345,7 +345,6 @@ function Renfo({ plan, prog }: ScreenProps) {
               <div key={i} className="d-ex-row">
                 <button className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
                   <span className="d-ex-idx">{on ? <CheckMark size={16} color="var(--bg)" /> : i + 1}</span>
-                  <ExerciseThumb order={i + 1} variant="d" />
                   <div className="d-ex-mid">
                     <div className="d-ex-t">
                       {e.name} <span className="d-chip">{e.chip}</span>
@@ -354,7 +353,7 @@ function Renfo({ plan, prog }: ScreenProps) {
                   </div>
                   <div className="d-ex-vol">{e.vol}</div>
                 </button>
-                <ExerciseLinks order={i + 1} variant="d" />
+                <ExerciseLinks order={i + 1} name={e.name} variant="d" />
               </div>
             )
           })}

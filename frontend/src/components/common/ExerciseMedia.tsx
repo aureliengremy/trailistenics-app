@@ -1,49 +1,76 @@
-import { EXERCISE_MEDIA, imagesSearchUrl, videoSearchUrl } from "@/lib/exerciseMedia"
+import { useState } from "react"
+import { ImageIcon, Play } from "lucide-react"
+
+import { Modal } from "@/components/common/Modal"
+import {
+  EXERCISE_MEDIA,
+  imagesSearchUrl,
+  videoEmbedUrl,
+  videoSearchUrl,
+} from "@/lib/exerciseMedia"
 
 type Variant = "d" | "m"
+type Mode = "images" | "video"
 
-/**
- * Vignette de démo d'un exercice renfo (image embarquée free-exercise-db).
- * `order` = numéro de l'exercice (1–6). Se masque si l'image échoue à charger.
- */
-export function ExerciseThumb({ order, variant }: { order: number; variant: Variant }) {
-  const media = EXERCISE_MEDIA[order]
-  if (!media?.imageUrl) return null
-  return (
-    <img
-      className={`${variant}-ex-thumb`}
-      src={media.imageUrl}
-      alt=""
-      loading="lazy"
-      onError={(e) => {
-        e.currentTarget.style.display = "none"
-      }}
-    />
-  )
+interface ExerciseLinksProps {
+  order: number
+  name: string
+  variant: Variant
 }
 
-/** Liens « Images » / « Vidéo » de démo (recherches pré-remplies) pour un exercice renfo. */
-export function ExerciseLinks({ order, variant }: { order: number; variant: Variant }) {
+/**
+ * Deux déclencheurs « Image » / « Vidéo » par exercice renfo. Chacun ouvre une modal qui
+ * embarque le média : galerie d'images open-source, ou lecteur YouTube curé.
+ * `order` = numéro de l'exercice (1–6).
+ */
+export function ExerciseLinks({ order, name, variant }: ExerciseLinksProps) {
   const media = EXERCISE_MEDIA[order]
+  const [mode, setMode] = useState<Mode | null>(null)
   if (!media) return null
+
   return (
     <div className={`${variant}-ex-links`}>
-      <a
-        className={`${variant}-ex-link`}
-        href={imagesSearchUrl(media.query)}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Images
-      </a>
-      <a
-        className={`${variant}-ex-link`}
-        href={videoSearchUrl(media.query)}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Vidéo
-      </a>
+      <button type="button" className={`${variant}-ex-link`} onClick={() => setMode("images")}>
+        <ImageIcon size={14} /> Image
+      </button>
+      <button type="button" className={`${variant}-ex-link`} onClick={() => setMode("video")}>
+        <Play size={14} /> Vidéo
+      </button>
+
+      <Modal open={mode === "images"} onClose={() => setMode(null)} title={name}>
+        <div className="modal-gallery">
+          {media.images.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt={`${name} — vue ${i + 1}`}
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.style.display = "none"
+              }}
+            />
+          ))}
+        </div>
+        <a className="modal-ext" href={imagesSearchUrl(media.query)} target="_blank" rel="noreferrer">
+          Ouvrir dans Google Images ↗
+        </a>
+      </Modal>
+
+      <Modal open={mode === "video"} onClose={() => setMode(null)} title={name}>
+        <div className="modal-video">
+          {mode === "video" && (
+            <iframe
+              src={videoEmbedUrl(media.videoId)}
+              title={`${name} — démo vidéo`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+        </div>
+        <a className="modal-ext" href={videoSearchUrl(media.query)} target="_blank" rel="noreferrer">
+          Voir d'autres résultats sur YouTube ↗
+        </a>
+      </Modal>
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { CheckMark } from "@/components/common/Check"
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
-import { ExerciseLinks, ExerciseThumb } from "@/components/common/ExerciseMedia"
+import { ExerciseLinks } from "@/components/common/ExerciseMedia"
 import { NavIcon, type TabId } from "@/components/common/Icons"
 import { KmField } from "@/components/common/KmField"
 import { LoadChart } from "@/components/common/LoadChart"
@@ -308,7 +308,6 @@ function Renfo({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
             <div key={i} className="m-ex-row">
               <button className={"m-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(i)}>
                 <span className="m-ex-idx">{on ? <CheckMark size={15} color="var(--bg)" /> : i + 1}</span>
-                <ExerciseThumb order={i + 1} variant="m" />
                 <div className="m-ex-mid">
                   <div className="m-ex-t">
                     {e.name} <span className="m-chip">{e.chip}</span>
@@ -317,7 +316,7 @@ function Renfo({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
                 </div>
                 <div className="m-ex-vol">{e.vol}</div>
               </button>
-              <ExerciseLinks order={i + 1} variant="m" />
+              <ExerciseLinks order={i + 1} name={e.name} variant="m" />
             </div>
           )
         })}
