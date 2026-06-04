@@ -80,12 +80,16 @@ le `.md` prime pour le **texte/contenu**, les fichiers `Trailistenics/` priment 
 
 - **Maintenant : PostgreSQL en local** (via Docker Compose fourni, ou Postgres local).
   On développe et valide tout sur cette base locale.
-- **Plus tard : migration vers Neon** (PostgreSQL serverless). La bascule doit être une
-  simple affaire de `DATABASE_URL` — **aucune dépendance en dur** à l'environnement local
-  dans le code. Tout passe par la variable d'env.
-- **Ne pas configurer Neon maintenant.** Garder le code agnostique.
+- **Production : Neon** (PostgreSQL serverless). La bascule est une simple affaire de
+  `DATABASE_URL` — **aucune dépendance en dur** à l'environnement local dans le code.
+  Tout passe par la variable d'env. Endpoint **direct** (sans `-pooler`) pour psycopg3/Alembic.
+- Le code est **agnostique** : local ⇄ Neon = changement de `DATABASE_URL` uniquement.
 
-Format attendu : `postgresql+psycopg://user:password@host:port/dbname`
+Format attendu : `postgresql+psycopg://user:password@host:port/dbname?sslmode=require`
+
+**Déploiement** (voir `DEPLOYMENT.md`) : Frontend → **Vercel** (`frontend/vercel.json`),
+Backend → **Render** (`render.yaml`, blueprint), DB → **Neon**. Secrets (`DATABASE_URL`,
+`CORS_ORIGINS`, `VITE_API_URL`) configurés dans chaque plateforme, jamais committés.
 
 ## 5. Arborescence du monorepo
 

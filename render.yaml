@@ -1,0 +1,24 @@
+# Blueprint Render — API FastAPI (backend/). DB = Neon (Postgres serverless, externe).
+# Déploiement : Render > New > Blueprint > sélectionne ce repo. Renseigne ensuite
+# DATABASE_URL et CORS_ORIGINS (marqués sync:false → saisis manuellement, jamais committés).
+services:
+  - type: web
+    name: trailistenics-api
+    runtime: python
+    plan: free
+    region: frankfurt # proche d'un projet Neon EU (eu-central)
+    rootDir: backend
+    # Les migrations tournent au build (Alembic est idempotent : ne ré-applique rien).
+    buildCommand: pip install -e . && alembic upgrade head
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Chaîne Neon — préfixe IMPÉRATIF `postgresql+psycopg://` (driver psycopg 3).
+      # Ex : postgresql+psycopg://USER:PWD@ep-xxx.eu-central-1.aws.neon.tech/plantrail?sslmode=require
+      - key: DATABASE_URL
+        sync: false
+      # URL(s) du front Vercel, séparées par des virgules (ex : https://trailistenics-app.vercel.app)
+      - key: CORS_ORIGINS
+        sync: false
