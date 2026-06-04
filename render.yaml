@@ -6,7 +6,7 @@ services:
     name: trailistenics-api
     runtime: python
     plan: free
-    region: frankfurt # proche d'un projet Neon EU (eu-central)
+    region: virginia # US-East, proche du projet Neon us-east-1 (latence DB minimale)
     rootDir: backend
     # Les migrations tournent au build (Alembic est idempotent : ne ré-applique rien).
     buildCommand: pip install -e . && alembic upgrade head
