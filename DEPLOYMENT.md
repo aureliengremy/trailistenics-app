@@ -64,6 +64,12 @@ python -m app.seed       # peuple 13 semaines, blocs, 6 exercices (idempotent)
 1. **Vercel > Add New > Project**, importe le repo.
 2. **Root Directory = `frontend`** (important, c'est un monorepo). Le reste est auto-détecté
    (Vite, build `npm run build`, output `dist`) — `frontend/vercel.json` le verrouille.
+
+   > ⚠️ **Si Vercel réclame un `experimentalServices` / « multiple services »** : c'est qu'il
+   > pointe sur la **racine** du repo (il voit `frontend/` + `backend/`). On NE veut PAS ça ici
+   > (le backend vit sur Render). La correction = régler **Root Directory sur `frontend`** dans
+   > *Settings → Build & Deployment → Root Directory*, puis redéployer. Vercel ne voit alors plus
+   > que le front et lit `frontend/vercel.json`. Ne crée **pas** de `vercel.json` à la racine.
 3. **Environment Variables** → ajoute :
    - `VITE_API_URL` = l'URL Render du backend, ex `https://trailistenics-api.onrender.com`
      (⚠️ sans slash final ; les variables `VITE_*` sont injectées **au build** → redeploy si tu la changes).
