@@ -66,13 +66,16 @@ le `.md` prime pour le **texte/contenu**, les fichiers `Trailistenics/` priment 
 - Tailwind CSS (thème personnalisé reprenant la palette + fonts du prototype)
 - shadcn/ui (composants — Accordion, Card, Tabs, etc.)
 - Recharts (graphiques — remplace le canvas du prototype par des composants React responsives)
+- **Neon Auth** (Better Auth) via `@neondatabase/auth` — auth email/mot de passe. L'UI de
+  connexion/inscription reste la nôtre (`AuthScreen`) ; le client gère la session. La `base_url`
+  est passée par `VITE_NEON_AUTH_URL`. **Pas de react-router** (onglets en `useState`).
 
 **Backend** (`backend/`)
-- FastAPI (Python 3.11+)
-- Pydantic v2 (schémas de validation / sérialisation, `EmailStr` via `email-validator`)
+- FastAPI (Python 3.11+) — endpoints de **données publiques** (aucune auth backend ; l'auth est
+  gérée par Neon Auth côté frontend)
+- Pydantic v2 (schémas de validation / sérialisation)
 - SQLAlchemy 2.x (ORM) + Alembic (migrations)
 - Uvicorn (serveur ASGI)
-- Auth : `bcrypt` (hachage mot de passe) + `pyjwt` (jetons JWT)
 
 **Base de données**
 - **PostgreSQL** (≥ 15)
@@ -106,15 +109,21 @@ trailistenics-app/
 │   ├── plan_trail_descriptif.md       # contenu
 │   ├── plan_trail_interactif.html     # 1er prototype éditorial
 │   └── Trailistenics/Plan Trail/      # design system de l'app Suivi (desktop + mobile)
+├── docs/                      # base de connaissances + génération de programmes
+│   ├── README.md                      # architecture de la génération (sans API, via Claude Code)
+│   ├── methodologie/                  # science brute sourcée (trail · calisthénie · hybride)
+│   ├── modele-donnees/                # contrat de sortie MD+JSON + JSON Schema + exemple 740
+│   ├── intake/                        # profil d'entrée (questionnaire de génération)
+│   ├── prompts/                       # 3 prompts : trail · calisthénie bas du corps · hybride
+│   └── generated/                     # sorties (programme-<slug>.md + .json)
 ├── backend/
 │   ├── app/
 │   │   ├── main.py            # instance FastAPI, montage routers, CORS
 │   │   ├── config.py         # Settings Pydantic (lit DATABASE_URL, CORS_ORIGINS…)
 │   │   ├── database.py       # engine + SessionLocal + get_db()
-│   │   ├── security.py       # hachage bcrypt, JWT, dépendance get_current_user
-│   │   ├── models/           # modèles SQLAlchemy (bloc, week, exercise, user)
-│   │   ├── schemas/          # schémas Pydantic (réponses API + auth)
-│   │   ├── routers/          # endpoints REST (weeks, exercises, blocs, auth)
+│   │   ├── models/           # modèles SQLAlchemy (bloc, week, exercise)
+│   │   ├── schemas/          # schémas Pydantic (réponses API)
+│   │   ├── routers/          # endpoints REST publics (weeks, exercises, blocs)
 │   │   └── seed.py           # peuple la DB à partir du contenu du .md
 │   ├── alembic/              # migrations
 │   ├── alembic.ini
@@ -126,13 +135,14 @@ trailistenics-app/
     │   ├── App.tsx           # switch desktop/mobile + états chargement/erreur
     │   ├── index.css         # design system porté : vars + CSS .d-* (desktop) & .m-* (mobile)
     │   ├── lib/
-    │   │   ├── api.ts        # client fetch typé (VITE_API_URL)
+    │   │   ├── api.ts        # client fetch typé des données publiques (VITE_API_URL)
+    │   │   ├── auth-client.ts # client Neon Auth (Better Auth) — VITE_NEON_AUTH_URL
     │   │   └── plan.ts       # adaptateur API→PlanWeek, constantes charts, dates, sessionForDay
     │   ├── types/            # types TS de l'API (Week, Bloc, Exercise)
     │   ├── hooks/
     │   │   ├── usePlan.ts        # fetch weeks+blocs+exercises → forme « plan »
     │   │   ├── useProgress.ts    # suivi persisté localStorage (weeks/ex/sessions)
-    │   │   ├── useAuth.ts        # état d'auth (jeton JWT localStorage, /me, login/register/logout)
+    │   │   ├── useAuth.ts        # état d'auth via Neon Auth (authClient.useSession / signIn / signUp / signOut)
     │   │   └── useMediaQuery.ts  # commutation desktop/mobile
     │   └── components/
     │       ├── common/      # Ring, Check, Icons, RestTimer, LoadChart, AccountMenu

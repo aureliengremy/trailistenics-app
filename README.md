@@ -36,8 +36,8 @@ docker compose up -d            # Postgres sur localhost:5432 (db plantrail)
 cd backend
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e .
-cp ../.env.example .env          # DATABASE_URL pré-rempli ; en prod, fixer un JWT_SECRET fort
-alembic upgrade head             # crée les tables (dont `users` pour l'auth)
+cp ../.env.example .env          # DATABASE_URL pré-rempli (local Docker, ou Neon)
+alembic upgrade head             # crée les tables (blocs, weeks, exercises)
 python -m app.seed               # peuple les 13 semaines, blocs et exercices
 uvicorn app.main:app --reload    # API → http://localhost:8000  (docs: /docs)
 ```
@@ -47,17 +47,21 @@ uvicorn app.main:app --reload    # API → http://localhost:8000  (docs: /docs)
 ```bash
 cd frontend
 npm install
-cp .env.example .env             # VITE_API_URL=http://localhost:8000
+cp .env.example .env             # VITE_API_URL + VITE_NEON_AUTH_URL (voir ci-dessous)
 npm run dev                      # → http://localhost:5173
 ```
 
 ## Authentification
 
-L'app est protégée par un écran de connexion / inscription (email + mot de passe). Les mots de
-passe sont hachés (bcrypt) et la session repose sur un jeton JWT signé avec `JWT_SECRET`.
-En production, fixe impérativement un `JWT_SECRET` fort dans `backend/.env`
-(`python -c "import secrets; print(secrets.token_urlsafe(48))"`). Endpoints : `POST /api/auth/register`,
-`POST /api/auth/login`, `GET /api/auth/me`.
+L'app est protégée par un écran de connexion / inscription (email + mot de passe), **propulsé
+par [Neon Auth](https://neon.com/docs/neon-auth/overview) (Better Auth)**. L'UI reste celle de
+l'app (`AuthScreen`) ; le client `@neondatabase/auth` gère la session.
+
+- Variable requise : **`VITE_NEON_AUTH_URL`** = la `base_url` affichée dans **Neon Console → Auth**
+  (publiable, pas un secret).
+- Le **backend ne fait pas d'auth** : ses endpoints de données sont publics. La progression est
+  rattachée à l'`id` Neon Auth de l'utilisateur (localStorage par compte).
+- En production, ajouter l'origine du front (Vercel) aux **Trusted origins** dans Neon Console → Auth.
 
 ## Structure
 

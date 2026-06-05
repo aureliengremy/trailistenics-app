@@ -36,14 +36,9 @@ export interface Exercise {
   rationale: string
 }
 
+/** Utilisateur Neon Auth (Better Auth). `id` = uuid. */
 export interface User {
-  id: number
+  id: string
   email: string
-  created_at: string
-}
-
-export interface Token {
-  access_token: string
-  token_type: string
-  user: User
+  name?: string
 }

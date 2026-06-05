@@ -23,8 +23,8 @@ export interface ProgressApi {
 const BASE_KEY = "planTrail.progress.v1"
 
 /** Clé de stockage propre à l'utilisateur (isole la progression entre comptes). */
-function storageKey(userId: number | null): string {
-  return userId != null ? `${BASE_KEY}.${userId}` : BASE_KEY
+function storageKey(userId: string | null): string {
+  return userId ? `${BASE_KEY}.${userId}` : BASE_KEY
 }
 
 function load(key: string): ProgressState {
@@ -46,7 +46,7 @@ export function exKey(week: number, i: number): string {
  * chaque compte a sa propre clé. Au changement d'utilisateur (connexion/déconnexion),
  * l'état est rechargé depuis la clé correspondante.
  */
-export function useProgress(userId: number | null): ProgressApi {
+export function useProgress(userId: string | null): ProgressApi {
   const key = storageKey(userId)
   const [s, setS] = useState<ProgressState>(() => load(key))
 
