@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { AccountMenu } from "@/components/common/AccountMenu"
 import { CheckMark } from "@/components/common/Check"
 import { DaySelector } from "@/components/common/DaySelector"
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
@@ -17,6 +18,7 @@ import type { PlanData } from "@/hooks/usePlan"
 import type { ProgressApi } from "@/hooks/useProgress"
 import { exKey } from "@/hooks/useProgress"
 import type { Theme } from "@/hooks/useTheme"
+import type { User } from "@/types"
 import {
   CHART_METRICS,
   currentWeek,
@@ -49,11 +51,15 @@ export function MobileApp({
   prog,
   theme,
   onToggleTheme,
+  user,
+  onLogout,
 }: {
   plan: PlanData
   prog: ProgressApi
   theme: Theme
   onToggleTheme: () => void
+  user: User | null
+  onLogout: () => void
 }) {
   const [tab, setTab] = useState<TabId>("today")
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -69,7 +75,10 @@ export function MobileApp({
           <div className="m-brand">TRAILISTENICS</div>
           <div className="m-title">{title}</div>
         </div>
-        <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="m" />
+        <div className="m-topbar-r">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="m" />
+          <AccountMenu user={user} onLogout={onLogout} variant="m" />
+        </div>
       </div>
       <div className="m-scroll" ref={scrollRef}>
         {tab === "today" && <Today plan={plan} prog={prog} go={setTab} />}

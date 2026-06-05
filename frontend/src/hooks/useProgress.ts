@@ -20,11 +20,16 @@ export interface ProgressApi {
   reset: () => void
 }
 
-const KEY = "planTrail.progress.v1"
+const BASE_KEY = "planTrail.progress.v1"
 
-function load(): ProgressState {
+/** Clé de stockage propre à l'utilisateur (isole la progression entre comptes). */
+function storageKey(userId: number | null): string {
+  return userId != null ? `${BASE_KEY}.${userId}` : BASE_KEY
+}
+
+function load(key: string): ProgressState {
   try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? "{}") as Partial<ProgressState>
+    const v = JSON.parse(localStorage.getItem(key) ?? "{}") as Partial<ProgressState>
     return { weeks: v.weeks ?? {}, ex: v.ex ?? {}, sessions: v.sessions ?? {}, km: v.km ?? {} }
   } catch {
     return { weeks: {}, ex: {}, sessions: {}, km: {} }
@@ -36,16 +41,30 @@ export function exKey(week: number, i: number): string {
   return `${week}-${i}`
 }
 
-export function useProgress(): ProgressApi {
-  const [s, setS] = useState<ProgressState>(load)
+/**
+ * Suivi de progression persisté en localStorage, **rattaché à l'utilisateur** :
+ * chaque compte a sa propre clé. Au changement d'utilisateur (connexion/déconnexion),
+ * l'état est rechargé depuis la clé correspondante.
+ */
+export function useProgress(userId: number | null): ProgressApi {
+  const key = storageKey(userId)
+  const [s, setS] = useState<ProgressState>(() => load(key))
+
+  // Réinitialise l'état quand la clé (donc l'utilisateur) change — pattern React
+  // « ajuster l'état pendant le rendu », sans réécriture parasite vers la nouvelle clé.
+  const [curKey, setCurKey] = useState(key)
+  if (key !== curKey) {
+    setCurKey(key)
+    setS(load(key))
+  }
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(s))
+      localStorage.setItem(key, JSON.stringify(s))
     } catch {
       /* quota indisponible — on ignore */
     }
-  }, [s])
+  }, [key, s])
 
   return {
     s,

@@ -20,9 +20,10 @@ query (`min-width: 860px`) :
   semaine (séance du jour), `Plan` (semaines → détail paginé), `Renfo` (barre de progression +
   minuteur), `Progrès` (anneau, stats cumulées, mini-graphe).
 
-**Suivi de progression** persisté en `localStorage` (clé `planTrail.progress.v1`) : semaines
-validées, exercices cochés, séances clés terminées. La semaine "en cours" est calculée d'après
-la date réelle (début S1 = 2 juin 2026).
+**Suivi de progression** persisté en `localStorage`, **par utilisateur** (clé
+`planTrail.progress.v1.<userId>`) : semaines validées, exercices renfo cochés (par semaine),
+séances clés terminées, km saisis. L'état est rechargé au changement de compte. La semaine
+"en cours" est calculée d'après la date réelle (début S1 = 2 juin 2026).
 
 **Thème clair/sombre** : toggle (soleil/lune) dans le header desktop et la topbar mobile.
 - **Premier chargement** : suit la préférence système (`prefers-color-scheme`) tant qu'aucun
@@ -68,9 +69,10 @@ le `.md` prime pour le **texte/contenu**, les fichiers `Trailistenics/` priment 
 
 **Backend** (`backend/`)
 - FastAPI (Python 3.11+)
-- Pydantic v2 (schémas de validation / sérialisation)
+- Pydantic v2 (schémas de validation / sérialisation, `EmailStr` via `email-validator`)
 - SQLAlchemy 2.x (ORM) + Alembic (migrations)
 - Uvicorn (serveur ASGI)
+- Auth : `bcrypt` (hachage mot de passe) + `pyjwt` (jetons JWT)
 
 **Base de données**
 - **PostgreSQL** (≥ 15)
@@ -109,9 +111,10 @@ trailistenics-app/
 │   │   ├── main.py            # instance FastAPI, montage routers, CORS
 │   │   ├── config.py         # Settings Pydantic (lit DATABASE_URL, CORS_ORIGINS…)
 │   │   ├── database.py       # engine + SessionLocal + get_db()
-│   │   ├── models/           # modèles SQLAlchemy (bloc, week, exercise)
-│   │   ├── schemas/          # schémas Pydantic (réponses API)
-│   │   ├── routers/          # endpoints REST (weeks, exercises, blocs)
+│   │   ├── security.py       # hachage bcrypt, JWT, dépendance get_current_user
+│   │   ├── models/           # modèles SQLAlchemy (bloc, week, exercise, user)
+│   │   ├── schemas/          # schémas Pydantic (réponses API + auth)
+│   │   ├── routers/          # endpoints REST (weeks, exercises, blocs, auth)
 │   │   └── seed.py           # peuple la DB à partir du contenu du .md
 │   ├── alembic/              # migrations
 │   ├── alembic.ini
@@ -129,9 +132,11 @@ trailistenics-app/
     │   ├── hooks/
     │   │   ├── usePlan.ts        # fetch weeks+blocs+exercises → forme « plan »
     │   │   ├── useProgress.ts    # suivi persisté localStorage (weeks/ex/sessions)
+    │   │   ├── useAuth.ts        # état d'auth (jeton JWT localStorage, /me, login/register/logout)
     │   │   └── useMediaQuery.ts  # commutation desktop/mobile
     │   └── components/
-    │       ├── common/      # Ring, Check, Icons, RestTimer, LoadChart (Recharts)
+    │       ├── common/      # Ring, Check, Icons, RestTimer, LoadChart, AccountMenu
+    │       ├── auth/AuthScreen.tsx      # écran d'entrée (connexion / inscription)
     │       ├── desktop/DesktopApp.tsx   # dashboard sidebar (Today/Plan/Renfo/Progres)
     │       └── mobile/MobileApp.tsx     # app à onglets (Today/Plan/Renfo/Progres)
     ├── tailwind.config.ts    # config conservée (le design Suivi est en CSS porté)
@@ -146,13 +151,15 @@ trailistenics-app/
 
 ## 6. Modèle de données
 
-Trois entités (détail dans la proposition de schéma — à valider avant implémentation) :
+Quatre entités :
 
 - **bloc** — phase d'entraînement (Reprise, Base, Développement, Allégée, Pic de charge,
   Simulateur, Affûtage) avec sa **couleur** et sa catégorie.
 - **week** — une des 13 semaines : numéro, date, bloc, durée de la longue, D+, séances/sem,
   libellé sortie longue, séance qualité, focus, drapeau course.
 - **exercise** — un des 6 exercices du circuit renfo : ordre, nom, volume, cible, justification.
+- **user** — compte d'authentification : email (unique, normalisé en minuscules),
+  `hashed_password` (bcrypt), `created_at`. Voir migration `0002_users`.
 
 ## 7. API REST
 
@@ -162,9 +169,19 @@ Base : `/api`
 - `GET /api/weeks` — les 13 semaines (avec bloc imbriqué).
 - `GET /api/weeks/{n}` — détail d'une semaine par numéro (1–13).
 - `GET /api/exercises` — les 6 exercices du circuit, ordonnés.
+- `POST /api/auth/register` — créer un compte (email + mot de passe) → renvoie un jeton JWT.
+- `POST /api/auth/login` — se connecter → renvoie un jeton JWT.
+- `GET /api/auth/me` — profil de l'utilisateur connecté (en-tête `Authorization: Bearer <token>`).
 - Documentation auto : `/docs` (Swagger) et `/redoc`.
 
 CORS autorisé pour l'origine du front (configurée via `CORS_ORIGINS`).
+
+**Authentification** : email + mot de passe. Mots de passe hachés en **bcrypt**, sessions par
+**JWT** (`pyjwt`, HS256) signés avec `JWT_SECRET` (env — jamais en dur). Le front gate toute
+l'app derrière un écran de connexion/inscription ; le jeton est persisté en `localStorage`
+(`planTrail.auth.v1`) et envoyé en en-tête `Authorization`. Les endpoints de contenu
+(`blocs`/`weeks`/`exercises`) restent publics. *Idée future : OAuth Google — voir
+`IDEES-FEATURES.md`.*
 
 ## 8. Identité visuelle (à respecter — pas de rendu shadcn générique)
 

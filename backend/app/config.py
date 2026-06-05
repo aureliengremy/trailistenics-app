@@ -16,6 +16,14 @@ class Settings(BaseSettings):
     # Origines autorisées par CORS, séparées par des virgules.
     cors_origins: str = "http://localhost:5173"
 
+    # --- Authentification (JWT) ---
+    # Secret de signature des jetons. Valeur par défaut NON SÉCURISÉE pour le dev local
+    # uniquement : à surcharger impérativement via JWT_SECRET en production.
+    jwt_secret: str = "dev-insecure-change-me-in-production-please-32b+"
+    jwt_algorithm: str = "HS256"
+    # Durée de validité d'un jeton d'accès (par défaut 14 jours, usage terrain mobile).
+    access_token_expire_minutes: int = 60 * 24 * 14
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

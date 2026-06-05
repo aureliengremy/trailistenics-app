@@ -36,8 +36,8 @@ docker compose up -d            # Postgres sur localhost:5432 (db plantrail)
 cd backend
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -e .
-cp ../.env.example .env          # DATABASE_URL est déjà pré-rempli pour le local
-alembic upgrade head             # crée les tables
+cp ../.env.example .env          # DATABASE_URL pré-rempli ; en prod, fixer un JWT_SECRET fort
+alembic upgrade head             # crée les tables (dont `users` pour l'auth)
 python -m app.seed               # peuple les 13 semaines, blocs et exercices
 uvicorn app.main:app --reload    # API → http://localhost:8000  (docs: /docs)
 ```
@@ -50,6 +50,14 @@ npm install
 cp .env.example .env             # VITE_API_URL=http://localhost:8000
 npm run dev                      # → http://localhost:5173
 ```
+
+## Authentification
+
+L'app est protégée par un écran de connexion / inscription (email + mot de passe). Les mots de
+passe sont hachés (bcrypt) et la session repose sur un jeton JWT signé avec `JWT_SECRET`.
+En production, fixe impérativement un `JWT_SECRET` fort dans `backend/.env`
+(`python -c "import secrets; print(secrets.token_urlsafe(48))"`). Endpoints : `POST /api/auth/register`,
+`POST /api/auth/login`, `GET /api/auth/me`.
 
 ## Structure
 

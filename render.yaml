@@ -15,6 +15,9 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
+      # Secret de signature JWT — généré automatiquement par Render (jamais le défaut de dev).
+      - key: JWT_SECRET
+        generateValue: true
       # Chaîne Neon — préfixe IMPÉRATIF `postgresql+psycopg://` (driver psycopg 3).
       # Ex : postgresql+psycopg://USER:PWD@ep-xxx.eu-central-1.aws.neon.tech/plantrail?sslmode=require
       - key: DATABASE_URL
