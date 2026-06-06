@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trailistenics.app/schemas/programme.json",
+  "title": "Programme d'entraînement Trailistenics",
+  "description": "Format de sortie d'un programme généré. Reprend exactement les entités de l'app (blocs, weeks, exercises) + un bloc meta. Voir docs/modele-donnees/contrat-de-sortie.md.",
+  "type": "object",
+  "required": ["meta", "blocs", "weeks", "exercises"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["slug", "title", "discipline", "total_weeks"],
+      "additionalProperties": true,
+      "properties": {
+        "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "title": { "type": "string", "minLength": 1 },
+        "discipline": { "type": "string", "enum": ["trail", "calisthenie", "hybride"] },
+        "objective": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "distance_km": { "type": ["number", "null"] },
+            "dplus_m": { "type": ["integer", "null"] },
+            "terrain": { "type": ["string", "null"] },
+            "race_date": { "type": ["string", "null"], "description": "ISO YYYY-MM-DD ou null" }
+          }
+        },
+        "total_weeks": { "type": "integer", "minimum": 1, "maximum": 52 },
+        "sessions_per_week_range": { "type": "string" },
+        "start_date": { "type": ["string", "null"], "description": "ISO YYYY-MM-DD" },
+        "athlete_profile": { "type": "object", "additionalProperties": true },
+        "principles": { "type": "array", "items": { "type": "string" } },
+        "generated_by": { "type": "string" },
+        "source_docs": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "blocs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["key", "name", "category", "color", "color_key", "description", "order"],
+        "additionalProperties": false,
+        "properties": {
+          "key": { "type": "string", "maxLength": 32, "pattern": "^[a-z0-9_]+$" },
+          "name": { "type": "string", "maxLength": 64 },
+          "category": { "type": "string", "maxLength": 64 },
+          "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+          "color_key": { "type": "string", "maxLength": 16, "enum": ["base", "allege", "pic", "simul", "affut"] },
+          "description": { "type": "string" },
+          "order": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "weeks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "number", "date_label", "bloc", "long_run_label",
+          "long_run_duration_min", "long_run_dplus_m", "long_run_distance_km",
+          "sessions_per_week", "sessions_label", "quality_session", "focus", "is_race"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "number": { "type": "integer", "minimum": 1 },
+          "date_label": { "type": "string", "maxLength": 32 },
+          "bloc": { "type": "string", "description": "Doit correspondre à un blocs[].key" },
+          "long_run_label": { "type": "string", "maxLength": 128 },
+          "long_run_duration_min": { "type": "integer", "minimum": 0 },
+          "long_run_dplus_m": { "type": "integer", "minimum": 0 },
+          "long_run_distance_km": { "type": ["integer", "null"], "minimum": 0 },
+          "sessions_per_week": { "type": "integer", "minimum": 0 },
+          "sessions_label": { "type": ["string", "null"], "maxLength": 16 },
+          "quality_session": { "type": "string", "maxLength": 128 },
+          "focus": { "type": "string" },
+          "is_race": { "type": "boolean" }
+        }
+      }
+    },
+    "exercises": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["order", "name", "volume", "target", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "order": { "type": "integer", "minimum": 1 },
+          "name": { "type": "string", "maxLength": 96 },
+          "volume": { "type": "string", "maxLength": 64 },
+          "target": { "type": "string", "maxLength": 32 },
+          "rationale": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -10,6 +10,10 @@ Rien ici n'est engagé : c'est une base de discussion. Coche / annote ce qui t'i
 
 ## 🟢 Quick wins (faible effort, valeur immédiate)
 
+Now :
+- [ ] **Lien `.ics`** — ajouter les 3 séances clés de la semaine au calendrier (Google/Apple).
+
+Later:
 - [ ] **Note de séance + ressenti** — un champ libre + une échelle RPE (effort perçu 1–10)
       par séance réalisée. Stocké à côté des km.
 - [ ] **Météo du jour** sur l'écran Aujourd'hui (API open-meteo, gratuite, sans clé) —
@@ -20,25 +24,38 @@ Rien ici n'est engagé : c'est une base de discussion. Coche / annote ce qui t'i
       stats honnêtes (cf. principe anti-surcharge : sauter est parfois la bonne décision).
 - [ ] **Partage / export** — bouton « exporter ma progression » (JSON + résumé texte) et
       « importer » pour changer d'appareil sans backend.
-- [ ] **Lien `.ics`** — ajouter les 3 séances clés de la semaine au calendrier (Google/Apple).
 
 ## 🟡 Moyennes (vraie valeur produit)
-
+Now: 
 - [ ] **Persistance serveur de la progression** — aujourd'hui tout est en `localStorage`
       (perdu si on change d'appareil / vide le cache). Table `progress` côté API + identifiant
       simple (PIN ou magic-link), pour synchroniser mobile ↔ desktop.
 - [ ] **Décalage de plan / date de début configurable** — `PLAN_START` est figé au 2 juin 2026.
       Permettre de choisir sa date de course et recaler les 13 semaines automatiquement.
+- [ ] **Adaptation à la forme** — un check-in rapide (sommeil, fraîcheur jambes, douleur) qui
+      suggère d'alléger (ex. footing au lieu de côtes) en respectant la règle « jamais empiler
+      les quadriceps ».
+
+Later: 
 - [ ] **Séance qualité détaillée** — la séance du jeudi alterne côtes / seuil ; la déplier en
       blocs (échauffement, série, récup, retour au calme) avec un minuteur d'intervalles.
 - [ ] **Historique réel des renfos** — le graphe « exercices par semaine » existe ; y ajouter
       les séries/charges saisies par exercice pour suivre la progression de force dans le temps.
-- [ ] **Adaptation à la forme** — un check-in rapide (sommeil, fraîcheur jambes, douleur) qui
-      suggère d'alléger (ex. footing au lieu de côtes) en respectant la règle « jamais empiler
-      les quadriceps ».
 - [ ] **Mode hors-ligne (PWA)** — manifest + service worker : installable sur l'écran d'accueil,
       utilisable sans réseau sur le terrain. Très pertinent pour le trail.
 - [ ] **Vidéos renfo en cache** — pré-charger/mettre en cache les démos pour les zones sans data.
+
+## 🔐 Authentification & comptes
+
+Fait :
+- [x] **Authentification email + mot de passe** — table `users` (Alembic), hachage bcrypt,
+      jetons JWT (`/api/auth/register`, `/login`, `/me`). Front : écran d'entrée (connexion /
+      inscription), jeton persisté en `localStorage`, gating de l'app, déconnexion.
+
+Now :
+- [ ] **OAuth Google** — connexion « Continuer avec Google » (OAuth 2.0 / OpenID Connect).
+      Réutiliser la table `users` (champ `google_sub` / provider), bouton dédié sur l'écran
+      d'auth, callback côté backend qui émet le même JWT. Évite la gestion d'un mot de passe.
 
 ## 🟠 Ambitieuses (différenciation forte)
 
