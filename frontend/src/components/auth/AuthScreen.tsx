@@ -18,6 +18,7 @@ export function AuthScreen({ auth, theme, onToggleTheme }: AuthScreenProps) {
   const [mode, setMode] = useState<Mode>("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirm, setConfirm] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -26,6 +27,7 @@ export function AuthScreen({ auth, theme, onToggleTheme }: AuthScreenProps) {
   function switchMode(next: Mode) {
     setMode(next)
     setError(null)
+    setConfirm("")
   }
 
   async function onSubmit(e: FormEvent) {
@@ -34,6 +36,10 @@ export function AuthScreen({ auth, theme, onToggleTheme }: AuthScreenProps) {
     setError(null)
     if (isRegister && password.length < 8) {
       setError("Le mot de passe doit faire au moins 8 caractères.")
+      return
+    }
+    if (isRegister && password !== confirm) {
+      setError("Les deux mots de passe ne correspondent pas.")
       return
     }
     setBusy(true)
@@ -114,6 +120,21 @@ export function AuthScreen({ auth, theme, onToggleTheme }: AuthScreenProps) {
             placeholder={isRegister ? "8 caractères minimum" : "••••••••"}
           />
         </label>
+
+        {isRegister && (
+          <label className="auth-field">
+            <span>Confirme le mot de passe</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              placeholder="Retape ton mot de passe"
+            />
+          </label>
+        )}
 
         {error && (
           <div className="auth-error" role="alert">
