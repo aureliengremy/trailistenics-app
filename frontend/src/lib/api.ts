@@ -70,4 +70,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   /** Programme de l'utilisateur courant — `null` si aucun (nouveau compte). */
   program: () => request<Program | null>("/api/program"),
+  /** Progression persistée de l'utilisateur courant (objet vide si aucune). */
+  getProgress: () => request<Record<string, unknown>>("/api/progress"),
+  putProgress: (data: unknown) =>
+    request<{ ok: boolean }>("/api/progress", { method: "PUT", body: JSON.stringify(data) }),
 }

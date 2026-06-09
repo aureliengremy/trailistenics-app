@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
-/** État de progression persisté en localStorage (semaines, exos, séances, km). */
+import { api } from "@/lib/api"
+
+/** État de progression (semaines, exos par semaine, séances, km). */
 export interface ProgressState {
   weeks: Record<number, boolean>
   /** Exercices renfo cochés, clé `${semaine}-${index}` (ex. "3-0"). */
@@ -22,18 +24,32 @@ export interface ProgressApi {
 
 const BASE_KEY = "planTrail.progress.v1"
 
-/** Clé de stockage propre à l'utilisateur (isole la progression entre comptes). */
 function storageKey(userId: string | null): string {
   return userId ? `${BASE_KEY}.${userId}` : BASE_KEY
 }
 
-function load(key: string): ProgressState {
+function normalize(v: Partial<ProgressState> | null | undefined): ProgressState {
+  return { weeks: v?.weeks ?? {}, ex: v?.ex ?? {}, sessions: v?.sessions ?? {}, km: v?.km ?? {} }
+}
+
+function loadLocal(key: string): ProgressState {
   try {
-    const v = JSON.parse(localStorage.getItem(key) ?? "{}") as Partial<ProgressState>
-    return { weeks: v.weeks ?? {}, ex: v.ex ?? {}, sessions: v.sessions ?? {}, km: v.km ?? {} }
+    return normalize(JSON.parse(localStorage.getItem(key) ?? "{}") as Partial<ProgressState>)
   } catch {
-    return { weeks: {}, ex: {}, sessions: {}, km: {} }
+    return normalize(null)
   }
+}
+
+function saveLocal(key: string, s: ProgressState): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(s))
+  } catch {
+    /* quota indisponible */
+  }
+}
+
+function hasData(s: ProgressState): boolean {
+  return [s.weeks, s.ex, s.sessions, s.km].some((m) => Object.keys(m).length > 0)
 }
 
 /** Clé d'un exercice renfo dans l'état (par semaine). */
@@ -42,29 +58,64 @@ export function exKey(week: number, i: number): string {
 }
 
 /**
- * Suivi de progression persisté en localStorage, **rattaché à l'utilisateur** :
- * chaque compte a sa propre clé. Au changement d'utilisateur (connexion/déconnexion),
- * l'état est rechargé depuis la clé correspondante.
+ * Suivi de progression **par utilisateur**, persisté en **DB** (source de vérité) avec
+ * `localStorage` en cache. Au login : charge depuis la DB (ou pousse le cache local si la DB
+ * est vide) ; à chaque changement : écrit le cache puis synchronise la DB (debounce).
  */
 export function useProgress(userId: string | null): ProgressApi {
   const key = storageKey(userId)
-  const [s, setS] = useState<ProgressState>(() => load(key))
+  const [s, setS] = useState<ProgressState>(() => loadLocal(key))
 
-  // Réinitialise l'état quand la clé (donc l'utilisateur) change — pattern React
-  // « ajuster l'état pendant le rendu », sans réécriture parasite vers la nouvelle clé.
+  // Réinitialise sur le cache local au changement d'utilisateur (évite toute fuite inter-comptes).
   const [curKey, setCurKey] = useState(key)
   if (key !== curKey) {
     setCurKey(key)
-    setS(load(key))
+    setS(loadLocal(key))
   }
 
+  // La DB n'est écrite qu'après le 1er chargement DB de CET utilisateur (sinon on écraserait).
+  const loadedFor = useRef<string | null>(null)
+
   useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(s))
-    } catch {
-      /* quota indisponible — on ignore */
+    if (!userId) {
+      loadedFor.current = null
+      return
     }
-  }, [key, s])
+    let cancelled = false
+    api
+      .getProgress()
+      .then((remote) => {
+        if (cancelled) return
+        const norm = normalize(remote as Partial<ProgressState>)
+        if (hasData(norm)) {
+          setS(norm)
+          saveLocal(key, norm)
+        } else {
+          const local = loadLocal(key)
+          if (hasData(local)) void api.putProgress(local)
+        }
+        loadedFor.current = userId
+      })
+      .catch(() => {
+        loadedFor.current = userId // hors-ligne : on garde le localStorage et on tentera d'écrire
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [userId, key])
+
+  // Persistance à chaque changement : localStorage immédiat + DB (debounce 800 ms).
+  const timer = useRef<number | null>(null)
+  useEffect(() => {
+    saveLocal(key, s)
+    if (userId && loadedFor.current === userId) {
+      if (timer.current) window.clearTimeout(timer.current)
+      timer.current = window.setTimeout(() => void api.putProgress(s), 800)
+    }
+    return () => {
+      if (timer.current) window.clearTimeout(timer.current)
+    }
+  }, [key, s, userId])
 
   return {
     s,

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import blocs, exercises, program, weeks
+from app.routers import blocs, exercises, program, progress, weeks
 
 app = FastAPI(
     title="Plan Trail API",
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(program.router)
+app.include_router(progress.router)
 app.include_router(blocs.router)
 app.include_router(weeks.router)
 app.include_router(exercises.router)
