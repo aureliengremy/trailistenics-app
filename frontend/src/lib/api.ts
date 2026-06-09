@@ -74,4 +74,8 @@ export const api = {
   getProgress: () => request<Record<string, unknown>>("/api/progress"),
   putProgress: (data: unknown) =>
     request<{ ok: boolean }>("/api/progress", { method: "PUT", body: JSON.stringify(data) }),
+  /** Intake (questionnaire de profil) de l'utilisateur courant. */
+  getIntake: () => request<Record<string, unknown>>("/api/intake"),
+  putIntake: (data: unknown) =>
+    request<{ ok: boolean }>("/api/intake", { method: "PUT", body: JSON.stringify(data) }),
 }
