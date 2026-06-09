@@ -10,7 +10,11 @@ class Week(Base):
     __tablename__ = "weeks"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    number: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    # Numéro unique PAR programme (plus globalement unique).
+    program_id: Mapped[int | None] = mapped_column(
+        ForeignKey("programs.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+    number: Mapped[int] = mapped_column(Integer, nullable=False)
     date_label: Mapped[str] = mapped_column(String(32), nullable=False)
 
     bloc_id: Mapped[int] = mapped_column(ForeignKey("blocs.id"), nullable=False)

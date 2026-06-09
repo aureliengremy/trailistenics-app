@@ -5,10 +5,13 @@ Le texte provient de plan_trail_descriptif.md ; les valeurs numériques des grap
 (durée, D+) suivent plan_trail_interactif.html.
 """
 
+from datetime import date
+
 from sqlalchemy import delete
 
+from app.config import settings
 from app.database import SessionLocal
-from app.models import Bloc, Exercise, Week
+from app.models import Bloc, Exercise, Program, Week
 
 # --- Blocs -----------------------------------------------------------------
 # (key, name, category, color, color_key, description, order)
@@ -104,6 +107,17 @@ def seed() -> None:
         db.execute(delete(Week))
         db.execute(delete(Exercise))
         db.execute(delete(Bloc))
+        db.execute(delete(Program))
+        db.flush()
+
+        # Programme « seed » = celui de l'admin (les nouveaux comptes partent vides).
+        program = Program(
+            owner_id=settings.admin_owner_id,
+            name="Trail 20 km · 740 m D+",
+            start_date=date(2026, 6, 2),
+            event_date=date(2026, 8, 30),
+        )
+        db.add(program)
         db.flush()
 
         bloc_by_key: dict[str, Bloc] = {}
@@ -119,6 +133,7 @@ def seed() -> None:
         for (number, date, bloc_key, label, dur, dplus, dist, sessions,
              sessions_label, quality, focus, is_race) in WEEKS:
             db.add(Week(
+                program_id=program.id,
                 number=number, date_label=date, bloc_id=bloc_by_key[bloc_key].id,
                 long_run_label=label, long_run_duration_min=dur, long_run_dplus_m=dplus,
                 long_run_distance_km=dist, sessions_per_week=sessions,
@@ -128,6 +143,7 @@ def seed() -> None:
 
         for order, name, volume, target, rationale in EXERCISES:
             db.add(Exercise(
+                program_id=program.id,
                 order=order, name=name, volume=volume, target=target, rationale=rationale,
             ))
 

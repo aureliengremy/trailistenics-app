@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 
 import { authClient } from "@/lib/auth-client"
-import { ApiError } from "@/lib/api"
+import { ApiError, clearAuthToken } from "@/lib/api"
 import type { User } from "@/types"
 
 export type AuthStatus = "loading" | "authenticated" | "anonymous"
@@ -40,6 +40,7 @@ export function useAuth(): AuthApi {
   }, [])
 
   const logout = useCallback(() => {
+    clearAuthToken()
     void authClient.signOut()
   }, [])
 

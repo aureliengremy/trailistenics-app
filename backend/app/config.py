@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     )
     # Email du compte administrateur (capacités admin).
     admin_email: str = "gremy.aurelien@gmail.com"
+    # uuid Neon Auth de l'admin — propriétaire du programme « seed » (13 semaines).
+    admin_owner_id: str = "2a11d7dd-dc93-43e8-bee5-fd5ac030bfaf"
 
     @property
     def cors_origins_list(self) -> list[str]:

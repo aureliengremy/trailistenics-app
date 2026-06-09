@@ -2,6 +2,7 @@
 
 from app.models.bloc import Bloc
 from app.models.exercise import Exercise
+from app.models.program import Program
 from app.models.week import Week
 
-__all__ = ["Bloc", "Week", "Exercise"]
+__all__ = ["Bloc", "Week", "Exercise", "Program"]

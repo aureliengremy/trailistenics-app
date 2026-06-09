@@ -36,6 +36,16 @@ export interface Exercise {
   rationale: string
 }
 
+/** Programme d'entraînement de l'utilisateur (semaines + exercices + dates). */
+export interface Program {
+  id: number
+  name: string
+  start_date: string | null
+  event_date: string | null
+  weeks: Week[]
+  exercises: Exercise[]
+}
+
 /** Utilisateur Neon Auth (Better Auth). `id` = uuid. */
 export interface User {
   id: string

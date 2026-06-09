@@ -14,32 +14,49 @@ export interface PlanData {
   exercises: PlanExercise[]
   colorByKey: Record<string, string>
   tagByKey: Record<string, string>
+  /** false = l'utilisateur n'a pas encore de programme (nouveau compte). */
+  hasProgram: boolean
+  startDate: string | null
+  eventDate: string | null
   loading: boolean
   error: string | null
 }
 
-/** Charge semaines + blocs + exercices et les adapte à la forme « plan ». */
+const EMPTY = {
+  weeks: [] as PlanWeek[],
+  exercises: [] as PlanExercise[],
+  colorByKey: {} as Record<string, string>,
+  tagByKey: {} as Record<string, string>,
+  hasProgram: false,
+  startDate: null as string | null,
+  eventDate: null as string | null,
+}
+
+/** Charge le programme de l'utilisateur courant (`/api/program`) → forme « plan ». */
 export function usePlan(): PlanData {
-  const [data, setData] = useState<Omit<PlanData, "loading" | "error">>({
-    weeks: [],
-    exercises: [],
-    colorByKey: {},
-    tagByKey: {},
-  })
+  const [data, setData] = useState(EMPTY)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([api.weeks(), api.exercises(), api.blocs()])
-      .then(([weeks, exercises, blocs]) => {
+    api
+      .program()
+      .then((prog) => {
         if (cancelled) return
-        const { colorByKey, tagByKey } = blocMaps(blocs)
+        if (!prog) {
+          setData(EMPTY)
+          return
+        }
+        const { colorByKey, tagByKey } = blocMaps(prog.weeks.map((w) => w.bloc))
         setData({
-          weeks: weeks.map(adaptWeek),
-          exercises: exercises.map(adaptExercise),
+          weeks: prog.weeks.map(adaptWeek),
+          exercises: prog.exercises.map(adaptExercise),
           colorByKey,
           tagByKey,
+          hasProgram: true,
+          startDate: prog.start_date,
+          eventDate: prog.event_date,
         })
       })
       .catch((err: unknown) => {
