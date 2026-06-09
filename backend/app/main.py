@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import admin, blocs, exercises, intake, notify, program, progress, weeks
+from app.routers import admin, intake, notify, program, progress
 
 app = FastAPI(
     title="Plan Trail API",
@@ -25,9 +25,6 @@ app.include_router(progress.router)
 app.include_router(intake.router)
 app.include_router(admin.router)
 app.include_router(notify.router)
-app.include_router(blocs.router)
-app.include_router(weeks.router)
-app.include_router(exercises.router)
 
 
 @app.get("/health", tags=["meta"], summary="Sonde de santé")
