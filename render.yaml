@@ -22,3 +22,7 @@ services:
       # URL(s) du front Vercel, séparées par des virgules (ex : https://trailistenics-app.vercel.app)
       - key: CORS_ORIGINS
         sync: false
+      # (Optionnel) Clé API Resend → active les emails de notification d'inscription.
+      # Absente = pas d'envoi (l'admin voit les nouveaux comptes dans l'onglet Admin).
+      - key: RESEND_API_KEY
+        sync: false
