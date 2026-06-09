@@ -10,7 +10,7 @@ import { useTheme } from "@/hooks/useTheme"
 
 export default function App() {
   const auth = useAuth()
-  const plan = usePlan()
+  const plan = usePlan(auth.user?.id ?? null)
   const prog = useProgress(auth.user?.id ?? null)
   const { theme, toggle } = useTheme()
   const isDesktop = useMediaQuery("(min-width: 860px)")

@@ -22,30 +22,51 @@ export interface PlanData {
   error: string | null
 }
 
-const EMPTY = {
-  weeks: [] as PlanWeek[],
-  exercises: [] as PlanExercise[],
-  colorByKey: {} as Record<string, string>,
-  tagByKey: {} as Record<string, string>,
-  hasProgram: false,
-  startDate: null as string | null,
-  eventDate: null as string | null,
+interface PlanState {
+  weeks: PlanWeek[]
+  exercises: PlanExercise[]
+  colorByKey: Record<string, string>
+  tagByKey: Record<string, string>
+  hasProgram: boolean
+  startDate: string | null
+  eventDate: string | null
+  /** uuid pour lequel ces données ont été chargées (null = pas encore). */
+  forUser: string | null
 }
 
-/** Charge le programme de l'utilisateur courant (`/api/program`) → forme « plan ». */
-export function usePlan(): PlanData {
-  const [data, setData] = useState(EMPTY)
-  const [loading, setLoading] = useState(true)
+const EMPTY: PlanState = {
+  weeks: [],
+  exercises: [],
+  colorByKey: {},
+  tagByKey: {},
+  hasProgram: false,
+  startDate: null,
+  eventDate: null,
+  forUser: null,
+}
+
+/**
+ * Charge le programme de l'utilisateur **authentifié** (`/api/program`).
+ * Se (re)déclenche au changement d'utilisateur ; ne fetch pas tant qu'anonyme
+ * (sinon l'appel partirait sans JWT → 401).
+ */
+export function usePlan(userId: string | null): PlanData {
+  const [data, setData] = useState<PlanState>(EMPTY)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setError(null)
+    if (!userId) {
+      setData(EMPTY)
+      return
+    }
     let cancelled = false
     api
       .program()
       .then((prog) => {
         if (cancelled) return
         if (!prog) {
-          setData(EMPTY)
+          setData({ ...EMPTY, forUser: userId })
           return
         }
         const { colorByKey, tagByKey } = blocMaps(prog.weeks.map((w) => w.bloc))
@@ -57,18 +78,27 @@ export function usePlan(): PlanData {
           hasProgram: true,
           startDate: prog.start_date,
           eventDate: prog.event_date,
+          forUser: userId,
         })
       })
       .catch((err: unknown) => {
         if (!cancelled) setError(err instanceof Error ? err.message : "Erreur réseau")
       })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [userId])
 
-  return { ...data, loading, error }
+  const loading = userId != null && data.forUser !== userId && error == null
+  return {
+    weeks: data.weeks,
+    exercises: data.exercises,
+    colorByKey: data.colorByKey,
+    tagByKey: data.tagByKey,
+    hasProgram: data.hasProgram,
+    startDate: data.startDate,
+    eventDate: data.eventDate,
+    loading,
+    error,
+  }
 }
