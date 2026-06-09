@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import { AccountMenu } from "@/components/common/AccountMenu"
+import { BonusSection } from "@/components/common/BonusSection"
 import { CheckMark } from "@/components/common/Check"
 import { DaySelector } from "@/components/common/DaySelector"
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
@@ -199,6 +200,8 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
           )
         })}
       </div>
+
+      <BonusSection week={cur} prog={prog} />
 
       <p className="m-note">{w.focus}</p>
       <button className="m-link" onClick={() => go("plan")}>

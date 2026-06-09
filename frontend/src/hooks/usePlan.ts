@@ -7,6 +7,7 @@ import {
   blocMaps,
   type PlanExercise,
   type PlanWeek,
+  setPlanAnchor,
 } from "@/lib/plan"
 
 export interface PlanData {
@@ -69,6 +70,7 @@ export function usePlan(userId: string | null): PlanData {
           setData({ ...EMPTY, forUser: userId })
           return
         }
+        setPlanAnchor(prog.start_date, prog.weeks.length)
         const { colorByKey, tagByKey } = blocMaps(prog.weeks.map((w) => w.bloc))
         setData({
           weeks: prog.weeks.map(adaptWeek),

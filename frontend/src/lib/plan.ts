@@ -103,18 +103,29 @@ export const MONTHS_LONG = [
   "septembre", "octobre", "novembre", "décembre",
 ]
 
-/** Début de la semaine 1 du plan : 2 juin 2026. */
-const PLAN_START = new Date(2026, 5, 2)
+/** Ancrage par défaut (utilisé tant qu'aucun programme n'est chargé). */
+const DEFAULT_PLAN_START = new Date(2026, 5, 2)
+let planStart = DEFAULT_PLAN_START
+let planWeekCount = 13
 
-/** Numéro de la semaine en cours (1–13) d'après la date du jour. */
-export function currentWeek(today: Date = new Date()): number {
-  const diff = Math.floor((today.getTime() - PLAN_START.getTime()) / (7 * 864e5))
-  return Math.max(1, Math.min(13, diff + 1))
+/**
+ * Ancre le calcul des semaines/dates sur le programme courant : `start_date` (ISO `YYYY-MM-DD`)
+ * et nombre de semaines. Appelé par usePlan au chargement du programme.
+ */
+export function setPlanAnchor(startISO: string | null, weekCount: number): void {
+  planStart = startISO ? new Date(`${startISO}T00:00:00`) : DEFAULT_PLAN_START
+  planWeekCount = weekCount > 0 ? weekCount : 13
 }
 
-/** Date du lundi de la semaine n du plan (S1 commence le lundi 2 juin 2026). */
+/** Numéro de la semaine en cours d'après la date du jour et l'ancrage du programme. */
+export function currentWeek(today: Date = new Date()): number {
+  const diff = Math.floor((today.getTime() - planStart.getTime()) / (7 * 864e5))
+  return Math.max(1, Math.min(planWeekCount, diff + 1))
+}
+
+/** Date du lundi de la semaine n (S1 = start_date du programme). */
 export function weekStartDate(n: number): Date {
-  return new Date(PLAN_START.getTime() + (n - 1) * 7 * 864e5)
+  return new Date(planStart.getTime() + (n - 1) * 7 * 864e5)
 }
 
 /** Mois (0–11) de la semaine n. */

@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import { AccountMenu } from "@/components/common/AccountMenu"
+import { BonusSection } from "@/components/common/BonusSection"
 import { CheckMark } from "@/components/common/Check"
 import { DaySelector } from "@/components/common/DaySelector"
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
@@ -226,6 +227,8 @@ function Today({ plan, prog, go }: ScreenProps) {
             )
           })}
         </div>
+
+        <BonusSection week={cur} prog={prog} />
       </div>
 
       <aside className="d-side-card">

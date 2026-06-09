@@ -2523,3 +2523,175 @@ button {
 .auth-switch button:hover {
   text-decoration: underline;
 }
+
+/* ============================================================= */
+/* Séances bonus (page Aujourd'hui)                              */
+/* ============================================================= */
+.bonus {
+  margin-top: 26px;
+}
+.bonus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.bonus-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--moss);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.bonus-day {
+  font-weight: 700;
+  color: var(--ink);
+  min-width: 64px;
+}
+.bonus-type {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.bonus-km {
+  font-family: "Fraunces";
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.bonus-x {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg2);
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.16s;
+}
+.bonus-x:hover {
+  color: var(--rust);
+  border-color: var(--rust);
+}
+.bonus-open {
+  background: none;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 11px 16px;
+  width: 100%;
+  color: var(--moss);
+  font-family: "Archivo";
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.16s;
+}
+.bonus-open:hover {
+  border-color: var(--moss-d);
+  background: var(--panel);
+}
+.bonus-form {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bonus-days {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.bonus-daych {
+  flex: 1 1 0;
+  min-width: 44px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px 4px;
+  color: var(--muted);
+  font-family: "Archivo";
+  font-weight: 600;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: 0.16s;
+}
+.bonus-daych.on {
+  background: var(--moss);
+  border-color: var(--moss);
+  color: var(--bg);
+}
+.bonus-in {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--ink);
+  font-family: "Archivo";
+  font-size: 14px;
+  width: 100%;
+}
+.bonus-in:focus {
+  outline: none;
+  border-color: var(--moss-d);
+}
+.bonus-km-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 14px;
+}
+.bonus-km-in input {
+  flex: 1;
+  background: none;
+  border: 0;
+  padding: 11px 0;
+  color: var(--ink);
+  font-family: "Archivo";
+  font-size: 14px;
+  outline: none;
+}
+.bonus-km-in span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.bonus-actions {
+  display: flex;
+  gap: 10px;
+}
+.bonus-add {
+  flex: 1;
+  background: var(--accent);
+  color: var(--bg);
+  border: 0;
+  border-radius: 10px;
+  padding: 11px;
+  font-family: "Archivo";
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.bonus-cancel {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 16px;
+  color: var(--muted);
+  font-family: "Archivo";
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}

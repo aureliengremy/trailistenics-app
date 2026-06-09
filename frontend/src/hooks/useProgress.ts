@@ -2,7 +2,15 @@ import { useEffect, useRef, useState } from "react"
 
 import { api } from "@/lib/api"
 
-/** État de progression (semaines, exos par semaine, séances, km). */
+/** Séance « bonus » : un entraînement réalisé hors programme (ex. course du samedi). */
+export interface BonusSession {
+  week: number
+  day: number // 0 = dimanche … 6 = samedi
+  type: string
+  km: number | null
+}
+
+/** État de progression (semaines, exos par semaine, séances, km, séances bonus). */
 export interface ProgressState {
   weeks: Record<number, boolean>
   /** Exercices renfo cochés, clé `${semaine}-${index}` (ex. "3-0"). */
@@ -10,6 +18,8 @@ export interface ProgressState {
   sessions: Record<string, boolean>
   /** Kilomètres réalisés, clé `${semaine}-${séance}` (ex. "1-longue"). */
   km: Record<string, number>
+  /** Séances bonus, clé = id unique. */
+  bonus: Record<string, BonusSession>
 }
 
 export interface ProgressApi {
@@ -19,6 +29,8 @@ export interface ProgressApi {
   toggleSession: (k: string) => void
   setKm: (k: string, val: number | null) => void
   resetEx: (week: number) => void
+  addBonus: (b: BonusSession) => void
+  removeBonus: (id: string) => void
   reset: () => void
 }
 
@@ -29,7 +41,13 @@ function storageKey(userId: string | null): string {
 }
 
 function normalize(v: Partial<ProgressState> | null | undefined): ProgressState {
-  return { weeks: v?.weeks ?? {}, ex: v?.ex ?? {}, sessions: v?.sessions ?? {}, km: v?.km ?? {} }
+  return {
+    weeks: v?.weeks ?? {},
+    ex: v?.ex ?? {},
+    sessions: v?.sessions ?? {},
+    km: v?.km ?? {},
+    bonus: v?.bonus ?? {},
+  }
 }
 
 function loadLocal(key: string): ProgressState {
@@ -49,8 +67,10 @@ function saveLocal(key: string, s: ProgressState): void {
 }
 
 function hasData(s: ProgressState): boolean {
-  return [s.weeks, s.ex, s.sessions, s.km].some((m) => Object.keys(m).length > 0)
+  return [s.weeks, s.ex, s.sessions, s.km, s.bonus].some((m) => Object.keys(m).length > 0)
 }
+
+let bonusSeq = 0
 
 /** Clé d'un exercice renfo dans l'état (par semaine). */
 export function exKey(week: number, i: number): string {
@@ -139,6 +159,17 @@ export function useProgress(userId: string | null): ProgressApi {
         for (let i = 0; i < 6; i++) delete ex[exKey(week, i)]
         return { ...p, ex }
       }),
-    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {} }),
+    addBonus: (b) =>
+      setS((p) => {
+        const id = `b${b.week}-${b.day}-${(bonusSeq += 1)}-${Math.floor(Math.random() * 1e4)}`
+        return { ...p, bonus: { ...p.bonus, [id]: b } }
+      }),
+    removeBonus: (id) =>
+      setS((p) => {
+        const bonus = { ...p.bonus }
+        delete bonus[id]
+        return { ...p, bonus }
+      }),
+    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, bonus: {} }),
   }
 }
