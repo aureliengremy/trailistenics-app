@@ -1,6 +1,7 @@
 import { useState } from "react"
 
 import { AccountMenu } from "@/components/common/AccountMenu"
+import { AdminView } from "@/components/AdminView"
 import { BonusSection } from "@/components/common/BonusSection"
 import { CheckMark } from "@/components/common/Check"
 import { DaySelector } from "@/components/common/DaySelector"
@@ -52,11 +53,13 @@ const NAV: { id: TabId; label: string }[] = [
   { id: "renfo", label: "Renfo" },
   { id: "progres", label: "Progrès" },
 ]
+const ADMIN_NAV = { id: "admin" as const, label: "Admin" }
 const TITLES: Record<TabId, string> = {
   today: "Aujourd'hui",
   plan: "Le plan",
   renfo: "Renfo · calisthénie × trail",
   progres: "Progrès",
+  admin: "Admin · comptes",
 }
 
 export function DesktopApp({
@@ -80,6 +83,7 @@ export function DesktopApp({
   const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
   const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
   const dow = today.getDay()
+  const nav = user?.role === "admin" ? [...NAV, ADMIN_NAV] : NAV
 
   return (
     <div className="d-app">
@@ -92,7 +96,7 @@ export function DesktopApp({
           </div>
         </div>
         <nav className="d-nav">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <button
               key={item.id}
               className={"d-navitem" + (tab === item.id ? " on" : "")}
@@ -138,6 +142,7 @@ export function DesktopApp({
           {tab === "plan" && <Plan plan={plan} prog={prog} go={setTab} />}
           {tab === "renfo" && <Renfo plan={plan} prog={prog} go={setTab} />}
           {tab === "progres" && <Progres plan={plan} prog={prog} go={setTab} />}
+          {tab === "admin" && <AdminView />}
         </div>
       </main>
     </div>

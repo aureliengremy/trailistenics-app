@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { AdminView } from "@/components/AdminView"
 import { AccountMenu } from "@/components/common/AccountMenu"
 import { BonusSection } from "@/components/common/BonusSection"
 import { CheckMark } from "@/components/common/Check"
@@ -46,6 +47,7 @@ const TABS: { id: TabId; label: string; title: string }[] = [
   { id: "renfo", label: "Renfo", title: "Renfo" },
   { id: "progres", label: "Progrès", title: "Progrès" },
 ]
+const ADMIN_TAB = { id: "admin" as const, label: "Admin", title: "Admin" }
 
 export function MobileApp({
   plan,
@@ -67,7 +69,8 @@ export function MobileApp({
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = 0
   }, [tab])
-  const title = TABS.find((t) => t.id === tab)!.title
+  const tabs = user?.role === "admin" ? [...TABS, ADMIN_TAB] : TABS
+  const title = tabs.find((t) => t.id === tab)!.title
 
   return (
     <div className="m-app">
@@ -86,9 +89,10 @@ export function MobileApp({
         {tab === "plan" && <Plan plan={plan} prog={prog} />}
         {tab === "renfo" && <Renfo plan={plan} prog={prog} />}
         {tab === "progres" && <Progres plan={plan} prog={prog} />}
+        {tab === "admin" && <AdminView />}
       </div>
       <div className="m-tabbar">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.id}
             className={"m-tab" + (tab === t.id ? " on" : "")}

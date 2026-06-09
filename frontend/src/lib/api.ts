@@ -1,4 +1,4 @@
-import type { Program } from "@/types"
+import type { AdminUser, Program } from "@/types"
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000"
 const AUTH_URL = import.meta.env.VITE_NEON_AUTH_URL as string | undefined
@@ -78,4 +78,8 @@ export const api = {
   getIntake: () => request<Record<string, unknown>>("/api/intake"),
   putIntake: (data: unknown) =>
     request<{ ok: boolean }>("/api/intake", { method: "PUT", body: JSON.stringify(data) }),
+  /** Notifie l'admin d'une nouvelle inscription (best-effort). */
+  notifySignup: () => request<{ sent: boolean }>("/api/notify-signup", { method: "POST", body: "{}" }),
+  /** Admin : liste des comptes + état intake/programme. */
+  adminUsers: () => request<AdminUser[]>("/api/admin/users"),
 }

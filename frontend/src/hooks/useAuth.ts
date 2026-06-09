@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 
 import { authClient } from "@/lib/auth-client"
-import { ApiError, clearAuthToken } from "@/lib/api"
+import { api, ApiError, clearAuthToken } from "@/lib/api"
 import type { User } from "@/types"
 
 export type AuthStatus = "loading" | "authenticated" | "anonymous"
@@ -22,7 +22,9 @@ export interface AuthApi {
 export function useAuth(): AuthApi {
   const session = authClient.useSession()
   const su = session.data?.user ?? null
-  const user: User | null = su ? { id: su.id, email: su.email, name: su.name ?? undefined } : null
+  const user: User | null = su
+    ? { id: su.id, email: su.email, name: su.name ?? undefined, role: (su as { role?: string }).role }
+    : null
   const status: AuthStatus = session.isPending ? "loading" : su ? "authenticated" : "anonymous"
 
   const login = useCallback(async (email: string, password: string) => {
@@ -37,6 +39,7 @@ export function useAuth(): AuthApi {
       name: email.split("@")[0],
     })
     if (error) throw new ApiError(error.status ?? 400, error.message ?? "Inscription impossible.")
+    void api.notifySignup() // notifie l'admin (best-effort)
   }, [])
 
   const logout = useCallback(() => {

@@ -1,4 +1,4 @@
-export type TabId = "today" | "plan" | "renfo" | "progres"
+export type TabId = "today" | "plan" | "renfo" | "progres" | "admin"
 
 /** Icônes des onglets / nav (communes desktop & mobile). */
 export function NavIcon({ name, on }: { name: TabId; on: boolean }) {
@@ -26,6 +26,12 @@ export function NavIcon({ name, on }: { name: TabId; on: boolean }) {
       <g fill="none" stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 14l4-4 3.5 3L18 6" />
         <path d="M14 6h4v4" />
+      </g>
+    ),
+    admin: (
+      <g fill="none" stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M11 2.5l7 3v5c0 4.2-3 7.4-7 8.5-4-1.1-7-4.3-7-8.5v-5z" />
+        <path d="M8 10.5l2 2 4-4" />
       </g>
     ),
   }

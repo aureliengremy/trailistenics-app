@@ -23,10 +23,17 @@ class Settings(BaseSettings):
     neon_auth_jwks_url: str = (
         "https://ep-damp-pond-aq32vtdp.neonauth.c-8.us-east-1.aws.neon.tech/neondb/auth/.well-known/jwks.json"
     )
-    # Email du compte administrateur (capacités admin).
+    # Email du compte administrateur (capacités admin + destinataire des notifications).
     admin_email: str = "gremy.aurelien@gmail.com"
     # uuid Neon Auth de l'admin — propriétaire du programme « seed » (13 semaines).
     admin_owner_id: str = "2a11d7dd-dc93-43e8-bee5-fd5ac030bfaf"
+
+    # --- Notifications (Resend) ---
+    # Clé API Resend. Vide → aucun envoi (les endpoints de notif deviennent des no-op).
+    resend_api_key: str = ""
+    # Expéditeur. `onboarding@resend.dev` fonctionne sans domaine vérifié (mode test Resend).
+    resend_from: str = "Trailistenics <onboarding@resend.dev>"
+    app_url: str = "https://trailistenics-app.vercel.app"
 
     @property
     def cors_origins_list(self) -> list[str]:

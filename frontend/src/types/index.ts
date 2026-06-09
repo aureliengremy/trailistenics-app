@@ -51,4 +51,15 @@ export interface User {
   id: string
   email: string
   name?: string
+  role?: string
+}
+
+/** Ligne de la vue admin (un compte + état intake/programme). */
+export interface AdminUser {
+  id: string
+  email: string
+  created_at: string
+  has_intake: boolean
+  intake: Record<string, unknown> | null
+  has_program: boolean
 }
