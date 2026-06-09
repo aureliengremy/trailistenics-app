@@ -14,8 +14,17 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://traildev:traildev@localhost:5432/plantrail"
 
     # Origines autorisées par CORS, séparées par des virgules.
-    # (L'authentification est gérée par Neon Auth côté frontend, pas par cette API.)
     cors_origins: str = "http://localhost:5173"
+
+    # --- Neon Auth (Better Auth) ---
+    # Le front envoie le JWT (EdDSA) obtenu via {auth}/token ; on le vérifie via JWKS.
+    # `iss`/`aud` = l'host du serveur d'auth (sans le chemin /neondb/auth).
+    neon_auth_issuer: str = "https://ep-damp-pond-aq32vtdp.neonauth.c-8.us-east-1.aws.neon.tech"
+    neon_auth_jwks_url: str = (
+        "https://ep-damp-pond-aq32vtdp.neonauth.c-8.us-east-1.aws.neon.tech/neondb/auth/.well-known/jwks.json"
+    )
+    # Email du compte administrateur (capacités admin).
+    admin_email: str = "gremy.aurelien@gmail.com"
 
     @property
     def cors_origins_list(self) -> list[str]:
