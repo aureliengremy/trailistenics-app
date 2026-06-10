@@ -85,6 +85,9 @@ isolé), **tableau des N semaines** (Date · Bloc · Sortie longue · Qualité �
 tes pistols, mais pas le même jour que les step-downs »), **technique & stratégie** (descente,
 power hiking, jour J, nutrition, matériel), résumé (3 leviers). **Mêmes chiffres que le JSON.**
 
+> **Ton** : si `meta.athlete_profile` porte un `prenom`, tutoie en l'employant (côté perso/fun) ;
+> adapte les rappels de prudence à l'`age` (récupération si master).
+
 ### Étape 5 — Valide et rends compte
 
 - Valide le `.json` contre `schema-programme.json` + la **checklist** du contrat §6, **dont les

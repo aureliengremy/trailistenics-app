@@ -30,9 +30,16 @@ liste d'exercices calisthénie (le Prompt 2 s'en charge, le Prompt 3 fusionne).
 
 ### Étape 1 — Lis le sous-ensemble A
 
-`objectif` (distance, **D+**, terrain, date, technicité descente) + `course` (volume hebdo,
-sortie longue max, fréquence, expérience trail, accès terrain) + contraintes (`jours_dispo`,
-`seances_max_par_sem`, `antecedents_blessure`). Défauts prudents si manquant (intake §D) + note.
+`profil` (`prenom`, `sexe`, `age`, `court_deja`) + `objectif` (distance, **D+**, terrain, date,
+technicité descente) + `course` (volume hebdo, sortie longue max, fréquence, expérience trail,
+accès terrain — **mis à 0 / `débutant` si `court_deja = false`**) + contraintes (`jours_dispo` —
+le **nb de séances/sem s'en déduit** (≤ leur nombre), `antecedents_blessure`). Défauts prudents si
+manquant (intake §D) + note.
+
+> **Prudence `age` / `court_deja`** : athlète master (≈ 45 ans et +) → récupération accrue, montée
+> de charge plus graduelle, +1 jour entre les gros stress quadriceps. `court_deja = false` → grand
+> débutant (départ marche/course alternée, longue de départ courte). `prenom` / `sexe` servent au
+> **ton** du `.md` (tutoiement personnalisé), pas à la structure.
 
 ### Étape 2 — Conçois le squelette (raisonne avant d'écrire)
 
@@ -72,7 +79,8 @@ Applique la **synthèse opérationnelle** de `01-trail-periodisation.md` :
 
 Format = **contrat §7.1** (proche du programme, mais c'est un document de travail) :
 - `meta` : `slug`, `title`, `discipline: "trail"`, `pipeline_stage: "trail"`, `objective`,
-  `total_weeks` (= N), `sessions_per_week_range`, `start_date`, `athlete_profile` (résumé course),
+  `total_weeks` (= N), `sessions_per_week_range`, `start_date`, `athlete_profile` (résumé course
+  + `prenom`/`sexe`/`age`/`court_deja` — pour le ton et la prudence en aval),
   `principles`, `generated_by: "claude-code"`, `source_docs`, `notes` (hypothèses, défauts,
   **profil de charge** : où sont les déloads, quand commence la descente, où est le taper).
 - `blocs` : palette imposée, `order` croissant.

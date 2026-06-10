@@ -35,9 +35,13 @@ Si un `questionnaire.json` est fourni, charge-le. Sinon **pose les questions** d
 (section D) pour tout champ manquant et note-les.
 
 Choisis un `slug` (ex. `trail-20k-740-13s`) et crée le dossier de sortie `docs/generated/<slug>/`.
-Découpe le questionnaire en deux sous-ensembles :
-- **A** (objectif + course + contraintes communes) → pour le Prompt 1.
-- **B** (calisthénie : max reps + matériel + contraintes communes) → pour le Prompt 2.
+Découpe le questionnaire en deux sous-ensembles (le **profil** `prenom`/`sexe`/`age`/`court_deja`
+et les contraintes communes `jours_dispo`/`antecedents_blessure` vont aux **deux**) :
+- **A** (profil + objectif + course + contraintes communes) → pour le Prompt 1.
+- **B** (profil + calisthénie : max reps + matériel + contraintes communes) → pour le Prompt 2.
+
+> Rappel : `seances_max_par_sem` n'est plus demandé — le **nb de séances/sem se déduit des
+> `jours_dispo`**. Tiens compte de l'`age` (récupération) et de `court_deja` (grand débutant si faux).
 
 ### Étape 2 — Prompt 1 (TRAIL) → artefact `01-trail.json`
 

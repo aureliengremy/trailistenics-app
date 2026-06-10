@@ -15,6 +15,15 @@
 
 ## A. Objectif trail (→ Prompt 1)
 
+### A.0 Profil (toi)
+
+| Champ | Type | Exemple | Obligatoire |
+|---|---|---|---|
+| `prenom` | string | `"Aurélien"` (ou un surnom) | optionnel (ton du `.md`) |
+| `sexe` | enum | `"femme"` / `"homme"` / `"autre"` | ✅ |
+| `age` | int | `34` | ✅ (prudence récup — voir §D) |
+| `court_deja` | bool | `true` | ✅ (porte d'entrée de la forme course, cf. A.2) |
+
 ### A.1 La course visée
 
 | Champ | Type | Exemple | Obligatoire |
@@ -25,24 +34,26 @@
 | `objectif.date_course` | date `YYYY-MM-DD` | `"2026-09-06"` | ✅ (fixe la fin de plan + le taper) |
 | `objectif.technicite_descente` | enum | `"roulante"` / `"technique"` | défaut `"roulante"` |
 
-### A.2 Forme actuelle (minimale, pour la sécurité)
+### A.2 Forme actuelle en course — **uniquement si `court_deja = true`**
+
+> Si `court_deja = false` (« je ne cours pas encore »), ces champs ne sont **pas demandés** : on
+> prend `volume_hebdo_km = 0`, `sortie_longue_max_km = null`, `frequence_actuelle = 0`,
+> `experience_trail = "débutant"` (grand débutant). `acces_terrain` reste demandé dans tous les cas.
 
 | Champ | Type | Exemple | Obligatoire |
 |---|---|---|---|
-| `course.volume_hebdo_km` | number | `20` | ✅ (base de la progression) |
-| `course.sortie_longue_max_km` | number | `11` | ✅ (plafond prudent du pic) |
-| `course.frequence_actuelle` | int | `2` | ✅ |
+| `course.volume_hebdo_km` | number | `20` | ✅ si `court_deja` (base de la progression) |
+| `course.sortie_longue_max_km` | number | `11` | si `court_deja` (plafond prudent du pic) |
+| `course.frequence_actuelle` | int | `2` | si `court_deja` |
 | `course.experience_trail` | enum | `"débutant"` / `"intermédiaire"` / `"confirmé"` | défaut `"débutant"` |
-| `course.acces_terrain` | array | `["côtes","escaliers"]` / `["montagne"]` / `["plat"]` | défaut `["côtes"]` |
+| `course.acces_terrain` | array | `["côtes","escaliers"]` / `["montagne"]` / `["plat"]` | défaut `["côtes"]` (toujours demandé) |
 
 ### A.3 Contraintes pratiques (communes au plan)
 
 | Champ | Type | Exemple | Obligatoire |
 |---|---|---|---|
-| `jours_dispo` | array | `["mar","jeu","sam","dim"]` | défaut 4 j |
-| `seances_max_par_sem` | int | `4` | défaut `4` |
+| `jours_dispo` | array | `["mar","jeu","sam","dim"]` | défaut 4 j — le **nb de séances/sem se déduit de ces jours** |
 | `antecedents_blessure` | array | `["genou droit"]` | défaut `[]` |
-| `prenom` | string | `"Aurélien"` | optionnel (ton du `.md`) |
 
 ---
 
@@ -98,8 +109,10 @@ sur le pattern faible. À documenter dans `meta.notes`.
 ```json
 {
   "prenom": "Aurélien",
+  "sexe": "homme",
+  "age": 34,
+  "court_deja": true,
   "jours_dispo": ["mar", "jeu", "sam", "dim"],
-  "seances_max_par_sem": 4,
   "antecedents_blessure": [],
 
   "objectif": {
@@ -128,9 +141,9 @@ sur le pattern faible. À documenter dans `meta.notes`.
 }
 ```
 
-Le pipeline découpe ce JSON : `{prenom, jours_dispo, seances_max_par_sem, antecedents_blessure,
-objectif, course}` → **Prompt 1** ; `{prenom, jours_dispo, seances_max_par_sem,
-antecedents_blessure, calisthenie}` → **Prompt 2**. (Les champs communs vont aux deux.)
+Le pipeline découpe ce JSON : `{prenom, sexe, age, court_deja, jours_dispo, antecedents_blessure,
+objectif, course}` → **Prompt 1** ; `{prenom, sexe, age, jours_dispo, antecedents_blessure,
+calisthenie}` → **Prompt 2**. (Les champs communs — dont `prenom/sexe/age` — vont aux deux.)
 
 ---
 
@@ -138,7 +151,11 @@ antecedents_blessure, calisthenie}` → **Prompt 2**. (Les champs communs vont a
 
 La génération **suppose un défaut prudent** et le **signale** dans `meta.notes` :
 
-- Forme course incomplète → **débutant prudent** : départ 2–3 séances/sem, sortie longue de départ ≈ `volume_hebdo_km` ÷ 2,5.
+- `court_deja = false` (ou forme course incomplète) → **grand débutant prudent** : départ 2–3 séances/sem en marche/course alternée, sortie longue de départ courte, montée de charge très graduelle.
+- Forme course incomplète (mais `court_deja = true`) → **débutant prudent** : départ 2–3 séances/sem, sortie longue de départ ≈ `volume_hebdo_km` ÷ 2,5.
+- `age` élevé (≈ 45 ans et +) → **récupération accrue** : montée de charge plus graduelle, +1 jour de récup entre les gros stress quadriceps, prudence sur le volume. `age` sert aussi de garde-fou (pas de protocole inadapté).
+- `prenom` / `sexe` → servent au **ton** du `.md` (tutoiement personnalisé), pas à la structure du plan.
+- `seances_max_par_sem` n'est plus demandé : le **nombre de séances/sem se déduit des `jours_dispo`** (≤ leur nombre).
 - `acces_terrain` inconnu → prévoir **alternatives** (escaliers, côtes routières, tapis incliné) et le noter.
 - Capacités calisthénie partielles → niveau déduit du **mouvement le plus bas renseigné** ; pistol non testé → supposer `aucun` (régressions).
 - `date_course` absente → caler la durée de prépa via le tableau §1.4 de

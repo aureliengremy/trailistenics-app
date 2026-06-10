@@ -51,6 +51,32 @@ function Chips({
   )
 }
 
+/** Choix unique (radio) rendu avec le style des chips. */
+function Choice<T extends string | boolean>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T
+  onChange: (v: T) => void
+  options: [T, string][]
+}) {
+  return (
+    <div className="intake-chips">
+      {options.map(([v, label]) => (
+        <button
+          key={String(v)}
+          type="button"
+          className={"intake-chip" + (value === v ? " on" : "")}
+          onClick={() => onChange(v)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 /** Questionnaire de profil (intake) → enregistré en JSON, base de la génération du programme. */
 export function IntakeForm({ onSaved }: { onSaved: () => void }) {
   const [loading, setLoading] = useState(true)
@@ -58,22 +84,26 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
   const [error, setError] = useState<string | null>(null)
   const [already, setAlready] = useState(false)
 
+  // profil
   const [prenom, setPrenom] = useState("")
-  const [jours, setJours] = useState<string[]>(["mar", "jeu", "sam", "dim"])
-  const [seancesMax, setSeancesMax] = useState("4")
-  const [anteced, setAnteced] = useState("")
+  const [sexe, setSexe] = useState("")
+  const [age, setAge] = useState("")
+  // pratique course
+  const [courtDeja, setCourtDeja] = useState(true)
+  const [volHebdo, setVolHebdo] = useState("")
+  const [longueMax, setLongueMax] = useState("")
+  const [freq, setFreq] = useState("")
+  const [exp, setExp] = useState("débutant")
   // objectif
   const [distance, setDistance] = useState("")
   const [dplus, setDplus] = useState("")
   const [terrain, setTerrain] = useState("vallonné")
   const [dateCourse, setDateCourse] = useState("")
   const [techDesc, setTechDesc] = useState("roulante")
-  // course
-  const [volHebdo, setVolHebdo] = useState("")
-  const [longueMax, setLongueMax] = useState("")
-  const [freq, setFreq] = useState("")
-  const [exp, setExp] = useState("débutant")
+  // dispos & contraintes
+  const [jours, setJours] = useState<string[]>(["mar", "jeu", "sam", "dim"])
   const [acces, setAcces] = useState<string[]>(["côtes"])
+  const [anteced, setAnteced] = useState("")
   // calisthénie
   const [squat, setSquat] = useState("")
   const [pistol, setPistol] = useState("")
@@ -93,8 +123,10 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
         const c = (d.course ?? {}) as Record<string, unknown>
         const k = (d.calisthenie ?? {}) as Record<string, unknown>
         setPrenom(str(d.prenom))
+        setSexe(str(d.sexe))
+        setAge(str(d.age))
+        setCourtDeja(d.court_deja !== false)
         if (arr(d.jours_dispo).length) setJours(arr(d.jours_dispo))
-        setSeancesMax(str(d.seances_max_par_sem) || "4")
         setAnteced(arr(d.antecedents_blessure).join(", "))
         setDistance(str(o.distance_km))
         setDplus(str(o.dplus_m))
@@ -124,16 +156,22 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
 
   async function submit(e: FormEvent) {
     e.preventDefault()
-    if (!distance || !dplus || !dateCourse || !volHebdo) {
-      setError("Renseigne au moins la distance, le D+, la date de course et ton volume hebdo.")
+    if (!sexe || !age || !distance || !dplus || !dateCourse) {
+      setError("Renseigne au moins ton sexe, ton âge, la distance, le D+ et la date de la course.")
+      return
+    }
+    if (courtDeja && !volHebdo) {
+      setError("Renseigne ton volume hebdo (ou indique que tu ne cours pas encore).")
       return
     }
     setSaving(true)
     setError(null)
     const data = {
       prenom: prenom.trim() || null,
+      sexe,
+      age: num(age),
+      court_deja: courtDeja,
       jours_dispo: jours,
-      seances_max_par_sem: num(seancesMax),
       antecedents_blessure: anteced.split(",").map((x) => x.trim()).filter(Boolean),
       objectif: {
         distance_km: num(distance),
@@ -142,13 +180,21 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
         date_course: dateCourse || null,
         technicite_descente: techDesc,
       },
-      course: {
-        volume_hebdo_km: num(volHebdo),
-        sortie_longue_max_km: num(longueMax),
-        frequence_actuelle: num(freq),
-        experience_trail: exp,
-        acces_terrain: acces,
-      },
+      course: courtDeja
+        ? {
+            volume_hebdo_km: num(volHebdo),
+            sortie_longue_max_km: num(longueMax),
+            frequence_actuelle: num(freq),
+            experience_trail: exp,
+            acces_terrain: acces,
+          }
+        : {
+            volume_hebdo_km: 0,
+            sortie_longue_max_km: null,
+            frequence_actuelle: 0,
+            experience_trail: "débutant",
+            acces_terrain: acces,
+          },
       calisthenie: {
         squat_max: num(squat),
         pistol_max_par_jambe: num(pistol),
@@ -175,6 +221,54 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
         <div className="intake-note">Profil déjà enregistré — tu peux le modifier ci-dessous.</div>
       )}
 
+      <div className="intake-sec">Faisons connaissance</div>
+      <Field label="Prénom ou surnom" hint="le petit nom qu'on affichera">
+        <input className="intake-in" value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Aurélien, Rél, Roadrunner…" />
+      </Field>
+      <Field label="Sexe">
+        <select className="intake-in" value={sexe} onChange={(e) => setSexe(e.target.value)}>
+          <option value="">—</option>
+          <option value="femme">Femme</option>
+          <option value="homme">Homme</option>
+          <option value="autre">Autre</option>
+        </select>
+      </Field>
+      <Field label="Âge" hint="ans">
+        <input className="intake-in" type="number" inputMode="numeric" min="12" max="99" value={age} onChange={(e) => setAge(e.target.value)} placeholder="34" />
+      </Field>
+
+      <div className="intake-sec">Ta pratique de la course</div>
+      <Field label="Est-ce que tu cours déjà ?">
+        <Choice<boolean>
+          value={courtDeja}
+          onChange={setCourtDeja}
+          options={[
+            [true, "Oui"],
+            [false, "Non, pas encore"],
+          ]}
+        />
+      </Field>
+      {courtDeja && (
+        <>
+          <Field label="Volume hebdo" hint="km/sem">
+            <input className="intake-in" type="number" inputMode="decimal" value={volHebdo} onChange={(e) => setVolHebdo(e.target.value)} placeholder="20" />
+          </Field>
+          <Field label="Sortie longue max récente" hint="km">
+            <input className="intake-in" type="number" inputMode="decimal" value={longueMax} onChange={(e) => setLongueMax(e.target.value)} placeholder="11" />
+          </Field>
+          <Field label="Séances course / semaine">
+            <input className="intake-in" type="number" inputMode="numeric" value={freq} onChange={(e) => setFreq(e.target.value)} placeholder="2" />
+          </Field>
+          <Field label="Expérience trail">
+            <select className="intake-in" value={exp} onChange={(e) => setExp(e.target.value)}>
+              <option value="débutant">Débutant</option>
+              <option value="intermédiaire">Intermédiaire</option>
+              <option value="confirmé">Confirmé</option>
+            </select>
+          </Field>
+        </>
+      )}
+
       <div className="intake-sec">Ta course visée</div>
       <Field label="Distance" hint="km">
         <input className="intake-in" type="number" inputMode="decimal" value={distance} onChange={(e) => setDistance(e.target.value)} placeholder="20" />
@@ -185,53 +279,29 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
       <Field label="Date de la course">
         <input className="intake-in" type="date" value={dateCourse} onChange={(e) => setDateCourse(e.target.value)} />
       </Field>
-      <Field label="Terrain">
+      <Field label="Terrain" hint="le profil du parcours de ta course">
         <select className="intake-in" value={terrain} onChange={(e) => setTerrain(e.target.value)}>
-          <option value="roulant">Roulant</option>
-          <option value="vallonné">Vallonné</option>
+          <option value="roulant">Plutôt plat / roulant</option>
+          <option value="vallonné">Vallonné (des bosses)</option>
           <option value="montagneux">Montagneux</option>
         </select>
       </Field>
-      <Field label="Technicité de la descente">
+      <Field label="Technicité de la descente" hint="comment sont les descentes de ta course">
         <select className="intake-in" value={techDesc} onChange={(e) => setTechDesc(e.target.value)}>
-          <option value="roulante">Roulante</option>
-          <option value="technique">Technique</option>
+          <option value="roulante">Roulante (large, facile)</option>
+          <option value="technique">Technique (cailloux, racines, pentu)</option>
         </select>
       </Field>
 
-      <div className="intake-sec">Ta forme actuelle</div>
-      <Field label="Volume hebdo" hint="km/sem">
-        <input className="intake-in" type="number" inputMode="decimal" value={volHebdo} onChange={(e) => setVolHebdo(e.target.value)} placeholder="20" />
-      </Field>
-      <Field label="Sortie longue max récente" hint="km">
-        <input className="intake-in" type="number" inputMode="decimal" value={longueMax} onChange={(e) => setLongueMax(e.target.value)} placeholder="11" />
-      </Field>
-      <Field label="Séances course / semaine">
-        <input className="intake-in" type="number" inputMode="numeric" value={freq} onChange={(e) => setFreq(e.target.value)} placeholder="2" />
-      </Field>
-      <Field label="Expérience trail">
-        <select className="intake-in" value={exp} onChange={(e) => setExp(e.target.value)}>
-          <option value="débutant">Débutant</option>
-          <option value="intermédiaire">Intermédiaire</option>
-          <option value="confirmé">Confirmé</option>
-        </select>
-      </Field>
-      <Field label="Accès terrain">
-        <Chips value={acces} onToggle={(v) => toggle(acces, setAcces, v)} options={ACCES.map((a) => [a, a])} />
-      </Field>
-
-      <div className="intake-sec">Pratique</div>
-      <Field label="Jours dispo">
+      <div className="intake-sec">Tes dispos & contraintes</div>
+      <Field label="Jours dispo" hint="pour courir et t'entraîner">
         <Chips value={jours} onToggle={(v) => toggle(jours, setJours, v)} options={JOURS.map((j) => [j, j])} />
       </Field>
-      <Field label="Séances max / semaine">
-        <input className="intake-in" type="number" inputMode="numeric" value={seancesMax} onChange={(e) => setSeancesMax(e.target.value)} placeholder="4" />
+      <Field label="Accès terrain" hint="ce que tu as près de chez toi">
+        <Chips value={acces} onToggle={(v) => toggle(acces, setAcces, v)} options={ACCES.map((a) => [a, a])} />
       </Field>
       <Field label="Antécédents de blessure" hint="séparés par des virgules">
         <input className="intake-in" value={anteced} onChange={(e) => setAnteced(e.target.value)} placeholder="genou droit, …" />
-      </Field>
-      <Field label="Prénom" hint="optionnel">
-        <input className="intake-in" value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Aurélien" />
       </Field>
 
       <div className="intake-sec">Force au poids du corps (max reps en 1 série)</div>

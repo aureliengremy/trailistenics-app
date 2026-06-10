@@ -32,7 +32,11 @@ sa **composante renforcement bas du corps**, orientée trail (chaîne postérieu
 ### Étape 1 — Lis le sous-ensemble B et DÉDUIS le niveau
 
 Entrées : `squat_max`, `pistol_max_par_jambe` (+ `pistol_variante`), `fente_max_par_jambe`,
-`materiel`, `mobilite_cheville` (optionnel). Applique la **grille §B.1** :
+`materiel`, `mobilite_cheville` (optionnel) + profil `prenom`/`sexe`/`age`. Applique la **grille §B.1** :
+
+> **`age`** : athlète master (≈ 45 ans et +) → plus de récupération entre les séances de force
+> (espacement, volume prudent, progression d'un barreau plus lente). `prenom`/`sexe` → ton du `.md`.
+
 
 - Classe chaque test en débutant / intermédiaire / avancé.
 - **Niveau global** = le **plus bas** des trois (prudence), avec régression ciblée si un seul
