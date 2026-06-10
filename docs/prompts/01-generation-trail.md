@@ -42,8 +42,21 @@ Applique la **synthèse opérationnelle** de `01-trail-periodisation.md` :
 - **Blocs** : Reprise → Base → Développement → (Allégée) → Pic de charge → Simulateur → Affûtage,
   adaptés à N et au niveau. Palette **imposée** (`key`/`color`/`color_key`). Un terrain **plat**
   peut omettre `simulateur` ; un terrain **montagneux** doit l'inclure.
-- **Distribution ~80/20** : séance qualité hebdo alternant **côtes** ⇄ **seuil** (VO2max si niveau
-  le permet) ; reste en endurance fondamentale.
+- **Distribution ~80/20** : ~1 séance qualité/sem (2 max en phase spécifique), le reste en
+  endurance fondamentale. La séance qualité tourne sur **TROIS** familles — ne pas se limiter
+  côtes/seuil :
+  1. **Seuil** (tempo/threshold) — 88–92 % VO2max ; ex. 2–3 × 10–12 min, récup 1–3 min (ou SSR 2×30 min).
+  2. **Intervalles VO2max / VMA** — **OBLIGATOIRES dans tout plan** (puissance aérobie, économie de
+     course, le moteur de l'endurance). 95–100 % VO2max ; reps de **2–5 min**, récup ~égale,
+     **12–24 min** d'intervalle au total (ex. 5×3 min, 6×2 min, 4×4 min). Réf. méthodo §3.3.
+  3. **Côtes** (hill repeats — intervalles en côte, spécifiques trail) — puissance/force : 6–10 × 1–2 min.
+  **Placement par phase** : base = surtout seuil + côtes courtes (introduction prudente de la VMA) ;
+  **développement/spécifique = c'est là que les intervalles VO2max montent en charge** (1 séance VMA
+  + côtes spécifiques D+) ; pic = côtes longues spécifiques course ; **affûtage = garder UNE séance
+  d'intervalles VO2max raccourcie** (maintien de l'intensité, jambes vives). Sur objectif **court
+  (≤ 21 km)**, la VMA pèse davantage ; sur ultra, elle reste présente mais minoritaire.
+  > Inscris explicitement ces séances dans `weeks[].quality_session` (ex. « VMA : 5×3 min (récup 3 min) »),
+  > pas seulement « côtes/seuil ». Adapte le volume au niveau (débutant : commence à 4–5 min total utiles).
 - **Sortie longue** : progression **≤ ~10 %/sem** (durée, distance, **D+**), jamais > 3 sem de
   hausse d'affilée, **déload** ~3:1 (−40 à −60 %), pas de volume + intensité la même semaine ;
   surveille le pic d'une seule sortie (≤ +10 % vs la plus longue des 30 j).
