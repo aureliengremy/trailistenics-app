@@ -354,7 +354,7 @@ function Plan({ plan, prog }: ScreenProps) {
         <div className="d-label" style={{ marginTop: 4 }}>
           La semaine jour par jour
         </div>
-        <WeekDays w={w} exercises={plan.exercises} openDow={w.n === cur ? dow : RENFO_DOW} />
+        <WeekDays w={w} exercises={plan.exercises} prog={prog} openDow={w.n === cur ? dow : RENFO_DOW} />
         <div className="d-detail-foot">
           <button className={"d-btn" + (done ? " done" : "")} onClick={() => prog.toggleWeek(w.n)}>
             {done ? "✓ Semaine validée" : "Marquer la semaine comme faite"}
