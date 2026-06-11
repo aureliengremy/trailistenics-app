@@ -163,7 +163,7 @@ export function sessionForDay(d: number, w: PlanWeek): DaySession {
     case 0:
       return { type: "Sortie longue", detail: w.longue, tag: "Endurance", col: "var(--moss)", key: "longue" }
     case 1:
-      return { type: "Repos", detail: "Mobilité, étirements légers. On laisse le corps assimiler.", tag: "Récup", col: "var(--muted)", key: "repos" }
+      return { type: "Repos", detail: "Mobilité, étirements légers. On laisse le corps assimiler.", tag: "Récup", col: "var(--muted)", key: "repos1" }
     case 2:
       return { type: "Renfo + footing", detail: "Circuit 6 exos · 2–3 tours, puis 20–30 min footing facile.", tag: "Force", col: "var(--sky)", key: "renfo" }
     case 3:
@@ -171,7 +171,7 @@ export function sessionForDay(d: number, w: PlanWeek): DaySession {
     case 4:
       return { type: "Séance qualité", detail: w.qual, tag: "Intensité", col: "var(--accent)", key: "qual" }
     case 5:
-      return { type: "Repos", detail: "Récupération avant le week-end de volume.", tag: "Récup", col: "var(--muted)", key: "repos" }
+      return { type: "Repos", detail: "Récupération avant le week-end de volume.", tag: "Récup", col: "var(--muted)", key: "repos5" }
     default:
       return { type: "Footing libre", detail: "40–50 min en nature, allure facile, plaisir.", tag: "Souple", col: "var(--moss)", key: "easyW" }
   }
@@ -198,6 +198,11 @@ export const PLANNED_DOW: Record<string, number> = {
 /** Séance d'entraînement par clé (renfo/easy/qual/easyW/longue), depuis son jour planifié. */
 export function sessionByKey(key: string, w: PlanWeek): DaySession {
   return sessionForDay(PLANNED_DOW[key] ?? 1, w)
+}
+
+/** Vrai si la clé désigne un jour de repos (repos1 = lundi, repos5 = vendredi). */
+export function isRestKey(key: string): boolean {
+  return key.startsWith("repos")
 }
 
 /** Clé de saisie km d'une séance (le renfo trace le footing qui suit le circuit). */

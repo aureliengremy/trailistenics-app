@@ -27,6 +27,7 @@ import {
   CHART_METRICS,
   currentWeek,
   DAY_NAMES,
+  isRestKey,
   keySessions,
   kmKeyFor,
   MONTHS_SHORT,
@@ -121,8 +122,9 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
   const dow = today.getDay()
   const sess = sessionForDay(dow, w)
   const todayKey = cur + "-" + sess.key
-  const isRest = sess.key === "repos"
+  const isRest = isRestKey(sess.key)
   const movedAway = prog.s.moved[todayKey] != null
+  const todayDone = !!prog.s.sessions[todayKey]
   const todayKm = kmKeyFor(cur, sess.key)
   const sessions = keySessions(w)
   const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
@@ -151,18 +153,24 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
       <div className={"m-today" + (isRest ? " rest" : "")}>
         <div className="m-today-top">
           <span className="m-tag" style={{ background: tint(sess.col), color: sess.col }}>
-            {sess.tag}
+            {isRest && todayDone ? "Couru quand même" : sess.tag}
           </span>
           {!isRest && <span className="m-today-day">{DAY_NAMES[dow]}</span>}
         </div>
         <div className="m-today-type">{sess.type}</div>
         <div className="m-today-detail">{sess.detail}</div>
-        {!isRest && !movedAway && (
+        {!movedAway && (
           <button
-            className={"m-btn" + (prog.s.sessions[todayKey] ? " done" : "")}
+            className={"m-btn" + (todayDone ? " done" : "")}
             onClick={() => prog.toggleSession(todayKey)}
           >
-            {prog.s.sessions[todayKey] ? "✓ Séance terminée" : "Marquer comme terminée"}
+            {isRest
+              ? todayDone
+                ? "✓ Couru quand même"
+                : "Pas été sage ? J'ai quand même couru"
+              : todayDone
+                ? "✓ Séance terminée"
+                : "Marquer comme terminée"}
           </button>
         )}
         {sess.key === "renfo" && (
@@ -170,7 +178,7 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
             Ouvrir le circuit renfo ›
           </button>
         )}
-        {!isRest && !movedAway && (
+        {!movedAway && (!isRest || todayDone) && (
           <KmField
             planned={plannedKmFor(sess.key, w)}
             value={prog.s.km[todayKm]}
@@ -409,7 +417,7 @@ function Renfo({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
           <p className="m-intro">
             Le circuit renfo se fait <b>le mardi</b>. {DAY_NAMES[day]}, voici la séance prévue.
           </p>
-          <div className={"m-today" + (sess.key === "repos" ? " rest" : "")}>
+          <div className={"m-today" + (isRestKey(sess.key) ? " rest" : "")}>
             <div className="m-today-top">
               <span className="m-tag" style={{ background: tint(sess.col), color: sess.col }}>
                 {sess.tag}
@@ -417,7 +425,7 @@ function Renfo({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
             </div>
             <div className="m-today-type">{sess.type}</div>
             <div className="m-today-detail">{sess.detail}</div>
-            {sess.key !== "repos" && (
+            {!isRestKey(sess.key) && (
               <div style={{ marginTop: 12 }}>
                 <KmField
                   planned={sess.key === "longue" ? w.dist : null}

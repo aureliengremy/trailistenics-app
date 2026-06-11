@@ -15,8 +15,8 @@ import {
 
 /**
  * Contrôles de report d'une séance : « pas pu ce jour-là ? » → la décale au lendemain
- * (elle apparaît alors sur l'écran Aujourd'hui du jour cible) ; report annulable.
- * `fromDow` = jour où la séance se trouve actuellement (planifié, ou cible d'un 1er report).
+ * (elle apparaît alors sur le jour cible, dans « Le plan » et sur l'écran Aujourd'hui) ;
+ * report annulable. `fromDow` = jour où la séance se trouve actuellement.
  */
 export function MoveControls({
   sk,
@@ -49,11 +49,68 @@ export function MoveControls({
   )
 }
 
+/** Clés des séances de la semaine `weekN` reportées **au jour `dow`**. */
+export function arrivalsForDay(
+  weekN: number,
+  dow: number,
+  moved: Record<string, number>,
+): string[] {
+  return Object.entries(moved)
+    .filter(([k, d]) => d === dow && k.startsWith(`${weekN}-`))
+    .map(([k]) => k.slice(`${weekN}-`.length))
+    .filter((key) => PLANNED_DOW[key] !== undefined && PLANNED_DOW[key] !== dow)
+}
+
 /**
- * Séances reportées **au jour `dow`** de la semaine courante : affichées sur l'écran
- * Aujourd'hui du jour cible, cochables et saisissables (mêmes clés que la séance d'origine,
- * donc comptées dans Progrès). Re-reportables au lendemain tant que la semaine n'est pas finie.
+ * Carte d'une séance reportée, affichée sur son jour cible : cochable, km saisissables
+ * (mêmes clés que la séance d'origine, donc comptées dans Progrès), re-reportable.
  */
+export function ArrivalCard({
+  sessKey,
+  w,
+  dow,
+  dayLabel,
+  prog,
+  exercises,
+  defaultOpen = false,
+}: {
+  sessKey: string
+  w: PlanWeek
+  dow: number
+  dayLabel: string
+  prog: ProgressApi
+  exercises: PlanExercise[]
+  defaultOpen?: boolean
+}) {
+  const sess = sessionByKey(sessKey, w)
+  const sk = `${w.n}-${sessKey}`
+  const kk = kmKeyFor(w.n, sessKey)
+  return (
+    <SessionCard
+      color={sess.col}
+      day={dayLabel}
+      label={sess.type}
+      summary={`Reportée de ${DAY_NAMES[PLANNED_DOW[sessKey]].toLowerCase()}`}
+      done={!!prog.s.sessions[sk]}
+      onToggleDone={() => prog.toggleSession(sk)}
+      defaultOpen={defaultOpen}
+    >
+      {sessKey === "renfo" ? (
+        <ExerciseChecklist exercises={exercises} prog={prog} week={w.n} />
+      ) : (
+        <div className="sess-body-note">{sess.detail}</div>
+      )}
+      <KmField
+        planned={plannedKmFor(sessKey, w)}
+        value={prog.s.km[kk]}
+        onChange={(v) => prog.setKm(kk, v)}
+      />
+      <MoveControls sk={sk} fromDow={dow} prog={prog} />
+    </SessionCard>
+  )
+}
+
+/** Séances reportées au jour `dow`, pour l'écran Aujourd'hui. */
 export function MovedSessions({
   w,
   dow,
@@ -67,45 +124,25 @@ export function MovedSessions({
   exercises: PlanExercise[]
   variant: "d" | "m"
 }) {
-  const arrivals = Object.entries(prog.s.moved)
-    .filter(([k, d]) => d === dow && k.startsWith(`${w.n}-`))
-    .map(([k]) => k.slice(`${w.n}-`.length))
-    .filter((key) => PLANNED_DOW[key] !== undefined && PLANNED_DOW[key] !== dow)
+  const arrivals = arrivalsForDay(w.n, dow, prog.s.moved)
   if (arrivals.length === 0) return null
 
   return (
     <>
       <div className={variant === "d" ? "d-label" : "m-label"}>Reporté à aujourd'hui</div>
       <div className="sess-list">
-        {arrivals.map((key) => {
-          const sess = sessionByKey(key, w)
-          const sk = `${w.n}-${key}`
-          const kk = kmKeyFor(w.n, key)
-          return (
-            <SessionCard
-              key={key}
-              color={sess.col}
-              day={`Prévu ${DAY_NAMES[PLANNED_DOW[key]].toLowerCase()}`}
-              label={sess.type}
-              summary={sess.tag}
-              done={!!prog.s.sessions[sk]}
-              onToggleDone={() => prog.toggleSession(sk)}
-              defaultOpen
-            >
-              {key === "renfo" ? (
-                <ExerciseChecklist exercises={exercises} prog={prog} week={w.n} />
-              ) : (
-                <div className="sess-body-note">{sess.detail}</div>
-              )}
-              <KmField
-                planned={plannedKmFor(key, w)}
-                value={prog.s.km[kk]}
-                onChange={(v) => prog.setKm(kk, v)}
-              />
-              <MoveControls sk={sk} fromDow={dow} prog={prog} />
-            </SessionCard>
-          )
-        })}
+        {arrivals.map((key) => (
+          <ArrivalCard
+            key={key}
+            sessKey={key}
+            w={w}
+            dow={dow}
+            dayLabel="Aujourd'hui"
+            prog={prog}
+            exercises={exercises}
+            defaultOpen
+          />
+        ))}
       </div>
     </>
   )

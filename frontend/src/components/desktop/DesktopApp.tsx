@@ -27,6 +27,7 @@ import {
   CHART_METRICS,
   currentWeek,
   DAY_NAMES,
+  isRestKey,
   keySessions,
   kmKeyFor,
   MONTHS_LONG,
@@ -163,8 +164,9 @@ function Today({ plan, prog, go }: ScreenProps) {
   const dow = today.getDay()
   const sess = sessionForDay(dow, w)
   const todayKey = cur + "-" + sess.key
-  const isRest = sess.key === "repos"
+  const isRest = isRestKey(sess.key)
   const movedAway = prog.s.moved[todayKey] != null
+  const todayDone = !!prog.s.sessions[todayKey]
   const todayKm = kmKeyFor(cur, sess.key)
   const sessions = keySessions(w)
   const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
@@ -175,17 +177,23 @@ function Today({ plan, prog, go }: ScreenProps) {
         <div className="d-label">À faire aujourd'hui · {DAY_NAMES[dow]}</div>
         <div className={"d-today" + (isRest ? " rest" : "")}>
           <span className="d-tag" style={{ background: tint(sess.col), color: sess.col }}>
-            {sess.tag}
+            {isRest && todayDone ? "Couru quand même" : sess.tag}
           </span>
           <div className="d-today-type">{sess.type}</div>
           <div className="d-today-detail">{sess.detail}</div>
           <div className="d-today-actions">
-            {!isRest && !movedAway && (
+            {!movedAway && (
               <button
-                className={"d-btn" + (prog.s.sessions[todayKey] ? " done" : "")}
+                className={"d-btn" + (todayDone ? " done" : "")}
                 onClick={() => prog.toggleSession(todayKey)}
               >
-                {prog.s.sessions[todayKey] ? "✓ Séance terminée" : "Marquer comme terminée"}
+                {isRest
+                  ? todayDone
+                    ? "✓ Couru quand même"
+                    : "Pas été sage ? J'ai quand même couru"
+                  : todayDone
+                    ? "✓ Séance terminée"
+                    : "Marquer comme terminée"}
               </button>
             )}
             {sess.key === "renfo" && (
@@ -194,7 +202,7 @@ function Today({ plan, prog, go }: ScreenProps) {
               </button>
             )}
           </div>
-          {!isRest && !movedAway && (
+          {!movedAway && (!isRest || todayDone) && (
             <KmField
               planned={plannedKmFor(sess.key, w)}
               value={prog.s.km[todayKm]}
@@ -438,13 +446,13 @@ function Renfo({ plan, prog }: ScreenProps) {
             <p className="d-intro">
               Le circuit renfo se fait <b>le mardi</b>. {DAY_NAMES[day]}, voici la séance prévue.
             </p>
-            <div className={"d-today" + (sess.key === "repos" ? " rest" : "")}>
+            <div className={"d-today" + (isRestKey(sess.key) ? " rest" : "")}>
               <span className="d-tag" style={{ background: tint(sess.col), color: sess.col }}>
                 {sess.tag}
               </span>
               <div className="d-today-type">{sess.type}</div>
               <div className="d-today-detail">{sess.detail}</div>
-              {sess.key !== "repos" && (
+              {!isRestKey(sess.key) && (
                 <div style={{ marginTop: 14 }}>
                   <KmField
                     planned={sess.key === "longue" ? w.dist : null}
