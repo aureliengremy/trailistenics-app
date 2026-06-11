@@ -1,5 +1,6 @@
 import { AuthScreen } from "@/components/auth/AuthScreen"
 import { EmptyProgram } from "@/components/EmptyProgram"
+import { PlanLoader } from "@/components/common/Loader"
 import { DesktopApp } from "@/components/desktop/DesktopApp"
 import { MobileApp } from "@/components/mobile/MobileApp"
 import { useAuth } from "@/hooks/useAuth"
@@ -23,7 +24,7 @@ export default function App() {
   }
 
   if (plan.loading) {
-    return <Centered>Chargement du plan…</Centered>
+    return <PlanLoader />
   }
   if (plan.error) {
     return (

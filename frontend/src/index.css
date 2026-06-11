@@ -2199,6 +2199,118 @@ button {
   color: var(--bg);
 }
 
+/* ===========================================================================
+   Loader « randonneur » (chargement du plan)
+   =========================================================================== */
+.ldr {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.ldr-sun {
+  fill: var(--ocre);
+  animation: ldr-pulse 3.2s ease-in-out infinite;
+}
+.ldr-cloud {
+  fill: var(--line);
+  opacity: 0.55;
+}
+.ldr-c1 {
+  animation: ldr-drift 7s ease-in-out infinite alternate;
+}
+.ldr-c2 {
+  animation: ldr-drift 9s ease-in-out infinite alternate-reverse;
+}
+.ldr-mtn-back {
+  fill: var(--panel);
+}
+.ldr-mtn {
+  fill: var(--panel2);
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+.ldr-trail {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 2.5 6;
+  opacity: 0.6;
+  animation: ldr-dash 1.1s linear infinite;
+}
+.ldr-pole {
+  stroke: var(--muted);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.ldr-flag {
+  fill: var(--ocre);
+}
+.ldr-ground {
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+.ldr-head {
+  fill: var(--ink);
+}
+.ldr-body,
+.ldr-limb {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.ldr-pack {
+  fill: var(--rust);
+}
+.ldr-label {
+  color: var(--muted);
+  font-size: 15px;
+}
+.ldr-dots span {
+  animation: ldr-blink 1.4s infinite;
+}
+.ldr-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.ldr-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes ldr-dash {
+  to {
+    stroke-dashoffset: -8.5;
+  }
+}
+@keyframes ldr-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes ldr-drift {
+  from {
+    transform: translateX(-6px);
+  }
+  to {
+    transform: translateX(8px);
+  }
+}
+@keyframes ldr-blink {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
 /* --- Report d'une séance au lendemain --- */
 .sess-moveline {
   display: flex;
