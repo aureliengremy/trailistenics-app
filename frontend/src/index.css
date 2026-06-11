@@ -652,7 +652,7 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 .d-pager {
   display: flex;

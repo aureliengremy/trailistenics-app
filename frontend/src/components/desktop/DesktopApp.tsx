@@ -285,7 +285,6 @@ function Plan({ plan, prog }: ScreenProps) {
   const dow = new Date().getDay()
   const [sel, setSel] = useState(cur)
   const w = plan.weeks.find((x) => x.n === sel) ?? plan.weeks[0]
-  const done = !!prog.s.weeks[w.n]
   let lastBloc: string | null = null
 
   return (
@@ -356,9 +355,6 @@ function Plan({ plan, prog }: ScreenProps) {
         </div>
         <WeekDays w={w} exercises={plan.exercises} prog={prog} openDow={w.n === cur ? dow : RENFO_DOW} />
         <div className="d-detail-foot">
-          <button className={"d-btn" + (done ? " done" : "")} onClick={() => prog.toggleWeek(w.n)}>
-            {done ? "✓ Semaine validée" : "Marquer la semaine comme faite"}
-          </button>
           <div className="d-pager">
             <button disabled={sel <= 1} onClick={() => setSel(sel - 1)} aria-label="Semaine précédente">
               ‹

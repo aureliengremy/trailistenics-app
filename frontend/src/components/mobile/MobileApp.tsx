@@ -280,7 +280,6 @@ function WeekDetailM({
   setSel: (n: number) => void
 }) {
   const w = plan.weeks.find((x) => x.n === n) ?? plan.weeks[0]
-  const done = !!prog.s.weeks[w.n]
   const cur = currentWeek()
   const dow = new Date().getDay()
   return (
@@ -315,9 +314,6 @@ function WeekDetailM({
       <p className="m-note">{w.focus}</p>
       <div className="m-label">La semaine jour par jour</div>
       <WeekDays w={w} exercises={plan.exercises} prog={prog} openDow={w.n === cur ? dow : RENFO_DOW} />
-      <button className={"m-btn" + (done ? " done" : "")} onClick={() => prog.toggleWeek(w.n)}>
-        {done ? "✓ Semaine validée" : "Marquer la semaine comme faite"}
-      </button>
       <div className="m-pager">
         <button disabled={n <= 1} onClick={() => setSel(n - 1)}>
           ‹ S{n - 1 || ""}
