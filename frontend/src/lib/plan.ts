@@ -31,7 +31,9 @@ export interface PlanExercise {
 export function adaptWeek(w: Week): PlanWeek {
   return {
     n: w.number,
-    date: w.date_label,
+    // Premier jour (lundi) de la semaine, calculé depuis l'ancrage du programme
+    // (et non `w.date_label`, qui suivait le mardi de départ).
+    date: weekStartLabel(w.number),
     bloc: w.bloc.name,
     blocKey: w.bloc.color_key,
     duree: w.long_run_duration_min,
@@ -123,9 +125,20 @@ export function currentWeek(today: Date = new Date()): number {
   return Math.max(1, Math.min(planWeekCount, diff + 1))
 }
 
-/** Date du lundi de la semaine n (S1 = start_date du programme). */
+/** Date de départ de la semaine n (S1 = start_date du programme). */
 export function weekStartDate(n: number): Date {
   return new Date(planStart.getTime() + (n - 1) * 7 * 864e5)
+}
+
+/**
+ * Libellé du **premier jour (lundi)** de la semaine n, ex. « 1 juin ».
+ * On recale sur le lundi même si l'ancrage tombe un autre jour (start_date = mardi).
+ */
+export function weekStartLabel(n: number): string {
+  const d = weekStartDate(n)
+  const backToMonday = (d.getDay() + 6) % 7 // 0=dim … 6=sam → recul jusqu'au lundi
+  const monday = new Date(d.getTime() - backToMonday * 864e5)
+  return `${monday.getDate()} ${MONTHS_SHORT[monday.getMonth()]}`
 }
 
 /** Mois (0–11) de la semaine n. */
