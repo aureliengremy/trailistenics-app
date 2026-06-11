@@ -1876,6 +1876,65 @@ button {
   background: var(--panel);
 }
 
+/* Indicateur d'enregistrement (disquette) : vert = synchronisé, orange = à enregistrer, rouge = échec. */
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  background: transparent;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  cursor: pointer;
+  transition: color 0.16s, border-color 0.16s, background 0.16s, transform 0.12s;
+}
+.save-btn-d {
+  width: 40px;
+  height: 40px;
+}
+.save-btn-m {
+  width: 38px;
+  height: 38px;
+  background: var(--panel);
+}
+.save-btn:active {
+  transform: scale(0.94);
+}
+.save-idle {
+  color: var(--muted);
+  cursor: default;
+}
+.save-saved {
+  color: var(--moss);
+  cursor: default;
+}
+.save-pending {
+  color: var(--ocre);
+}
+.save-saving {
+  color: var(--ocre);
+  cursor: progress;
+}
+.save-error {
+  color: var(--rust);
+}
+.save-pending:hover,
+.save-error:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.save-saving svg {
+  animation: save-pulse 0.9s ease-in-out infinite;
+}
+@keyframes save-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 /* ===========================================================================
    Cartes de séance dépliables + saisies (écran Aujourd'hui, desktop & mobile)
    =========================================================================== */

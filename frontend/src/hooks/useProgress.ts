@@ -22,8 +22,22 @@ export interface ProgressState {
   bonus: Record<string, BonusSession>
 }
 
+/**
+ * État de synchronisation DB de la progression :
+ * - `idle`    : pas d'utilisateur / rien à enregistrer.
+ * - `saved`   : la DB reflète l'état local (vert).
+ * - `pending` : des changements locaux ne sont pas encore en base (orange, cliquable).
+ * - `saving`  : un appel d'enregistrement est en cours.
+ * - `error`   : le dernier enregistrement a échoué (rouge, cliquable pour réessayer).
+ */
+export type SyncStatus = "idle" | "saved" | "pending" | "saving" | "error"
+
 export interface ProgressApi {
   s: ProgressState
+  /** État de synchronisation avec la base (pour l'indicateur d'enregistrement). */
+  syncStatus: SyncStatus
+  /** Force un enregistrement immédiat en base (bouton « disquette »). */
+  syncNow: () => void
   toggleWeek: (n: number) => void
   toggleEx: (week: number, i: number) => void
   toggleSession: (k: string) => void
@@ -85,20 +99,63 @@ export function exKey(week: number, i: number): string {
 export function useProgress(userId: string | null): ProgressApi {
   const key = storageKey(userId)
   const [s, setS] = useState<ProgressState>(() => loadLocal(key))
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle")
 
   // Réinitialise sur le cache local au changement d'utilisateur (évite toute fuite inter-comptes).
   const [curKey, setCurKey] = useState(key)
   if (key !== curKey) {
     setCurKey(key)
     setS(loadLocal(key))
+    setSyncStatus("idle")
   }
 
   // La DB n'est écrite qu'après le 1er chargement DB de CET utilisateur (sinon on écraserait).
   const loadedFor = useRef<string | null>(null)
+  // Image sérialisée de ce que la DB contient (pour détecter les changements non enregistrés).
+  const savedSnapshot = useRef<string>("")
+  // Toujours la dernière valeur de `s` (lue par les enregistrements asynchrones).
+  const sRef = useRef(s)
+  sRef.current = s
+  const savingRef = useRef(false)
+  const timer = useRef<number | null>(null)
 
+  // Enregistrement immédiat en base. Réévalue le statut à la fin (l'état a pu changer entre-temps).
+  const save = async (): Promise<void> => {
+    if (!userId || loadedFor.current !== userId || savingRef.current) return
+    savingRef.current = true
+    setSyncStatus("saving")
+    const snapshot = JSON.stringify(sRef.current)
+    try {
+      await api.putProgress(sRef.current)
+    } catch {
+      savingRef.current = false
+      setSyncStatus("error")
+      return
+    }
+    savedSnapshot.current = snapshot
+    savingRef.current = false
+    if (JSON.stringify(sRef.current) === savedSnapshot.current) {
+      setSyncStatus("saved")
+    } else {
+      // Des changements sont survenus pendant l'appel : replanifie un enregistrement.
+      setSyncStatus("pending")
+      if (timer.current) window.clearTimeout(timer.current)
+      timer.current = window.setTimeout(() => void saveRef.current(), 800)
+    }
+  }
+  const saveRef = useRef(save)
+  saveRef.current = save
+
+  const syncNow = (): void => {
+    if (timer.current) window.clearTimeout(timer.current)
+    void saveRef.current()
+  }
+
+  // Chargement initial depuis la DB (source de vérité), avec bascule du cache local si la DB est vide.
   useEffect(() => {
     if (!userId) {
       loadedFor.current = null
+      setSyncStatus("idle")
       return
     }
     let cancelled = false
@@ -110,28 +167,43 @@ export function useProgress(userId: string | null): ProgressApi {
         if (hasData(norm)) {
           setS(norm)
           saveLocal(key, norm)
+          savedSnapshot.current = JSON.stringify(norm)
+          loadedFor.current = userId
+          setSyncStatus("saved")
         } else {
-          const local = loadLocal(key)
-          if (hasData(local)) void api.putProgress(local)
+          // DB vide : l'état distant connu est « vide » ; on pousse le cache local s'il existe.
+          savedSnapshot.current = JSON.stringify(normalize(null))
+          loadedFor.current = userId
+          if (hasData(loadLocal(key))) {
+            setSyncStatus("pending")
+            void saveRef.current()
+          } else {
+            setSyncStatus("saved")
+          }
         }
-        loadedFor.current = userId
       })
       .catch(() => {
-        loadedFor.current = userId // hors-ligne : on garde le localStorage et on tentera d'écrire
+        // DB injoignable : on garde le localStorage ; statut d'erreur si des données restent à pousser.
+        loadedFor.current = userId
+        savedSnapshot.current = ""
+        setSyncStatus(hasData(sRef.current) ? "error" : "idle")
       })
     return () => {
       cancelled = true
     }
   }, [userId, key])
 
-  // Persistance à chaque changement : localStorage immédiat + DB (debounce 800 ms).
-  const timer = useRef<number | null>(null)
+  // À chaque changement : cache localStorage immédiat + détection « non enregistré » → DB (debounce 800 ms).
   useEffect(() => {
     saveLocal(key, s)
-    if (userId && loadedFor.current === userId) {
-      if (timer.current) window.clearTimeout(timer.current)
-      timer.current = window.setTimeout(() => void api.putProgress(s), 800)
+    if (!userId || loadedFor.current !== userId || savingRef.current) return
+    if (JSON.stringify(s) === savedSnapshot.current) {
+      setSyncStatus("saved")
+      return
     }
+    setSyncStatus("pending")
+    if (timer.current) window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => void saveRef.current(), 800)
     return () => {
       if (timer.current) window.clearTimeout(timer.current)
     }
@@ -139,6 +211,8 @@ export function useProgress(userId: string | null): ProgressApi {
 
   return {
     s,
+    syncStatus,
+    syncNow,
     toggleWeek: (n) => setS((p) => ({ ...p, weeks: { ...p.weeks, [n]: !p.weeks[n] } })),
     toggleEx: (week, i) =>
       setS((p) => {

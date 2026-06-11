@@ -14,6 +14,7 @@ import { RealizedBars } from "@/components/common/RealizedBars"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
 import { SessionCard } from "@/components/common/SessionCard"
+import { SaveButton } from "@/components/common/SaveButton"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
 import type { PlanData } from "@/hooks/usePlan"
@@ -80,6 +81,7 @@ export function MobileApp({
           <div className="m-title">{title}</div>
         </div>
         <div className="m-topbar-r">
+          <SaveButton status={prog.syncStatus} onSave={prog.syncNow} variant="m" />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="m" />
           <AccountMenu user={user} onLogout={onLogout} variant="m" />
         </div>

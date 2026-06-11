@@ -13,6 +13,7 @@ import { LoadChart } from "@/components/common/LoadChart"
 import { RealizedBars } from "@/components/common/RealizedBars"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
+import { SaveButton } from "@/components/common/SaveButton"
 import { SessionCard } from "@/components/common/SessionCard"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
@@ -135,6 +136,7 @@ export function DesktopApp({
                 {w.bloc}
               </span>
             </div>
+            <SaveButton status={prog.syncStatus} onSave={prog.syncNow} variant="d" />
           </div>
         </header>
         <div className="d-content">
