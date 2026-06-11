@@ -2199,6 +2199,39 @@ button {
   color: var(--bg);
 }
 
+/* --- Report d'une séance au lendemain --- */
+.sess-moveline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.sess-moved-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ocre);
+}
+.sess-movebtn {
+  background: transparent;
+  border: 1px dashed var(--line);
+  border-radius: 9px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.16s, border-color 0.16s;
+}
+.sess-movebtn:hover {
+  color: var(--ink);
+  border-color: var(--ocre);
+}
+.d-today .km-field,
+.m-today .km-field {
+  margin-top: 14px;
+}
+
 /* --- Bloc footing dans la carte de séance (mardi) --- */
 .sess-footing {
   margin-top: 16px;

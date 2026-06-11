@@ -84,7 +84,7 @@ Tiré de `backend/app/models/{bloc,week,exercise}.py` et des schémas Pydantic
 | Champ | Type | Contrainte | Exemple |
 |---|---|---|---|
 | `number` | int | **unique**, 1..N (séquentiel) | `9` |
-| `date_label` | string | ≤ 32, libellé court de date | `"28 juil."` |
+| `date_label` | string | ≤ 32, **lundi (premier jour)** de la semaine | `"27 juil."` |
 | `bloc` | string | **clé** d'un bloc défini ci-dessus (FK logique) | `"pic"` |
 | `long_run_label` | string | ≤ 128, libellé riche de la sortie longue | `"2h00 · ~17 km · 550 m D+"` |
 | `long_run_duration_min` | int | durée de la longue en **minutes** | `120` |
@@ -98,6 +98,10 @@ Tiré de `backend/app/models/{bloc,week,exercise}.py` et des schémas Pydantic
 
 **Règles de cohérence semaines :**
 - `number` est **séquentiel sans trou** de 1 à `meta.total_weeks`.
+- `date_label` = le **lundi de la semaine `number`** (format court FR, ex. `"1 juin"`, `"27 juil."`),
+  dérivé de `meta.start_date` : la semaine 1 est celle qui contient `start_date` (si `start_date`
+  tombe un mardi, son `date_label` est le lundi de la veille). L'app affiche le premier jour de
+  chaque semaine — S1 = 1 juin, S2 = 8 juin, etc.
 - Exactement **une** semaine avec `is_race = true` (la dernière, en général).
 - `long_run_label` doit refléter `long_run_duration_min` / `long_run_dplus_m` / `long_run_distance_km`.
 - Chaque `week.bloc` référence un `bloc.key` existant.

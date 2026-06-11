@@ -180,6 +180,38 @@ export function sessionForDay(d: number, w: PlanWeek): DaySession {
 /** Ordre d'affichage des jours d'une semaine d'entraînement : lundi → dimanche. */
 const WEEK_DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 
+/** Lendemain dans la semaine d'entraînement (lundi → dimanche) ; null après dimanche. */
+export function nextDow(d: number): number | null {
+  const i = WEEK_DAY_ORDER.indexOf(d)
+  return i >= 0 && i < WEEK_DAY_ORDER.length - 1 ? WEEK_DAY_ORDER[i + 1] : null
+}
+
+/** Jour planifié (0–6) de chaque séance d'entraînement (hors repos). */
+export const PLANNED_DOW: Record<string, number> = {
+  renfo: 2,
+  easy: 3,
+  qual: 4,
+  easyW: 6,
+  longue: 0,
+}
+
+/** Séance d'entraînement par clé (renfo/easy/qual/easyW/longue), depuis son jour planifié. */
+export function sessionByKey(key: string, w: PlanWeek): DaySession {
+  return sessionForDay(PLANNED_DOW[key] ?? 1, w)
+}
+
+/** Clé de saisie km d'une séance (le renfo trace le footing qui suit le circuit). */
+export function kmKeyFor(week: number, sessKey: string): string {
+  return sessKey === "renfo" ? `${week}-renfoRun` : `${week}-${sessKey}`
+}
+
+/** Distance prévue (km) d'une séance, si connue. */
+export function plannedKmFor(sessKey: string, w: PlanWeek): number | null {
+  if (sessKey === "longue") return w.dist
+  if (sessKey === "renfo") return 5
+  return null
+}
+
 export interface WeekDay {
   dow: number
   name: string

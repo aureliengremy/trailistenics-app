@@ -20,6 +20,8 @@ export interface ProgressState {
   km: Record<string, number>
   /** Séances bonus, clé = id unique. */
   bonus: Record<string, BonusSession>
+  /** Séances reportées à un autre jour, clé `${semaine}-${séance}` → jour cible (0–6). */
+  moved: Record<string, number>
 }
 
 /**
@@ -42,6 +44,8 @@ export interface ProgressApi {
   toggleEx: (week: number, i: number) => void
   toggleSession: (k: string) => void
   setKm: (k: string, val: number | null) => void
+  /** Reporte une séance au jour `dow` (0–6) ; `null` annule le report. */
+  setMoved: (k: string, dow: number | null) => void
   resetEx: (week: number) => void
   addBonus: (b: BonusSession) => void
   removeBonus: (id: string) => void
@@ -61,6 +65,7 @@ function normalize(v: Partial<ProgressState> | null | undefined): ProgressState 
     sessions: v?.sessions ?? {},
     km: v?.km ?? {},
     bonus: v?.bonus ?? {},
+    moved: v?.moved ?? {},
   }
 }
 
@@ -81,7 +86,9 @@ function saveLocal(key: string, s: ProgressState): void {
 }
 
 function hasData(s: ProgressState): boolean {
-  return [s.weeks, s.ex, s.sessions, s.km, s.bonus].some((m) => Object.keys(m).length > 0)
+  return [s.weeks, s.ex, s.sessions, s.km, s.bonus, s.moved].some(
+    (m) => Object.keys(m).length > 0,
+  )
 }
 
 let bonusSeq = 0
@@ -227,6 +234,13 @@ export function useProgress(userId: string | null): ProgressApi {
         else km[k] = val
         return { ...p, km }
       }),
+    setMoved: (k, dow) =>
+      setS((p) => {
+        const moved = { ...p.moved }
+        if (dow == null) delete moved[k]
+        else moved[k] = dow
+        return { ...p, moved }
+      }),
     resetEx: (week) =>
       setS((p) => {
         const ex = { ...p.ex }
@@ -244,6 +258,6 @@ export function useProgress(userId: string | null): ProgressApi {
         delete bonus[id]
         return { ...p, bonus }
       }),
-    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, bonus: {} }),
+    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, bonus: {}, moved: {} }),
   }
 }

@@ -64,6 +64,9 @@ export function realizedStats(weeks: PlanWeek[], s: ProgressState, weekNums: num
   for (const [key, val] of Object.entries(s.km)) {
     if (set.has(Number(key.split("-")[0]))) km += val
   }
+  for (const b of Object.values(s.bonus)) {
+    if (b.km != null && set.has(b.week)) km += b.km
+  }
 
   return {
     sessionsDone,

@@ -15,6 +15,7 @@ import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
 import { SaveButton } from "@/components/common/SaveButton"
 import { SessionCard } from "@/components/common/SessionCard"
+import { MoveControls, MovedSessions } from "@/components/common/SessionMove"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
 import type { ProgressApi } from "@/hooks/useProgress"
@@ -27,8 +28,11 @@ import {
   currentWeek,
   DAY_NAMES,
   keySessions,
+  kmKeyFor,
   MONTHS_LONG,
   type MetricKey,
+  PLANNED_DOW,
+  plannedKmFor,
   RENFO_DOW,
   sessionForDay,
   tint,
@@ -160,6 +164,8 @@ function Today({ plan, prog, go }: ScreenProps) {
   const sess = sessionForDay(dow, w)
   const todayKey = cur + "-" + sess.key
   const isRest = sess.key === "repos"
+  const movedAway = prog.s.moved[todayKey] != null
+  const todayKm = kmKeyFor(cur, sess.key)
   const sessions = keySessions(w)
   const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
 
@@ -174,7 +180,7 @@ function Today({ plan, prog, go }: ScreenProps) {
           <div className="d-today-type">{sess.type}</div>
           <div className="d-today-detail">{sess.detail}</div>
           <div className="d-today-actions">
-            {!isRest && (
+            {!isRest && !movedAway && (
               <button
                 className={"d-btn" + (prog.s.sessions[todayKey] ? " done" : "")}
                 onClick={() => prog.toggleSession(todayKey)}
@@ -188,19 +194,32 @@ function Today({ plan, prog, go }: ScreenProps) {
               </button>
             )}
           </div>
+          {!isRest && !movedAway && (
+            <KmField
+              planned={plannedKmFor(sess.key, w)}
+              value={prog.s.km[todayKm]}
+              onChange={(v) => prog.setKm(todayKm, v)}
+            />
+          )}
+          {!isRest && <MoveControls sk={todayKey} fromDow={dow} prog={prog} />}
         </div>
+
+        <MovedSessions w={w} dow={dow} prog={prog} exercises={plan.exercises} variant="d" />
 
         <div className="d-label">Les 3 séances clés de la semaine</div>
         <div className="sess-list">
           {sessions.map((s) => {
             const sk = `${cur}-${s.key}`
+            const movedTo = prog.s.moved[sk]
             return (
               <SessionCard
                 key={s.key}
                 color={s.col}
                 day={s.day}
                 label={s.label}
-                summary={s.summary}
+                summary={
+                  movedTo != null ? `→ Reportée à ${DAY_NAMES[movedTo].toLowerCase()}` : s.summary
+                }
                 done={!!prog.s.sessions[sk]}
                 onToggleDone={() => prog.toggleSession(sk)}
                 defaultOpen={sess.key === s.key}
@@ -230,6 +249,7 @@ function Today({ plan, prog, go }: ScreenProps) {
                     <div className="sess-body-note">{s.detail}</div>
                   </>
                 )}
+                <MoveControls sk={sk} fromDow={PLANNED_DOW[s.key]} prog={prog} />
               </SessionCard>
             )
           })}

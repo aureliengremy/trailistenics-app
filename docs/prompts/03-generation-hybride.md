@@ -72,8 +72,9 @@ manquant, semaines vides…), signale-le et arrête proprement.
   `derived_level`), `principles` (incluant les **deux** principes directeurs), `generated_by`,
   `source_docs`, `notes` (variations renfo par phase, placement, mises en garde quadriceps).
 - `blocs` : repris de l'artefact trail (palette imposée, `order` croissant).
-- `weeks` : repris de l'artefact trail (séquentiel 1..N, `bloc` valide, `long_run_*` cohérents,
-  **une** `is_race: true`), `focus`/`quality_session` éventuellement enrichis.
+- `weeks` : repris de l'artefact trail (séquentiel 1..N, `date_label` = **lundi de la semaine**,
+  `bloc` valide, `long_run_*` cohérents, **une** `is_race: true`), `focus`/`quality_session`
+  éventuellement enrichis.
 - `exercises` : le circuit de l'artefact calisthénie (`order` 1..N, ≥ 6 recommandé).
 
 ### Étape 4 — Écris le Markdown final `programme-<slug>.md`

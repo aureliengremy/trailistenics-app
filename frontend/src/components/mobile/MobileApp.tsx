@@ -15,6 +15,7 @@ import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
 import { SessionCard } from "@/components/common/SessionCard"
 import { SaveButton } from "@/components/common/SaveButton"
+import { MoveControls, MovedSessions } from "@/components/common/SessionMove"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
 import type { PlanData } from "@/hooks/usePlan"
@@ -27,8 +28,11 @@ import {
   currentWeek,
   DAY_NAMES,
   keySessions,
+  kmKeyFor,
   MONTHS_SHORT,
   type MetricKey,
+  PLANNED_DOW,
+  plannedKmFor,
   RENFO_DOW,
   sessionForDay,
   tint,
@@ -118,6 +122,8 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
   const sess = sessionForDay(dow, w)
   const todayKey = cur + "-" + sess.key
   const isRest = sess.key === "repos"
+  const movedAway = prog.s.moved[todayKey] != null
+  const todayKm = kmKeyFor(cur, sess.key)
   const sessions = keySessions(w)
   const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
 
@@ -151,7 +157,7 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
         </div>
         <div className="m-today-type">{sess.type}</div>
         <div className="m-today-detail">{sess.detail}</div>
-        {!isRest && (
+        {!isRest && !movedAway && (
           <button
             className={"m-btn" + (prog.s.sessions[todayKey] ? " done" : "")}
             onClick={() => prog.toggleSession(todayKey)}
@@ -164,19 +170,32 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
             Ouvrir le circuit renfo ›
           </button>
         )}
+        {!isRest && !movedAway && (
+          <KmField
+            planned={plannedKmFor(sess.key, w)}
+            value={prog.s.km[todayKm]}
+            onChange={(v) => prog.setKm(todayKm, v)}
+          />
+        )}
+        {!isRest && <MoveControls sk={todayKey} fromDow={dow} prog={prog} />}
       </div>
+
+      <MovedSessions w={w} dow={dow} prog={prog} exercises={plan.exercises} variant="m" />
 
       <div className="m-label">Les 3 séances clés de la semaine</div>
       <div className="sess-list">
         {sessions.map((s) => {
           const sk = `${cur}-${s.key}`
+          const movedTo = prog.s.moved[sk]
           return (
             <SessionCard
               key={s.key}
               color={s.col}
               day={s.day}
               label={s.label}
-              summary={s.summary}
+              summary={
+                movedTo != null ? `→ Reportée à ${DAY_NAMES[movedTo].toLowerCase()}` : s.summary
+              }
               done={!!prog.s.sessions[sk]}
               onToggleDone={() => prog.toggleSession(sk)}
               defaultOpen={sess.key === s.key}
@@ -202,6 +221,7 @@ function Today({ plan, prog, go }: { plan: PlanData; prog: ProgressApi; go: (t: 
                   <div className="sess-body-note">{s.detail}</div>
                 </>
               )}
+              <MoveControls sk={sk} fromDow={PLANNED_DOW[s.key]} prog={prog} />
             </SessionCard>
           )
         })}

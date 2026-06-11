@@ -84,9 +84,10 @@ Format = **contrat §7.1** (proche du programme, mais c'est un document de trava
   `principles`, `generated_by: "claude-code"`, `source_docs`, `notes` (hypothèses, défauts,
   **profil de charge** : où sont les déloads, quand commence la descente, où est le taper).
 - `blocs` : palette imposée, `order` croissant.
-- `weeks` : `number` séquentiel 1..N **sans trou** ; chaque `bloc` ∈ clés définies ; `long_run_*`
-  cohérents (durée min, D+ m, distance km|null) ; `quality_session` (côtes/seuil) ; `focus` (ton
-  app) ; **une** semaine `is_race: true` (la dernière).
+- `weeks` : `number` séquentiel 1..N **sans trou** ; `date_label` = **lundi de la semaine**
+  (format court FR dérivé de `start_date`, ex. `"1 juin"` — S1 = semaine contenant `start_date`) ;
+  chaque `bloc` ∈ clés définies ; `long_run_*` cohérents (durée min, D+ m, distance km|null) ;
+  `quality_session` (côtes/seuil) ; `focus` (ton app) ; **une** semaine `is_race: true` (la dernière).
 - `exercises` : **laisse `[]`** (vide) — le renfo est défini au Prompt 2 et fusionné au Prompt 3.
   *(L'artefact n'a pas à valider contre `schema-programme.json` ; seul le programme final le doit.)*
 
