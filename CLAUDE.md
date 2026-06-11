@@ -161,37 +161,41 @@ trailistenics-app/
 
 ## 6. Modèle de données
 
-Quatre entités :
+- **program** — le plan d'un utilisateur : `owner_id` (uuid Neon Auth), nom, `start_date`,
+  `event_date`. Un programme par utilisateur.
+- **bloc** — phase d'entraînement (Reprise, Base, …, Affûtage) avec sa **couleur** et sa
+  catégorie. **Partagé** entre programmes (clé `key` unique).
+- **week** — une semaine d'un programme : numéro (unique par programme), date, bloc, durée de
+  la longue, D+, séances/sem, libellé sortie longue, séance qualité, focus, drapeau course.
+- **exercise** — un exercice du circuit renfo d'un programme : ordre, nom, volume, cible,
+  justification.
+- **user_intake** — questionnaire de profil (JSON brut, entrée du pipeline de génération).
+- **user_progress** — progression (JSON : weeks/ex/sessions/km/bonus/moved), source de vérité
+  en DB avec cache `localStorage`.
 
-- **bloc** — phase d'entraînement (Reprise, Base, Développement, Allégée, Pic de charge,
-  Simulateur, Affûtage) avec sa **couleur** et sa catégorie.
-- **week** — une des 13 semaines : numéro, date, bloc, durée de la longue, D+, séances/sem,
-  libellé sortie longue, séance qualité, focus, drapeau course.
-- **exercise** — un des 6 exercices du circuit renfo : ordre, nom, volume, cible, justification.
-- **user** — compte d'authentification : email (unique, normalisé en minuscules),
-  `hashed_password` (bcrypt), `created_at`. Voir migration `0002_users`.
+> Les comptes vivent dans le schéma **`neon_auth`** (géré par Neon Auth), pas dans nos tables.
 
-## 7. API REST
+## 7. API REST & flow de génération
 
-Base : `/api`
+Base : `/api` — tous les endpoints exigent un **JWT Neon Auth** (`Authorization: Bearer`),
+vérifié via JWKS (EdDSA) dans `app/security.py`.
 
-- `GET /api/blocs` — liste des blocs avec couleurs.
-- `GET /api/weeks` — les 13 semaines (avec bloc imbriqué).
-- `GET /api/weeks/{n}` — détail d'une semaine par numéro (1–13).
-- `GET /api/exercises` — les 6 exercices du circuit, ordonnés.
-- `POST /api/auth/register` — créer un compte (email + mot de passe) → renvoie un jeton JWT.
-- `POST /api/auth/login` — se connecter → renvoie un jeton JWT.
-- `GET /api/auth/me` — profil de l'utilisateur connecté (en-tête `Authorization: Bearer <token>`).
+- `GET /api/program` — le programme de l'utilisateur courant (`null` si nouveau compte).
+- `GET|PUT /api/progress` — progression de l'utilisateur (blob JSON).
+- `GET|PUT /api/intake` — questionnaire de profil ; le PUT **notifie l'admin** (Slack +
+  email, best-effort) avec le JSON complet.
+- `POST /api/notify-signup` — notification « nouveau compte » (Slack + email).
+- `GET /api/admin/users` — (admin) comptes + intake + état programme.
 - Documentation auto : `/docs` (Swagger) et `/redoc`.
 
-CORS autorisé pour l'origine du front (configurée via `CORS_ORIGINS`).
+CORS autorisé pour l'origine du front (`CORS_ORIGINS`). Notifications configurées par
+`SLACK_WEBHOOK_URL` et `RESEND_API_KEY` (env — no-op si absentes).
 
-**Authentification** : email + mot de passe. Mots de passe hachés en **bcrypt**, sessions par
-**JWT** (`pyjwt`, HS256) signés avec `JWT_SECRET` (env — jamais en dur). Le front gate toute
-l'app derrière un écran de connexion/inscription ; le jeton est persisté en `localStorage`
-(`planTrail.auth.v1`) et envoyé en en-tête `Authorization`. Les endpoints de contenu
-(`blocs`/`weeks`/`exercises`) restent publics. *Idée future : OAuth Google — voir
-`IDEES-FEATURES.md`.*
+**Flow de génération d'un programme** (manuel, sans API Claude — voir `docs/README.md`) :
+inscription → formulaire intake in-app → JSON posté sur **Slack** + badge « à traiter » sur
+l'onglet **Admin** → l'admin colle le JSON dans Claude Code (`docs/prompts/00-…`) → programme
+généré → `python -m app.import_program <json> --owner-email <email>` → la personne voit son
+plan. *Futur : génération par API Claude — voir `IDEES-FEATURES.md`.*
 
 ## 8. Identité visuelle (à respecter — pas de rendu shadcn générique)
 

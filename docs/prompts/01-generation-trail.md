@@ -79,7 +79,8 @@ Applique la **synthèse opérationnelle** de `01-trail-periodisation.md` :
 
 Format = **contrat §7.1** (proche du programme, mais c'est un document de travail) :
 - `meta` : `slug`, `title`, `discipline: "trail"`, `pipeline_stage: "trail"`, `objective`,
-  `total_weeks` (= N), `sessions_per_week_range`, `start_date`, `athlete_profile` (résumé course
+  `total_weeks` (= N), `sessions_per_week_range`, `start_date` (**si non fourni : le lundi qui
+  suit la génération**), `event_date` (= `objectif.date_course`), `athlete_profile` (résumé course
   + `prenom`/`sexe`/`age`/`court_deja` — pour le ton et la prudence en aval),
   `principles`, `generated_by: "claude-code"`, `source_docs`, `notes` (hypothèses, défauts,
   **profil de charge** : où sont les déloads, quand commence la descente, où est le taper).

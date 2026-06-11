@@ -143,15 +143,17 @@ champs inconnus), mais essentiel pour la traçabilité, le `.md`, et l'évolutio
 | `objective` | object | `{ distance_km, dplus_m, terrain, race_date }` (selon discipline) |
 | `total_weeks` | int | doit égaler le nombre d'entrées `weeks` |
 | `sessions_per_week_range` | string | ex. `"2 → 4"` |
-| `start_date` | string | date de début (ISO `YYYY-MM-DD`) |
+| `start_date` | string | date de début (ISO `YYYY-MM-DD`) — défaut : **le lundi qui suit la génération** |
+| `event_date` | string \| null | date de la course (ISO `YYYY-MM-DD`) = `objectif.date_course` de l'intake |
 | `athlete_profile` | object | résumé du profil d'entrée ayant produit le plan (cf. [`../intake/profil-coureur.md`](../intake/profil-coureur.md)) |
 | `principles` | array<string> | principes directeurs appliqués (ex. les deux du projet) |
 | `generated_by` | string | `"claude-code"` (aujourd'hui) ou modèle API (futur) |
 | `source_docs` | array<string> | docs de `docs/` utilisés (traçabilité) |
 | `notes` | array<string> | notes libres (ex. variations renfo par phase, mises en garde) |
 
-> Le seed/import ne lit aujourd'hui que `blocs`, `weeks`, `exercises`. `meta` est conservé dans
-> le fichier pour l'humain et pour l'avenir ; il ne casse pas l'import (champs ignorés).
+> L'import (`python -m app.import_program`) lit `blocs`, `weeks`, `exercises` **et** dans `meta` :
+> `title` (nom du programme), `start_date` et `event_date` (dérivée du dimanche de la dernière
+> semaine si absente). Le reste de `meta` est conservé pour l'humain et l'avenir (champs ignorés).
 
 ---
 
@@ -204,7 +206,8 @@ Le **squelette de périodisation**, sans renfo.
     "slug": "...", "title": "...",
     "discipline": "trail", "pipeline_stage": "trail",
     "objective": { "distance_km": 20, "dplus_m": 740, "terrain": "...", "race_date": "YYYY-MM-DD" },
-    "total_weeks": 13, "sessions_per_week_range": "2 → 4", "start_date": "YYYY-MM-DD",
+    "total_weeks": 13, "sessions_per_week_range": "2 → 4",
+    "start_date": "YYYY-MM-DD", "event_date": "YYYY-MM-DD",
     "athlete_profile": { /* résumé course */ },
     "principles": [ "..." ],
     "generated_by": "claude-code",

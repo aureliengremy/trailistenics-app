@@ -30,11 +30,18 @@ Lis : `docs/intake/profil-coureur.md` (le questionnaire + la grille de déductio
 
 ### Étape 1 — Recueille le questionnaire (une seule fois)
 
-Si un `questionnaire.json` est fourni, charge-le. Sinon **pose les questions** du formulaire
-`docs/intake/profil-coureur.md` (sections A et B) — reste **court**. Applique les défauts prudents
-(section D) pour tout champ manquant et note-les.
+**Cas nominal** : l'intake arrive de **l'app** — le nouvel inscrit a rempli le formulaire, son
+JSON a été **posté sur Slack** (et il est copiable depuis l'onglet **Admin** de l'app). Colle-le
+ici tel quel : il est déjà au format `docs/intake/profil-coureur.md` §C. Sinon (test/local), si un
+`questionnaire.json` est fourni, charge-le ; en dernier recours **pose les questions** du
+formulaire (sections A et B) — reste **court**. Applique les défauts prudents (section D) pour
+tout champ manquant et note-les.
 
-Choisis un `slug` (ex. `trail-20k-740-13s`) et crée le dossier de sortie `docs/generated/<slug>/`.
+> **`start_date`** : si elle n'est pas précisée, prends **le lundi qui suit la génération**
+> (les `date_label` des semaines = les lundis successifs). `event_date` = `objectif.date_course`.
+
+Choisis un `slug` (ex. `trail-20k-740-13s`, ou préfixé du prénom/email pour t'y retrouver) et
+crée le dossier de sortie `docs/generated/<slug>/`.
 Découpe le questionnaire en deux sous-ensembles (le **profil** `prenom`/`sexe`/`age`/`court_deja`
 et les contraintes communes `jours_dispo`/`antecedents_blessure` vont aux **deux**) :
 - **A** (profil + objectif + course + contraintes communes) → pour le Prompt 1.
@@ -73,6 +80,19 @@ renfo, applique les deux principes directeurs, et écrit le **programme final** 
 - Vérifie la **traçabilité** : `meta.inputs` du programme final liste bien les deux artefacts.
 - Rends un récap : objectif, durée, blocs, pic volume/D+, niveau calisthénie déduit, placement du
   renfo (jours, phases), points de vigilance, hypothèses/défauts pris.
+
+### Étape 6 — Mise sur le compte (import en base)
+
+Le programme part sur le compte de la personne via l'importeur (depuis `backend/`, venv actif,
+`DATABASE_URL` pointant sur la base **cible** — prod = l'URL Neon des env-vars Render, PAS le
+`.env` local) :
+
+```bash
+python -m app.import_program ../docs/generated/<slug>/programme-<slug>.json \
+    --owner-email <email-du-compte>          # --replace si un programme existe déjà
+```
+
+À sa prochaine connexion (ou au refresh), la personne voit son programme dans l'app.
 
 ### Règles dures
 

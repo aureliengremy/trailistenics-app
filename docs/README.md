@@ -15,12 +15,15 @@ le *moteur* : les docs, le contrat de sortie et les prompts restent les mêmes (
 
 ## 1. Architecture de la génération (pipeline en 3 étapes, sans API, via Claude Code)
 
-Un **seul petit questionnaire** à l'inscription, **découpé** en deux sous-ensembles, alimente
-deux prompts dont les **résultats** nourrissent un troisième prompt qui produit le programme final.
+**Flow opérationnel** : le nouvel inscrit remplit le **formulaire in-app** (intake) → son JSON
+est enregistré en base, **posté sur Slack** à l'admin et visible dans l'onglet **Admin** de l'app
+(badge « à traiter »). L'admin colle ce JSON dans Claude Code (prompt 00), qui produit le
+programme final, puis l'**importe sur le compte** de la personne. *(Plus tard : la génération
+passera par l'API Claude — seuls le moteur et le déclenchement changeront.)*
 
 ```
-   NOUVEAU COMPTE
-        │  questionnaire (objectif trail  +  max reps squat/pistol/fentes)
+   NOUVEAU COMPTE (app)
+        │  formulaire intake → user_intake (DB) → Slack + onglet Admin (JSON copiable)
         ▼
    ┌─────────────────────────── docs/intake/profil-coureur.md ───────────────────────────┐
    │  A. objectif trail + forme course            B. capacités calisthénie (max reps/série) │
@@ -39,8 +42,8 @@ deux prompts dont les **résultats** nourrissent un troisième prompt qui produi
                         │ → programme-<slug>.json + .md          │  ← LE programme de l'app
                         └──────────────────────────────────────┘
                                        │
-                            (futur) import / seed ▼
-                              backend → blocs / weeks / exercises
+        python -m app.import_program <json> --owner-email <email>  ▼
+                  backend → programme sur le compte de la personne
 ```
 
 L'**orchestrateur** [`prompts/00-pipeline-orchestration.md`](prompts/00-pipeline-orchestration.md)
@@ -108,13 +111,20 @@ Claude va :
 
 ---
 
-## 4. Vérifier / importer un programme généré (optionnel, futur)
+## 4. Importer un programme généré sur un compte
 
-- **Valider le JSON** contre le schéma (quand un validateur est en place) :
-  `programme-<slug>.json` ⟶ `modele-donnees/schema-programme.json`.
-- **Importer en base** : aujourd'hui le contenu vient de `backend/app/seed.py` (tuples codés en
-  dur). Étape future : un petit `python -m app.import_program generated/programme-<slug>.json` qui
-  lit `blocs`/`weeks`/`exercises` et remplace le plan global. Le JSON est **déjà au bon format** pour ça.
+Depuis `backend/` (venv actif, `DATABASE_URL` pointant sur la base **cible** — pour la prod,
+l'URL Neon des env-vars Render, PAS le `.env` local) :
+
+```bash
+python -m app.import_program ../docs/generated/<slug>/programme-<slug>.json \
+    --owner-email personne@exemple.com       # ou --owner-id <uuid> ; --replace si déjà un programme
+```
+
+- Blocs **partagés** entre programmes (upsert par `key`) ; semaines/exercices propres au programme.
+- `meta.title` → nom du programme ; `meta.start_date` / `meta.event_date` → dates (l'`event_date`
+  est dérivée du dimanche de la dernière semaine si absente).
+- La progression de l'utilisateur (`user_progress`) n'est pas touchée.
 
 ---
 
@@ -123,10 +133,11 @@ Claude va :
 | Étape | État | Description |
 |---|---|---|
 | 1. Base de connaissances + 3 prompts + contrat de sortie | ✅ fait | Ce dossier. |
-| 2. Première génération via Claude Code | ⏳ à tester | Produire un 2ᵉ programme (ex. autre D+/durée) et le relire. |
-| 3. Importeur `import_program` (JSON → DB) | ⏳ futur | Remplacer les tuples du seed par un import de fichier. |
-| 4. Programme **par utilisateur** en base | ⏳ futur | Table `programs` + `meta.user_id` ; l'app sert le plan de l'utilisateur connecté. |
-| 5. Génération par **API Claude** | ⏳ futur | Les docs deviennent le system prompt ; le schéma devient un *tool* à sortie structurée ; génération à l'inscription. |
+| 2. Programme **par utilisateur** en base | ✅ fait | Table `programs` (owner_id) ; l'app sert le plan de l'utilisateur connecté. |
+| 3. Intake in-app + notification **Slack** (JSON) + onglet Admin | ✅ fait | Le formulaire produit le JSON du pipeline ; badge « à traiter » côté admin. |
+| 4. Importeur `import_program` (JSON → compte) | ✅ fait | `python -m app.import_program <json> --owner-email <email>`. |
+| 5. Première génération via Claude Code | ⏳ à tester | Produire un 2ᵉ programme réel de bout en bout et le relire. |
+| 6. Génération par **API Claude** | ⏳ futur | Les docs deviennent le system prompt ; le schéma devient un *tool* à sortie structurée ; génération à l'inscription. |
 
 > Voir aussi `IDEES-FEATURES.md` à la racine et la note d'auth dans `CLAUDE.md` (§7).
 

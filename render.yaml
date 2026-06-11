@@ -26,3 +26,7 @@ services:
       # Absente = pas d'envoi (l'admin voit les nouveaux comptes dans l'onglet Admin).
       - key: RESEND_API_KEY
         sync: false
+      # (Optionnel) Webhook entrant Slack → notification à chaque intake rempli, avec le
+      # JSON complet (entrée du pipeline de génération). Absente = pas d'envoi.
+      - key: SLACK_WEBHOOK_URL
+        sync: false

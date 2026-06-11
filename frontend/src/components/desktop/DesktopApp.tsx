@@ -18,6 +18,7 @@ import { SessionCard } from "@/components/common/SessionCard"
 import { MoveControls, MovedSessions } from "@/components/common/SessionMove"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
+import { useAdminPending } from "@/hooks/useAdminPending"
 import type { ProgressApi } from "@/hooks/useProgress"
 import { exKey } from "@/hooks/useProgress"
 import type { PlanData } from "@/hooks/usePlan"
@@ -90,6 +91,7 @@ export function DesktopApp({
   const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
   const dow = today.getDay()
   const nav = user?.role === "admin" ? [...NAV, ADMIN_NAV] : NAV
+  const pending = useAdminPending(user)
 
   return (
     <div className="d-app">
@@ -110,6 +112,11 @@ export function DesktopApp({
             >
               <NavIcon name={item.id} on={tab === item.id} />
               <span>{item.label}</span>
+              {item.id === "admin" && pending > 0 && (
+                <span className="nav-badge" title={`${pending} intake(s) sans programme`}>
+                  {pending}
+                </span>
+              )}
             </button>
           ))}
         </nav>

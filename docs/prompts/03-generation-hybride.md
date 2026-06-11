@@ -68,7 +68,8 @@ manquant, semaines vides…), signale-le et arrête proprement.
 **Strictement conforme à `schema-programme.json`** (c'est lui qui sera importé dans l'app) :
 - `meta` : `slug`, `title`, `discipline: "hybride"`, `pipeline_stage: "hybride"`,
   **`inputs: ["01-trail.json","02-calisthenie.json"]`** (traçabilité), `objective`, `total_weeks`,
-  `sessions_per_week_range`, `start_date`, `athlete_profile` (résume course **et** calisthénie +
+  `sessions_per_week_range`, `start_date`, `event_date` (repris de l'artefact trail),
+  `athlete_profile` (résume course **et** calisthénie +
   `derived_level`), `principles` (incluant les **deux** principes directeurs), `generated_by`,
   `source_docs`, `notes` (variations renfo par phase, placement, mises en garde quadriceps).
 - `blocs` : repris de l'artefact trail (palette imposée, `order` croissant).

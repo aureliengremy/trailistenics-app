@@ -3133,3 +3133,63 @@ button {
   font-family: "Archivo";
   font-size: 13px;
 }
+.admin-row.pending {
+  border-color: color-mix(in srgb, var(--ocre) 45%, transparent);
+}
+.admin-badge.todo.on {
+  border-color: var(--ocre-d);
+  color: var(--ocre);
+  background: color-mix(in srgb, var(--ocre) 12%, transparent);
+}
+.admin-detail {
+  border-top: 1px solid var(--line);
+}
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px 0;
+  background: var(--bg2);
+}
+.admin-copy {
+  background: transparent;
+  border: 1px dashed var(--line);
+  border-radius: 9px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.16s, border-color 0.16s;
+}
+.admin-copy:hover {
+  color: var(--ink);
+  border-color: var(--ocre);
+}
+.admin-detail .admin-intake {
+  border-top: 0;
+}
+
+/* Badge « à traiter » sur l'onglet Admin (nav desktop + tabbar mobile) */
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: var(--ocre);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+.m-tab .nav-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 22px);
+}
+.m-tab {
+  position: relative;
+}

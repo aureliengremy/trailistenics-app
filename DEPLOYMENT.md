@@ -50,6 +50,10 @@ python -m app.seed       # peuple 13 semaines, blocs, 6 exercices (idempotent)
    - `DATABASE_URL` = la chaîne Neon `postgresql+psycopg://...?sslmode=require`
    - `CORS_ORIGINS` = l'URL Vercel du front (voir §3), ex `https://trailistenics-app.vercel.app`
      (on la remplit après le 1er déploiement Vercel ; provisoirement `http://localhost:5173`).
+   - `SLACK_WEBHOOK_URL` (optionnel) = webhook entrant Slack → à chaque intake rempli, le JSON
+     complet est posté (entrée du pipeline de génération). Créer via api.slack.com/apps →
+     Incoming Webhooks → Add New Webhook to Workspace (choisir le canal).
+   - `RESEND_API_KEY` (optionnel) = emails de notification en doublon.
 3. Deploy. Le build fait `pip install -e . && alembic upgrade head`, puis lance uvicorn.
 4. Healthcheck : `/health`. Teste : `https://trailistenics-api.onrender.com/health` → `{"status":"ok"}`
    et `…/api/weeks` → les 13 semaines.

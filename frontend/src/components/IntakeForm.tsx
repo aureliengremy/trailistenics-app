@@ -160,12 +160,23 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
       setError("Renseigne au moins ton sexe, ton âge, la distance, le D+ et la date de la course.")
       return
     }
+    if (new Date(`${dateCourse}T00:00:00`) <= new Date()) {
+      setError("La date de la course doit être dans le futur.")
+      return
+    }
+    if (jours.length < 2) {
+      setError("Choisis au moins 2 jours disponibles (il faut bien s'entraîner un minimum 😉).")
+      return
+    }
     if (courtDeja && !volHebdo) {
       setError("Renseigne ton volume hebdo (ou indique que tu ne cours pas encore).")
       return
     }
     setSaving(true)
     setError(null)
+    // Cohérence pistol : des reps complètes ⇒ variante « complet » (la variante décrit le niveau atteint).
+    const pistolReps = num(pistol)
+    const pistolVarCoherent = pistolReps != null && pistolReps > 0 ? "complet" : pistolVar
     const data = {
       prenom: prenom.trim() || null,
       sexe,
@@ -197,8 +208,8 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
           },
       calisthenie: {
         squat_max: num(squat),
-        pistol_max_par_jambe: num(pistol),
-        pistol_variante: pistolVar,
+        pistol_max_par_jambe: pistolReps,
+        pistol_variante: pistolVarCoherent,
         fente_max_par_jambe: num(fente),
         materiel,
         mobilite_cheville: cheville,
@@ -311,7 +322,7 @@ export function IntakeForm({ onSaved }: { onSaved: () => void }) {
       <Field label="Pistol squats / jambe" hint="0 si aucun">
         <input className="intake-in" type="number" inputMode="numeric" value={pistol} onChange={(e) => setPistol(e.target.value)} placeholder="2" />
       </Field>
-      <Field label="Variante pistol">
+      <Field label="Variante pistol" hint="si 0 reps : jusqu'où tu arrives">
         <select className="intake-in" value={pistolVar} onChange={(e) => setPistolVar(e.target.value)}>
           <option value="aucun">Aucun</option>
           <option value="assisté">Assisté</option>

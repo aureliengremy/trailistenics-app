@@ -18,6 +18,7 @@ import { SaveButton } from "@/components/common/SaveButton"
 import { MoveControls, MovedSessions } from "@/components/common/SessionMove"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
+import { useAdminPending } from "@/hooks/useAdminPending"
 import type { PlanData } from "@/hooks/usePlan"
 import type { ProgressApi } from "@/hooks/useProgress"
 import { exKey } from "@/hooks/useProgress"
@@ -77,6 +78,7 @@ export function MobileApp({
   }, [tab])
   const tabs = user?.role === "admin" ? [...TABS, ADMIN_TAB] : TABS
   const title = tabs.find((t) => t.id === tab)!.title
+  const pending = useAdminPending(user)
 
   return (
     <div className="m-app">
@@ -107,6 +109,7 @@ export function MobileApp({
           >
             <NavIcon name={t.id} on={tab === t.id} />
             <span>{t.label}</span>
+            {t.id === "admin" && pending > 0 && <span className="nav-badge">{pending}</span>}
           </button>
         ))}
       </div>
