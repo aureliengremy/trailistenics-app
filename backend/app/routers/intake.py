@@ -10,30 +10,24 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import get_db
 from app.models import UserIntake
-from app.notifications import send_email, send_slack
+from app.notifications import send_email
 from app.security import CurrentUser, get_current_user
 
 router = APIRouter(prefix="/api", tags=["intake"])
 
 
 def _notify_admin_intake(email: str | None, user_id: str, data: dict[str, Any], is_new: bool) -> None:
-    """Notifie l'admin qu'un intake a été rempli : Slack (JSON du pipeline) + email (best-effort)."""
+    """Notifie l'admin par email qu'un intake a été rempli (best-effort ; le JSON se récupère
+    dans l'onglet Admin de l'app)."""
     pretty = json.dumps(data, ensure_ascii=False, indent=2)
     verb = "rempli" if is_new else "mis à jour"
-    send_slack(
-        f":mountain: *Intake {verb}* — `{email or user_id}`\n"
-        f"Entrée du pipeline de génération (à coller dans Claude Code, "
-        f"cf. `docs/prompts/00-pipeline-orchestration.md`) :\n"
-        f"```{pretty}```\n"
-        f"Une fois le programme généré : "
-        f"`python -m app.import_program <programme.json> --owner-email {email or '<email>'}`"
-    )
     send_email(
         settings.admin_email,
         f"Intake {verb} — {email or user_id}",
         f"<p>Intake {verb} sur <b>Trailistenics</b> par <b>{email or user_id}</b>.</p>"
         f"<pre>{pretty}</pre>"
-        f'<p><a href="{settings.app_url}">Ouvrir l\'app</a> (onglet Admin) pour le retrouver.</p>',
+        f'<p><a href="{settings.app_url}">Ouvrir l\'app</a> (onglet Admin) pour copier le JSON '
+        f"et générer le programme.</p>",
     )
 
 

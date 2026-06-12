@@ -16,14 +16,15 @@ le *moteur* : les docs, le contrat de sortie et les prompts restent les mêmes (
 ## 1. Architecture de la génération (pipeline en 3 étapes, sans API, via Claude Code)
 
 **Flow opérationnel** : le nouvel inscrit remplit le **formulaire in-app** (intake) → son JSON
-est enregistré en base, **posté sur Slack** à l'admin et visible dans l'onglet **Admin** de l'app
-(badge « à traiter »). L'admin colle ce JSON dans Claude Code (prompt 00), qui produit le
-programme final, puis l'**importe sur le compte** de la personne. *(Plus tard : la génération
-passera par l'API Claude — seuls le moteur et le déclenchement changeront.)*
+est enregistré en base et apparaît dans l'onglet **Admin** de l'app (badge « à traiter »,
+bouton « Copier l'intake JSON »). L'admin colle ce JSON dans Claude Code (prompt 00) sur son
+laptop, qui produit le programme final, puis l'**importe sur le compte** de la personne.
+*(Plus tard : la génération passera par l'API Claude — seuls le moteur et le déclenchement
+changeront.)*
 
 ```
    NOUVEAU COMPTE (app)
-        │  formulaire intake → user_intake (DB) → Slack + onglet Admin (JSON copiable)
+        │  formulaire intake → user_intake (DB) → onglet Admin (badge « à traiter », JSON copiable)
         ▼
    ┌─────────────────────────── docs/intake/profil-coureur.md ───────────────────────────┐
    │  A. objectif trail + forme course            B. capacités calisthénie (max reps/série) │
@@ -134,7 +135,7 @@ python -m app.import_program ../docs/generated/<slug>/programme-<slug>.json \
 |---|---|---|
 | 1. Base de connaissances + 3 prompts + contrat de sortie | ✅ fait | Ce dossier. |
 | 2. Programme **par utilisateur** en base | ✅ fait | Table `programs` (owner_id) ; l'app sert le plan de l'utilisateur connecté. |
-| 3. Intake in-app + notification **Slack** (JSON) + onglet Admin | ✅ fait | Le formulaire produit le JSON du pipeline ; badge « à traiter » côté admin. |
+| 3. Intake in-app + onglet Admin (JSON copiable) | ✅ fait | Le formulaire produit le JSON du pipeline ; badge « à traiter » côté admin. |
 | 4. Importeur `import_program` (JSON → compte) | ✅ fait | `python -m app.import_program <json> --owner-email <email>`. |
 | 5. Première génération via Claude Code | ⏳ à tester | Produire un 2ᵉ programme réel de bout en bout et le relire. |
 | 6. Génération par **API Claude** | ⏳ futur | Les docs deviennent le system prompt ; le schéma devient un *tool* à sortie structurée ; génération à l'inscription. |

@@ -52,9 +52,9 @@ export function AdminView() {
         <b>{users.length}</b> comptes · <b style={{ color: pending ? "var(--ocre)" : "inherit" }}>
           {pending} à traiter
         </b>{" "}
-        · <b>{withProgram}</b> avec programme. Flow : copie l'intake JSON (aussi posté sur Slack)
-        → génère via <code>docs/prompts/00-pipeline-orchestration.md</code> dans Claude Code →
-        importe avec la commande ci-dessous.
+        · <b>{withProgram}</b> avec programme. Flow : copie l'intake JSON ci-dessous → génère via{" "}
+        <code>docs/prompts/00-pipeline-orchestration.md</code> dans Claude Code → importe avec la
+        commande ci-dessous.
       </p>
       <div className="admin-list">
         {users.map((u) => {

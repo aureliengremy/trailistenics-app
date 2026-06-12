@@ -4,7 +4,7 @@
 > ([`../prompts/00-pipeline-orchestration.md`](../prompts/00-pipeline-orchestration.md)).
 > **En production**, ce questionnaire est le formulaire in-app (`IntakeForm`) rempli à
 > l'inscription : il produit **exactement le JSON du §C**, enregistré en base
-> (`user_intake`) et **posté sur Slack** à l'admin (copiable aussi depuis l'onglet Admin).
+> (`user_intake`) et **copiable depuis l'onglet Admin** de l'app (badge « à traiter »).
 > Le nouvel inscrit répond à **un seul petit questionnaire**. Les réponses se découpent en
 > **deux sous-ensembles** :
 > - **A. Objectif trail** → consommé par le **Prompt 1** (artefact `01-trail.json`).

@@ -35,11 +35,6 @@ class Settings(BaseSettings):
     resend_from: str = "Trailistenics <onboarding@resend.dev>"
     app_url: str = "https://trailistenics-app.vercel.app"
 
-    # --- Notifications (Slack) ---
-    # URL d'un webhook entrant Slack. Vide → aucun envoi (no-op).
-    # À la soumission d'un intake, le JSON complet y est posté (entrée du pipeline de génération).
-    slack_webhook_url: str = ""
-
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]

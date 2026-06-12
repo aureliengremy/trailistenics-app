@@ -27,21 +27,3 @@ def send_email(to: str, subject: str, html: str) -> bool:
             return resp.status < 300
     except Exception:
         return False
-
-
-def send_slack(text: str) -> bool:
-    """Poste un message (mrkdwn) sur le webhook Slack. False (sans lever) si non configuré/échec."""
-    if not settings.slack_webhook_url:
-        return False
-    payload = json.dumps({"text": text}).encode("utf-8")
-    req = urllib.request.Request(
-        settings.slack_webhook_url,
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return resp.status < 300
-    except Exception:
-        return False

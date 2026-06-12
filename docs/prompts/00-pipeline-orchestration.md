@@ -30,12 +30,12 @@ Lis : `docs/intake/profil-coureur.md` (le questionnaire + la grille de déductio
 
 ### Étape 1 — Recueille le questionnaire (une seule fois)
 
-**Cas nominal** : l'intake arrive de **l'app** — le nouvel inscrit a rempli le formulaire, son
-JSON a été **posté sur Slack** (et il est copiable depuis l'onglet **Admin** de l'app). Colle-le
-ici tel quel : il est déjà au format `docs/intake/profil-coureur.md` §C. Sinon (test/local), si un
-`questionnaire.json` est fourni, charge-le ; en dernier recours **pose les questions** du
-formulaire (sections A et B) — reste **court**. Applique les défauts prudents (section D) pour
-tout champ manquant et note-les.
+**Cas nominal** : l'intake arrive de **l'app** — le nouvel inscrit a rempli le formulaire, et
+son JSON est **copiable depuis l'onglet Admin** de l'app (badge « à traiter », bouton « Copier
+l'intake JSON »). Colle-le ici tel quel : il est déjà au format `docs/intake/profil-coureur.md`
+§C. Sinon (test/local), si un `questionnaire.json` est fourni, charge-le ; en dernier recours
+**pose les questions** du formulaire (sections A et B) — reste **court**. Applique les défauts
+prudents (section D) pour tout champ manquant et note-les.
 
 > **`start_date`** : si elle n'est pas précisée, prends **le lundi qui suit la génération**
 > (les `date_label` des semaines = les lundis successifs). `event_date` = `objectif.date_course`.

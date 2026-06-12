@@ -3,18 +3,14 @@
 from fastapi import APIRouter, Depends
 
 from app.config import settings
-from app.notifications import send_email, send_slack
+from app.notifications import send_email
 from app.security import CurrentUser, get_current_user
 
 router = APIRouter(prefix="/api", tags=["notify"])
 
 
-@router.post("/notify-signup", summary="Notifie l'admin d'un nouveau compte (no-op si rien n'est configuré)")
+@router.post("/notify-signup", summary="Notifie l'admin d'un nouveau compte (no-op si Resend non configuré)")
 def notify_signup(user: CurrentUser = Depends(get_current_user)) -> dict[str, bool]:
-    slack_sent = send_slack(
-        f":wave: *Nouveau compte* Trailistenics — `{user.email}`\n"
-        f"L'intake suivra (un message avec le JSON arrivera ici une fois le formulaire rempli)."
-    )
     html = (
         f"<p>Nouveau compte sur <b>Trailistenics</b> :</p>"
         f"<p><b>{user.email}</b><br><small>uuid : {user.id}</small></p>"
@@ -22,4 +18,4 @@ def notify_signup(user: CurrentUser = Depends(get_current_user)) -> dict[str, bo
         f"une fois l'intake rempli.</p>"
     )
     sent = send_email(settings.admin_email, "Nouveau compte Trailistenics", html)
-    return {"sent": sent or slack_sent}
+    return {"sent": sent}

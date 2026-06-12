@@ -182,20 +182,20 @@ vérifié via JWKS (EdDSA) dans `app/security.py`.
 
 - `GET /api/program` — le programme de l'utilisateur courant (`null` si nouveau compte).
 - `GET|PUT /api/progress` — progression de l'utilisateur (blob JSON).
-- `GET|PUT /api/intake` — questionnaire de profil ; le PUT **notifie l'admin** (Slack +
-  email, best-effort) avec le JSON complet.
-- `POST /api/notify-signup` — notification « nouveau compte » (Slack + email).
+- `GET|PUT /api/intake` — questionnaire de profil ; le PUT **notifie l'admin par email**
+  (best-effort, no-op sans clé Resend) avec le JSON complet.
+- `POST /api/notify-signup` — notification « nouveau compte » (email).
 - `GET /api/admin/users` — (admin) comptes + intake + état programme.
 - Documentation auto : `/docs` (Swagger) et `/redoc`.
 
-CORS autorisé pour l'origine du front (`CORS_ORIGINS`). Notifications configurées par
-`SLACK_WEBHOOK_URL` et `RESEND_API_KEY` (env — no-op si absentes).
+CORS autorisé pour l'origine du front (`CORS_ORIGINS`). Emails configurés par `RESEND_API_KEY`
+(env — no-op si absente). **Pas de Slack** (choix assumé : tout passe par l'app).
 
 **Flow de génération d'un programme** (manuel, sans API Claude — voir `docs/README.md`) :
-inscription → formulaire intake in-app → JSON posté sur **Slack** + badge « à traiter » sur
-l'onglet **Admin** → l'admin colle le JSON dans Claude Code (`docs/prompts/00-…`) → programme
-généré → `python -m app.import_program <json> --owner-email <email>` → la personne voit son
-plan. *Futur : génération par API Claude — voir `IDEES-FEATURES.md`.*
+inscription → formulaire intake in-app → badge « à traiter » sur l'onglet **Admin** → l'admin
+**copie le JSON depuis l'onglet Admin** et le colle dans Claude Code (`docs/prompts/00-…`) sur
+son laptop → programme généré → `python -m app.import_program <json> --owner-email <email>` →
+la personne voit son plan. *Futur : génération par API Claude — voir `IDEES-FEATURES.md`.*
 
 ## 8. Identité visuelle (à respecter — pas de rendu shadcn générique)
 
