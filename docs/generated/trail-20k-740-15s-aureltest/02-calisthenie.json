@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "slug": "trail-20k-740-15s-aureltest",
+    "discipline": "calisthenie",
+    "pipeline_stage": "calisthenie",
+    "generated_by": "claude-code",
+    "source_docs": [
+      "docs/methodologie/02-calisthenie-bas-du-corps.md",
+      "docs/methodologie/03-hybride-trail-calisthenie.md",
+      "docs/intake/profil-coureur.md"
+    ],
+    "capability_assessment": {
+      "squat_max": 20,
+      "pistol_max_par_jambe": 5,
+      "pistol_variante": "complet",
+      "fente_max_par_jambe": 2,
+      "materiel": ["bande_elastique", "barre_traction"],
+      "mobilite_cheville": "3-5in",
+      "derived_level": "intermédiaire–avancé bas du corps (pistol complet acquis)",
+      "reasoning": "Pistol complet 5/jambe = AVANCÉ en force unilatérale (atout majeur). Mais squat 20 (plancher intermédiaire) et fentes 2/jambe (débutant) sont incohérents avec un pistol complet — données à confirmer (sous-déclaration probable, ou fentes mal testées). On retient un niveau bas du corps intermédiaire–avancé : la force est un ATOUT déjà en banque. Le vrai facteur limitant est la COURSE (grand débutant), pas la force. Profil type doc 03 §8 « calisthéniste qui se met au trail ».",
+      "starting_rungs": {
+        "squat_unilateral": "pistol complet déjà acquis → entretien minimal (PAS le jour des step-downs : anti-empilement quad)",
+        "pistol": "acquis (5/jambe) — maintien dose minimale ; ne pas en rajouter, les quads servent surtout à la course/descente",
+        "chaine_posterieure": "PRIORITÉ : Nordic à la bande (matériel dispo) + single-leg RDL — corriger la dominance quadriceps de la calisthénie",
+        "mollet_cheville": "single-leg calf raise + tibialis raise (cheville 3-5 in correcte, à entretenir pour la descente)"
+      }
+    },
+    "phase_progression": [
+      { "phase": "fondation (S1-S4)", "reglage": "3×8-12, contrôle ; renfo LÉGER pour ne pas gêner l'adaptation course (tendons) ; priorité chaîne postérieure" },
+      { "phase": "force/excentrique (S5-S9)", "reglage": "Nordic bande + step-downs 3-4 s, 3×6-8 ; convertir la force existante vers l'excentrique de descente" },
+      { "phase": "endurance de force (S10-S12)", "reglage": "3×12-15 spécifique montagne (step-ups/step-downs en volume), ≥48 h des grosses séances course" },
+      { "phase": "maintien/taper (S13-S15)", "reglage": "1×/sem, ~1/3 volume ; STOP step-downs/excentrique ≥ 7-10 j avant la course" }
+    ],
+    "principles": [
+      "exploiter la force existante (pistol) mais ne PAS la surdévelopper : les quadriceps servent à la course et à la descente",
+      "chaîne postérieure prioritaire (la calisthénie est souvent quad/squat-dominante)",
+      "excentrique descente (step-downs) = spécificité trail montagne, central ici",
+      "brider la progression de course sur les TENDONS/os, pas sur le souffle (doc 03 §8)"
+    ],
+    "notes": [
+      "ATOUT : force unilatérale avancée (pistol) → adaptation rapide à la force max, transfert vers l'économie de course. On capitalise sans en rajouter.",
+      "LACUNE réelle = base aérobie et résilience des tendons à la course (jamais couru). Le renfo reste SECONDAIRE : il ne doit jamais voler de la fraîcheur aux jambes pour la progression de course.",
+      "Matériel dispo (bande + barre) : Nordic curl à la bande = excellent pour l'excentrique ischio (corrige la dominance quad). Barre de traction utile pour le gainage suspendu (relevés de genoux), pas essentiel au bas du corps.",
+      "Step-downs sur escaliers (accès dispo) : parfait pour l'excentrique de descente, central vu le terrain montagneux.",
+      "ANTI-EMPILEMENT QUAD : pistols + step-downs + sortie longue vallonnée chargent tous le quadriceps. Ne jamais coller pistols et step-downs ; renfo lourd ≥ 48 h de la longue et de la séance de côtes."
+    ]
+  },
+  "exercises": [
+    {
+      "order": 1,
+      "name": "Single-Leg RDL (soulevé roumain sur une jambe)",
+      "volume": "3 × 10 / jambe, tempo contrôlé",
+      "target": "Chaîne postérieure",
+      "rationale": "Priorité n°1 : tes ischios/fessiers, sous-développés vs tes quadriceps de calisthéniste. Te propulse en montée et protège le genou en descente."
+    },
+    {
+      "order": 2,
+      "name": "Step-downs lents (escaliers)",
+      "volume": "3 × 8 / jambe, descente 3-4 s",
+      "target": "Descente",
+      "rationale": "LE geste de la descente montagne : excentrique quadriceps qui évite le quad blowout sur les 740 m D−. Tes escaliers sont parfaits pour ça."
+    },
+    {
+      "order": 3,
+      "name": "Nordic curl à la bande",
+      "volume": "3 × 6, descente lente",
+      "target": "Ischios",
+      "rationale": "Avec ta bande : excentrique ischio puissant. Rééquilibre le ratio ischios/quadriceps (économie de course + prévention) que la calisthénie néglige souvent."
+    },
+    {
+      "order": 4,
+      "name": "Hip thrust / pont fessier sur une jambe",
+      "volume": "3 × 12 / jambe",
+      "target": "Fessiers",
+      "rationale": "Active les fessiers (propulsion) sans recharger les quadriceps déjà servis par la course et tes pistols. Clé anti-dominance quad."
+    },
+    {
+      "order": 5,
+      "name": "Calf raises + Tibialis raises",
+      "volume": "3 × 15 / jambe, tempo lent",
+      "target": "Cheville",
+      "rationale": "Cheville solide pour le terrain montagneux irrégulier : poussée (mollet) + absorption/contrôle (tibial). Prévient l'entorse et la périostite du débutant."
+    },
+    {
+      "order": 6,
+      "name": "Gainage : planche + relevés de genoux suspendu (barre)",
+      "volume": "3 × 40 s planche + 3 × 8 relevés",
+      "target": "Gainage",
+      "rationale": "Stabilité du tronc en descente technique (ton atout calisthénie à entretenir). La barre de traction sert aux relevés de genoux."
+    }
+  ]
+}

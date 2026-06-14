@@ -1,0 +1,188 @@
+{
+  "meta": {
+    "slug": "trail-20k-740-4s-auriane",
+    "title": "Trail 20 km · 740 m D+ — prépa 4 semaines",
+    "discipline": "hybride",
+    "pipeline_stage": "hybride",
+    "inputs": ["01-trail.json", "02-calisthenie.json"],
+    "objective": {
+      "distance_km": 20,
+      "dplus_m": 740,
+      "terrain": "roulant",
+      "technicite_descente": "roulante",
+      "race_date": "2026-07-12"
+    },
+    "total_weeks": 4,
+    "sessions_per_week_range": "2 → 4",
+    "start_date": "2026-06-15",
+    "event_date": "2026-07-12",
+    "athlete_profile": {
+      "prenom": "Auriane",
+      "sexe": "femme",
+      "age": 36,
+      "court_deja": true,
+      "experience_trail": "intermédiaire",
+      "volume_hebdo_km": 20,
+      "sortie_longue_max_km": 21,
+      "frequence_actuelle": 4,
+      "acces_terrain": ["côtes", "plat", "montagne"],
+      "jours_dispo": ["lun", "mer", "jeu", "ven", "sam", "dim"],
+      "antecedents_blessure": [],
+      "calisthenie_derived_level": "intermédiaire (régression ciblée sur le pistol)"
+    },
+    "principles": [
+      "Prudence > performance : fenêtre de 4 semaines → affûtage spécifique, pas de construction.",
+      "Entraîner la descente (740 m D+ = autant de D−) : RBE, dernière grosse descente ~2 sem avant le jour J.",
+      "Ne jamais empiler le travail quadriceps : renfo lourd isolé, ≥ 48 h des grosses séances de course.",
+      "Chaîne postérieure prioritaire pour corriger la dominance quadriceps de la course."
+    ],
+    "generated_by": "claude-code",
+    "source_docs": [
+      "docs/methodologie/01-trail-periodisation.md",
+      "docs/methodologie/02-calisthenie-bas-du-corps.md",
+      "docs/methodologie/03-hybride-trail-calisthenie.md",
+      "docs/intake/profil-coureur.md"
+    ],
+    "notes": [
+      "FENÊTRE COURTE = 4 semaines (génération 13 juin → course 12 juil.). Recommandation méthodo : 10-12 sem pour un ≤21K. L'athlète ayant déjà la base (intermédiaire, sortie longue 21 km ≥ distance course), on AFFÛTE en spécifique au lieu de construire. À communiquer clairement : objectif = arriver fraîche et protégée en descente, pas progresser le moteur en 4 sem.",
+      "Renfo par phase (le modèle ne stocke qu'un circuit global) : S1 fondation 3×8-12 tempo 3-1-3 ; S2 force/excentrique 3×8 (step-downs & bulgare 3-4 s) ; S3 maintien ~1/2 volume ; S4 ~1/3 volume (mobilité + gainage), STOP step-downs ≥ 7 j avant la course.",
+      "Placement anti-surcharge quadriceps : 1 séance renfo/sem, placée ≥ 48 h de la sortie longue vallonnée et de la séance qualité. La sortie longue (descente) + les step-downs comptent dans un MÊME budget excentrique quadriceps — ne pas les coller.",
+      "CONFLIT app à connaître : l'app affiche une micro-structure FIXE (renfo mardi, qualité jeudi, sortie longue dimanche). Or Auriane est indisponible le MARDI (seul jour off). Idéalement déplacer le renfo au lundi ou mercredi ; tant que l'app fige le mardi, lui dire de faire le circuit un autre jour dispo (≥ 48 h de la longue).",
+      "Descente : 740 m D+ sur terrain roulant non technique → enjeu = endurance des cuisses, pas la technique. RBE : descente contrôlée en fin de longue S1, sortie choc S2 (dernière grosse descente ~2 sem avant), puis on laisse récupérer.",
+      "Matériel renfo = aucun (PdC pur) sauf une simple marche pour step-downs/bulgare (le seul accessoire à trouver). Mobilité cheville < 3 in à travailler en échauffement (dorsiflexion limitante).",
+      "ACWR : ne pas gonfler la distance (plafond ~20-21 km, son max actuel) ; travailler le D+/descente à distance ~constante.",
+      "Hypothèse start_date = lundi 15 juin 2026 (lundi suivant la génération). date_label = lundi de chaque semaine."
+    ]
+  },
+  "blocs": [
+    {
+      "key": "specifique",
+      "name": "Spécifique",
+      "category": "Construction",
+      "color": "#7ba05b",
+      "color_key": "base",
+      "description": "Prise de contact spécifique : on installe le D+ sur la sortie longue et la première descente contrôlée (amorce du RBE).",
+      "order": 1
+    },
+    {
+      "key": "simulateur",
+      "name": "Simulateur",
+      "category": "Simulateur",
+      "color": "#c2562e",
+      "color_key": "simul",
+      "description": "Semaine clé : sortie choc qui simule la course (D+ proche de l'objectif) et porte la dernière grosse descente, ~2 semaines avant le jour J.",
+      "order": 2
+    },
+    {
+      "key": "affutage",
+      "name": "Affûtage",
+      "category": "Affûtage",
+      "color": "#6fa8c4",
+      "color_key": "affut",
+      "description": "Réduction marquée du volume, intensité courte maintenue, fraîcheur — jusqu'à la course.",
+      "order": 3
+    }
+  ],
+  "weeks": [
+    {
+      "number": 1,
+      "date_label": "15 juin",
+      "bloc": "specifique",
+      "long_run_label": "1h50 · ~16 km · 450 m D+ (descente douce en fin)",
+      "long_run_duration_min": 110,
+      "long_run_dplus_m": 450,
+      "long_run_distance_km": 16,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Côtes : 6×1 min (récup en descendant)",
+      "focus": "Prise de contact, Auriane. On réveille le D+ sans forcer et on place une première descente contrôlée en fin de longue (5-6 × 1 min, effort 6/10) pour amorcer la protection des cuisses.",
+      "is_race": false
+    },
+    {
+      "number": 2,
+      "date_label": "22 juin",
+      "bloc": "simulateur",
+      "long_run_label": "2h30 · ~20 km · 600 m D+ (simulation course)",
+      "long_run_duration_min": 150,
+      "long_run_dplus_m": 600,
+      "long_run_distance_km": 20,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "VMA : 5×3 min (récup 3 min)",
+      "focus": "La semaine clé. Sortie choc dimanche : on simule la course (~600 m D+), power hiking dès que ça monte raide, descentes contrôlées (pas de chrono). C'est ta DERNIÈRE grosse descente — elle te protège jusqu'au jour J. Teste chaussures et nutrition.",
+      "is_race": false
+    },
+    {
+      "number": 3,
+      "date_label": "29 juin",
+      "bloc": "affutage",
+      "long_run_label": "1h20 · ~13 km · 350 m D+ (souple)",
+      "long_run_duration_min": 80,
+      "long_run_dplus_m": 350,
+      "long_run_distance_km": 13,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Seuil : 2×10 min (allure course)",
+      "focus": "On lève le pied : volume −45 %. Le travail est fait, on garde juste un peu de jus avec un seuil court à allure course. Pas de grosse descente cette semaine — la protection de S2 tient encore.",
+      "is_race": false
+    },
+    {
+      "number": 4,
+      "date_label": "6 juil.",
+      "bloc": "affutage",
+      "long_run_label": "40 min relâché + lignes → COURSE dimanche",
+      "long_run_duration_min": 40,
+      "long_run_dplus_m": 150,
+      "long_run_distance_km": 6,
+      "sessions_per_week": 2,
+      "sessions_label": null,
+      "quality_session": "Lignes droites : 6×20 s (activation)",
+      "focus": "Dernière ligne droite. Jambes fraîches, mental léger. Deux sorties très courtes avec quelques lignes pour rester vive, puis COURSE dimanche 12 juillet : 20 km / 740 m D+. Pars prudente, marche les raidards, lâche les descentes roulantes.",
+      "is_race": true
+    }
+  ],
+  "exercises": [
+    {
+      "order": 1,
+      "name": "Single-Leg RDL (soulevé roumain sur une jambe)",
+      "volume": "3 × 10 / jambe, tempo contrôlé",
+      "target": "Chaîne postérieure",
+      "rationale": "Ischios + fessiers : rééquilibre ton profil (la course rend quadriceps-dominante) et te propulse en montée. Excentrique contrôlé à la descente du buste."
+    },
+    {
+      "order": 2,
+      "name": "Step-downs lents (sur une marche)",
+      "volume": "3 × 8 / jambe, descente 3-4 s",
+      "target": "Descente",
+      "rationale": "LE geste de la descente : excentrique quadriceps qui blinde les cuisses contre le quad blowout des 740 m D−. Commence sur une marche basse, effort 5-6/10."
+    },
+    {
+      "order": 3,
+      "name": "Fente bulgare (pied arrière sur une marche) ou split squat",
+      "volume": "3 × 10 / jambe, descente 3 s",
+      "target": "Force unilatérale",
+      "rationale": "Force unilatérale quadriceps/fessier à amplitude maîtrisée (compense ton pistol non acquis sans forcer la cheville). Sans marche : split squat au sol."
+    },
+    {
+      "order": 4,
+      "name": "Pont fessier sur une jambe",
+      "volume": "3 × 12 / jambe",
+      "target": "Fessiers",
+      "rationale": "Renforce les fessiers (propulsion en montée) sans recharger des quadriceps déjà sollicités par la course — clé anti-surcharge."
+    },
+    {
+      "order": 5,
+      "name": "Calf raises + Tibialis raises (dos au mur)",
+      "volume": "3 × 15, tempo lent",
+      "target": "Cheville",
+      "rationale": "Mollet (poussée) + tibial (absorption, contrôle du pied) : cheville solide sur terrain irrégulier, et travail direct de ta dorsiflexion limitée (< 3 in)."
+    },
+    {
+      "order": 6,
+      "name": "Planche latérale + levé de jambe",
+      "volume": "3 × 40 s / côté",
+      "target": "Gainage",
+      "rationale": "Stabilité du bassin dans la foulée et en descente technique. Gainage = base à entretenir 2×/sem toute l'année."
+    }
+  ]
+}

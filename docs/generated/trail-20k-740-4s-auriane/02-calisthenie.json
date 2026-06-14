@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "slug": "trail-20k-740-4s-auriane",
+    "discipline": "calisthenie",
+    "pipeline_stage": "calisthenie",
+    "generated_by": "claude-code",
+    "source_docs": [
+      "docs/methodologie/02-calisthenie-bas-du-corps.md",
+      "docs/intake/profil-coureur.md"
+    ],
+    "capability_assessment": {
+      "squat_max": 40,
+      "pistol_max_par_jambe": 0,
+      "pistol_variante": "aucun",
+      "fente_max_par_jambe": 11,
+      "materiel": [],
+      "mobilite_cheville": "<3in",
+      "derived_level": "intermédiaire (régression ciblée sur le pistol)",
+      "reasoning": "Squat 40 = haut de l'intermédiaire ; fentes 11/jambe = intermédiaire. Le pistol (0, variante aucun) tire vers débutant, MAIS un seul pattern est bas → on retient un niveau global intermédiaire avec régression ciblée sur le squat unilatéral profond (pistol). La mobilité cheville < 3 in (dorsiflexion limitée) confirme de différer le pistol complet et de prioriser la mobilité + l'unilatéral à amplitude maîtrisée.",
+      "starting_rungs": {
+        "squat_unilateral": "split squat → fente bulgare (pied arrière sur une marche)",
+        "pistol": "différé : négatives assistées (appui chambranle/mur) + travail mobilité ; box pistol haut quand une marche/box est dispo",
+        "chaine_posterieure": "single-leg RDL au poids du corps + pont fessier une jambe (Nordic en appui-mains, faute de bande/ancrage)",
+        "mollet_cheville": "calf raise + tibialis raise dos au mur + mobilisation knee-to-wall (priorité : dorsiflexion < 3 in)"
+      }
+    },
+    "phase_progression": [
+      { "phase": "fondation (S1)", "reglage": "3×8-12, tempo 3-1-3, contrôle ; re-groove des patterns, pas d'échec" },
+      { "phase": "force/excentrique (S2)", "reglage": "step-downs & fente bulgare en excentrique 3-4 s, 3×8/jambe ; ≥48 h de la sortie longue ; jamais à l'échec" },
+      { "phase": "maintien (S3)", "reglage": "~1/2 volume (2 séries), intensité gardée, zéro DOMS" },
+      { "phase": "pré-course (S4)", "reglage": "~1/3 volume : mobilité cheville + gainage léger uniquement ; STOP step-downs/excentrique ≥ 7 j avant la course" }
+    ],
+    "principles": [
+      "surcharge progressive sans poids (levier/amplitude/tempo, pas de charge externe)",
+      "chaîne postérieure prioritaire (corriger la dominance quadriceps de la course)",
+      "excentrique descente (step-downs) = spécificité trail, toujours présent",
+      "ne pas empiler le quadriceps : renfo lourd isolé, ≥ 48 h des grosses séances de course"
+    ],
+    "notes": [
+      "MATÉRIEL = aucun (PdC pur). Tout le circuit se fait sans matériel SAUF les step-downs et la fente bulgare qui demandent une simple marche (escalier, trottoir, banc) : c'est le seul accessoire à trouver, et c'est le plus utile au trail (descente). À défaut, step-downs sur la marche la plus basse dispo.",
+      "MOBILITÉ CHEVILLE < 3 in (knee-to-wall) = facteur limitant n°1 du squat profond et du pistol → mobilisations dorsiflexion en échauffement (5 pulses + tenue 30 s/cheville), et on ne force pas l'amplitude profonde. Pertinent aussi pour absorber la descente.",
+      "Pistol DIFFÉRÉ : aucun pistol + cheville limitée → on ne vise pas le pistol sur ces 4 semaines (objectif = la course, pas la progression calisthénie). Option négatives assistées hors des jours de step-downs si Auriane veut entretenir le pattern.",
+      "Nordic curl sans bande ni ancrage : version appui-mains (push léger pour remonter) ou négatives lentes ; le bénéfice clé est l'excentrique ischio.",
+      "Fréquence : 1 à 2 séances/sem suffisent ; en fenêtre courte, le renfo reste SECONDAIRE à la course et ne doit jamais compromettre la fraîcheur des jambes."
+    ]
+  },
+  "exercises": [
+    {
+      "order": 1,
+      "name": "Single-Leg RDL (soulevé roumain sur une jambe)",
+      "volume": "3 × 10 / jambe, tempo contrôlé",
+      "target": "Chaîne postérieure",
+      "rationale": "Ischios + fessiers : rééquilibre ton profil (la course rend quadriceps-dominante) et te propulse en montée. Excentrique contrôlé à la descente du buste."
+    },
+    {
+      "order": 2,
+      "name": "Step-downs lents (sur une marche)",
+      "volume": "3 × 8 / jambe, descente 3-4 s",
+      "target": "Descente",
+      "rationale": "LE geste de la descente : excentrique quadriceps qui blinde les cuisses contre le quad blowout des 740 m D−. Commence sur une marche basse, effort 5-6/10."
+    },
+    {
+      "order": 3,
+      "name": "Fente bulgare (pied arrière sur une marche) ou split squat",
+      "volume": "3 × 10 / jambe, descente 3 s",
+      "target": "Force unilatérale",
+      "rationale": "Force unilatérale quadriceps/fessier à amplitude maîtrisée (compense ton pistol non acquis sans forcer la cheville). Sans marche : split squat au sol."
+    },
+    {
+      "order": 4,
+      "name": "Pont fessier sur une jambe",
+      "volume": "3 × 12 / jambe",
+      "target": "Fessiers",
+      "rationale": "Renforce les fessiers (propulsion en montée) sans recharger des quadriceps déjà sollicités par la course — clé anti-surcharge."
+    },
+    {
+      "order": 5,
+      "name": "Calf raises + Tibialis raises (dos au mur)",
+      "volume": "3 × 15, tempo lent",
+      "target": "Cheville",
+      "rationale": "Mollet (poussée) + tibial (absorption, contrôle du pied) : cheville solide sur terrain irrégulier, et travail direct de ta dorsiflexion limitée (< 3 in)."
+    },
+    {
+      "order": 6,
+      "name": "Planche latérale + levé de jambe",
+      "volume": "3 × 40 s / côté",
+      "target": "Gainage",
+      "rationale": "Stabilité du bassin dans la foulée et en descente technique. Gainage = base à entretenir 2×/sem toute l'année."
+    }
+  ]
+}

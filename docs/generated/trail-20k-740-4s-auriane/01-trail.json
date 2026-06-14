@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "slug": "trail-20k-740-4s-auriane",
+    "title": "Trail 20 km · 740 m D+ — prépa 4 semaines",
+    "discipline": "trail",
+    "pipeline_stage": "trail",
+    "objective": {
+      "distance_km": 20,
+      "dplus_m": 740,
+      "terrain": "roulant",
+      "technicite_descente": "roulante",
+      "race_date": "2026-07-12"
+    },
+    "total_weeks": 4,
+    "sessions_per_week_range": "2 → 4",
+    "start_date": "2026-06-15",
+    "event_date": "2026-07-12",
+    "athlete_profile": {
+      "prenom": "Auriane",
+      "sexe": "femme",
+      "age": 36,
+      "court_deja": true,
+      "experience_trail": "intermédiaire",
+      "volume_hebdo_km": 20,
+      "sortie_longue_max_km": 21,
+      "frequence_actuelle": 4,
+      "acces_terrain": ["côtes", "plat", "montagne"],
+      "jours_dispo": ["lun", "mer", "jeu", "ven", "sam", "dim"],
+      "antecedents_blessure": []
+    },
+    "principles": [
+      "Prudence > performance : fenêtre de 4 semaines → affûtage spécifique, pas de construction.",
+      "Entraîner la descente (740 m D+ = autant de D− le jour J) : RBE, dernière grosse descente ~2 sem avant.",
+      "Ne pas empiler le travail quadriceps : la sortie longue vallonnée est le gros stress quad de la semaine.",
+      "Polarisé ~80/20, progression du pic d'une seule sortie ≤ ~10 % du plus long des 30 j (≈ 21 km)."
+    ],
+    "generated_by": "claude-code",
+    "source_docs": [
+      "docs/methodologie/01-trail-periodisation.md",
+      "docs/intake/profil-coureur.md"
+    ],
+    "notes": [
+      "FENÊTRE COURTE : 4 semaines seulement (génération 13 juin → course 12 juil.). La méthodo recommande 10-12 sem pour un ≤21K ; ici l'athlète a déjà la base (intermédiaire, 4×/sem, sortie longue de 21 km ≥ distance de course) → on ne CONSTRUIT pas, on AFFÛTE en spécifique.",
+      "Enjeu n°1 = le D+/descente : 740 m D+ sur 20 km, terrain roulant non technique → le risque réel est le quad blowout en descente, pas la distance. Priorité : exposition descente (RBE) et économie en montée (power hiking > ~10-15 % de pente).",
+      "Profil de charge : S1 prise de contact (D+ modéré + 1re descente contrôlée) → S2 simulateur (sortie choc ~600 m D+, DERNIÈRE grosse descente, ~2 sem avant J) → S3 affûtage (−45 % volume) → S4 affûtage final + course.",
+      "ACWR : volume habituel ~20 km/sem, sortie longue max 21 km → on ne gonfle PAS la distance (plafond ~20-21 km), on travaille le D+ et la descente à distance constante. La sortie longue EST quasiment tout le volume hebdo de l'athlète.",
+      "VMA injectée en S2 (obligatoire dans tout plan) ; côtes en S1 ; seuil court en S3 ; activation en S4.",
+      "Hypothèse start_date = lundi suivant la génération (15 juin 2026). date_label = lundi de chaque semaine. Course = dimanche 12 juil. (dernier jour de S4)."
+    ]
+  },
+  "blocs": [
+    {
+      "key": "specifique",
+      "name": "Spécifique",
+      "category": "Construction",
+      "color": "#7ba05b",
+      "color_key": "base",
+      "description": "Prise de contact spécifique : on installe le D+ sur la sortie longue et la première descente contrôlée (amorce du RBE).",
+      "order": 1
+    },
+    {
+      "key": "simulateur",
+      "name": "Simulateur",
+      "category": "Simulateur",
+      "color": "#c2562e",
+      "color_key": "simul",
+      "description": "Semaine clé : sortie choc qui simule la course (D+ proche de l'objectif) et porte la dernière grosse descente, ~2 semaines avant le jour J.",
+      "order": 2
+    },
+    {
+      "key": "affutage",
+      "name": "Affûtage",
+      "category": "Affûtage",
+      "color": "#6fa8c4",
+      "color_key": "affut",
+      "description": "Réduction marquée du volume, intensité courte maintenue, fraîcheur — jusqu'à la course.",
+      "order": 3
+    }
+  ],
+  "weeks": [
+    {
+      "number": 1,
+      "date_label": "15 juin",
+      "bloc": "specifique",
+      "long_run_label": "1h50 · ~16 km · 450 m D+ (descente douce en fin)",
+      "long_run_duration_min": 110,
+      "long_run_dplus_m": 450,
+      "long_run_distance_km": 16,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Côtes : 6×1 min (récup en descendant)",
+      "focus": "Prise de contact, Auriane. On réveille le D+ sans forcer et on place une première descente contrôlée en fin de longue (5-6 × 1 min, effort 6/10) pour amorcer la protection des cuisses.",
+      "is_race": false
+    },
+    {
+      "number": 2,
+      "date_label": "22 juin",
+      "bloc": "simulateur",
+      "long_run_label": "2h30 · ~20 km · 600 m D+ (simulation course)",
+      "long_run_duration_min": 150,
+      "long_run_dplus_m": 600,
+      "long_run_distance_km": 20,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "VMA : 5×3 min (récup 3 min)",
+      "focus": "La semaine clé. Sortie choc dimanche : on simule la course (~600 m D+), power hiking dès que ça monte raide, descentes contrôlées (pas de chrono). C'est ta DERNIÈRE grosse descente — elle te protège jusqu'au jour J. Teste chaussures et nutrition.",
+      "is_race": false
+    },
+    {
+      "number": 3,
+      "date_label": "29 juin",
+      "bloc": "affutage",
+      "long_run_label": "1h20 · ~13 km · 350 m D+ (souple)",
+      "long_run_duration_min": 80,
+      "long_run_dplus_m": 350,
+      "long_run_distance_km": 13,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Seuil : 2×10 min (allure course)",
+      "focus": "On lève le pied : volume −45 %. Le travail est fait, on garde juste un peu de jus avec un seuil court à allure course. Pas de grosse descente cette semaine — la protection de S2 tient encore.",
+      "is_race": false
+    },
+    {
+      "number": 4,
+      "date_label": "6 juil.",
+      "bloc": "affutage",
+      "long_run_label": "40 min relâché + lignes → COURSE dimanche",
+      "long_run_duration_min": 40,
+      "long_run_dplus_m": 150,
+      "long_run_distance_km": 6,
+      "sessions_per_week": 2,
+      "sessions_label": null,
+      "quality_session": "Lignes droites : 6×20 s (activation)",
+      "focus": "Dernière ligne droite. Jambes fraîches, mental léger. Deux sorties très courtes avec quelques lignes pour rester vive, puis COURSE dimanche 12 juillet : 20 km / 740 m D+. Pars prudente, marche les raidards, lâche les descentes roulantes.",
+      "is_race": true
+    }
+  ],
+  "exercises": []
+}

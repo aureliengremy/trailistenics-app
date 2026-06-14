@@ -1,0 +1,392 @@
+{
+  "meta": {
+    "slug": "trail-20k-740-15s-aureltest",
+    "title": "Trail 20 km · 740 m D+ (montagne) — prépa débutant 15 semaines",
+    "discipline": "hybride",
+    "pipeline_stage": "hybride",
+    "objective": {
+      "distance_km": 20,
+      "dplus_m": 740,
+      "terrain": "montagneux",
+      "technicite_descente": "roulante",
+      "race_date": "2026-09-21"
+    },
+    "total_weeks": 15,
+    "sessions_per_week_range": "3 → 4",
+    "start_date": "2026-06-15",
+    "event_date": "2026-09-21",
+    "athlete_profile": {
+      "prenom": "AurelTest",
+      "sexe": "homme",
+      "age": 32,
+      "court_deja": false,
+      "experience_trail": "débutant",
+      "volume_hebdo_km": 0,
+      "sortie_longue_max_km": null,
+      "frequence_actuelle": 0,
+      "acces_terrain": [
+        "côtes",
+        "escaliers"
+      ],
+      "jours_dispo": [
+        "mar",
+        "jeu",
+        "sam",
+        "dim"
+      ],
+      "antecedents_blessure": [],
+      "calisthenie_derived_level": "intermédiaire–avancé bas du corps (pistol complet acquis)"
+    },
+    "principles": [
+      "Grand débutant course : brider la progression sur les tendons/os, pas le souffle (doc 03 §8).",
+      "Base aérobie d'abord (run/walk), montée ≤ ~10 %/sem, deloads S4/S8.",
+      "Entraîner la descente (740 m D+ montagne) : exposition progressive, dernière grosse descente ~2 sem avant.",
+      "Ne jamais empiler le quadriceps : sortie longue + step-downs + pistols = un seul budget excentrique.",
+      "Chaîne postérieure prioritaire pour corriger la dominance quadriceps du calisthéniste."
+    ],
+    "generated_by": "claude-code",
+    "source_docs": [
+      "docs/methodologie/01-trail-periodisation.md",
+      "docs/methodologie/02-calisthenie-bas-du-corps.md",
+      "docs/methodologie/03-hybride-trail-calisthenie.md",
+      "docs/intake/profil-coureur.md"
+    ],
+    "notes": [
+      "GRAND DÉBUTANT COURSE (court_deja=false, 0 km/sem) visant un 20 km / 740 m D+ MONTAGNEUX. 15 semaines = fenêtre confortable, MAIS le risque n°1 = blessure de surcharge (tendons/os non habitués). D'où run/walk au départ, deloads (S4, S8) et progression prudente. Objectif réaliste : FINIR, power hiking assumé dans les montées.",
+      "ACCÈS TERRAIN = côtes + escaliers seulement (PAS de montagne) alors que la course est montagneuse → simuler le D+ par RÉPÉTITION : boucles de côtes, escaliers, tapis incliné. Le D+ se travaille en cumulé, pas en une seule longue montée. À répéter dans le focus des semaines.",
+      "Profil de charge : Reprise run/walk (S1-3) → deload S4 → Base (S5-6) → Développement (S7) → deload S8 → Développement (S9) → Pic (S10-11) → Simulateur sortie choc 740 m (S12) → Affûtage (S13-15). Course = lundi 21 sept (1er jour de S15).",
+      "Descente : introduite dès S6 (escaliers/côtes, contrôlée), montée en S9-12, DERNIÈRE grosse descente ~S12-S13 (~2 sem avant J), puis on protège.",
+      "Intensité : pas de VMA avant que la base soit posée (~S9). Avant : run/walk, côtes en marche-course, seuil doux. VMA obligatoire injectée S9-S11.",
+      "Hypothèse start_date = lundi 15 juin 2026. date_label = lundi de chaque semaine. La course tombant un LUNDI (21 sept), S15 = semaine de course avec la course à son 1er jour ; le vrai taper est S13-S14.",
+      "RENFO PAR PHASE (le modèle ne stocke qu'un circuit global) : fondation léger S1-4 → force/excentrique S5-9 → endurance de force S10-12 → maintien S13-15 (stop step-downs ≥ 7-10 j avant la course).",
+      "PLACEMENT anti-surcharge quad : 1 séance renfo/sem, ≥ 48 h de la sortie longue et des côtes ; NE PAS coller pistols et step-downs (les deux chargent le quadriceps).",
+      "CONFLIT app : micro-structure figée (renfo mardi, qualité jeudi, longue dimanche). AurelTest est dispo mar/jeu/sam/dim → le mardi renfo et le jeudi qualité COLLENT avec ses dispos. Sortie longue dimanche OK. Bonne adéquation ici (contrairement à d'autres profils).",
+      "Sa force calisthénie (pistol complet) est un ATOUT : on capitalise sans surcharger le quad ; la course reste le facteur limitant."
+    ],
+    "inputs": [
+      "01-trail.json",
+      "02-calisthenie.json"
+    ]
+  },
+  "blocs": [
+    {
+      "key": "reprise",
+      "name": "Reprise",
+      "category": "Construction",
+      "color": "#7ba05b",
+      "color_key": "base",
+      "description": "Initiation à la course en marche/course alternée : on habitue les tendons, on pose la base aérobie en douceur.",
+      "order": 1
+    },
+    {
+      "key": "base",
+      "name": "Base",
+      "category": "Construction",
+      "color": "#7ba05b",
+      "color_key": "base",
+      "description": "Installation de la base d'endurance, course de plus en plus continue, premières côtes.",
+      "order": 2
+    },
+    {
+      "key": "developpement",
+      "name": "Développement",
+      "category": "Construction",
+      "color": "#7ba05b",
+      "color_key": "base",
+      "description": "Le volume et le D+ grimpent, introduction de la descente et de l'intensité.",
+      "order": 3
+    },
+    {
+      "key": "allegee",
+      "name": "Allégée",
+      "category": "Récupération",
+      "color": "#a99e88",
+      "color_key": "allege",
+      "description": "Semaine de récupération : on assimile la charge. À ne pas sauter, surtout en reprise.",
+      "order": 4
+    },
+    {
+      "key": "pic",
+      "name": "Pic de charge",
+      "category": "Pic de charge",
+      "color": "#c2562e",
+      "color_key": "pic",
+      "description": "Volume et D+ maximaux, le bloc le plus exigeant.",
+      "order": 5
+    },
+    {
+      "key": "simulateur",
+      "name": "Simulateur",
+      "category": "Simulateur",
+      "color": "#c2562e",
+      "color_key": "simul",
+      "description": "Sortie choc qui reproduit le D+ de la course (~740 m), dernière grosse descente.",
+      "order": 6
+    },
+    {
+      "key": "affutage",
+      "name": "Affûtage",
+      "category": "Affûtage",
+      "color": "#6fa8c4",
+      "color_key": "affut",
+      "description": "Réduction du volume pour arriver frais, intensité courte maintenue.",
+      "order": 7
+    }
+  ],
+  "weeks": [
+    {
+      "number": 1,
+      "date_label": "15 juin",
+      "bloc": "reprise",
+      "long_run_label": "45 min marche/course alternée · ~150 m D+",
+      "long_run_duration_min": 45,
+      "long_run_dplus_m": 150,
+      "long_run_distance_km": null,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Initiation : 8×(1 min course / 1 min marche)",
+      "focus": "On démarre tout en douceur, AurelTest. Tu ne cours pas encore : ce sont tes tendons qu'on réveille, pas ton souffle. Marche/course, et marche dès que ça monte. Le confort prime sur la vitesse.",
+      "is_race": false
+    },
+    {
+      "number": 2,
+      "date_label": "22 juin",
+      "bloc": "reprise",
+      "long_run_label": "55 min marche/course · ~200 m D+",
+      "long_run_duration_min": 55,
+      "long_run_dplus_m": 200,
+      "long_run_distance_km": null,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Initiation : 8×(2 min course / 1 min marche)",
+      "focus": "On allonge un peu les portions courues. Si une douleur tendineuse apparaît, on lève le pied : à ce stade, mieux vaut trop peu que trop.",
+      "is_race": false
+    },
+    {
+      "number": 3,
+      "date_label": "29 juin",
+      "bloc": "reprise",
+      "long_run_label": "1h05 marche/course · ~250 m D+",
+      "long_run_duration_min": 65,
+      "long_run_dplus_m": 250,
+      "long_run_distance_km": 7,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Côtes en marche rapide : 6×1 min",
+      "focus": "Premières côtes, en marchant vite (power hiking) : c'est exactement le geste de la montagne. Pas d'accès montagne ? Une côte du quartier ou des escaliers, répétés.",
+      "is_race": false
+    },
+    {
+      "number": 4,
+      "date_label": "6 juil.",
+      "bloc": "allegee",
+      "long_run_label": "50 min souple · ~180 m D+",
+      "long_run_duration_min": 50,
+      "long_run_dplus_m": 180,
+      "long_run_distance_km": 6,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Footing souple continu 20 min",
+      "focus": "Semaine allégée : on assimile. Essaie 20 min de course continue très facile — ta première vraie sortie sans marcher. On récupère pour repartir plus fort.",
+      "is_race": false
+    },
+    {
+      "number": 5,
+      "date_label": "13 juil.",
+      "bloc": "base",
+      "long_run_label": "1h15 · ~9 km · 300 m D+",
+      "long_run_duration_min": 75,
+      "long_run_dplus_m": 300,
+      "long_run_distance_km": 9,
+      "sessions_per_week": 4,
+      "sessions_label": "3 → 4",
+      "quality_session": "Côtes : 6×30 s (course)",
+      "focus": "On passe à 4 séances : ton corps est prêt. La course devient continue sur le plat, marche dans les raidards. Le renfo du mardi devient régulier.",
+      "is_race": false
+    },
+    {
+      "number": 6,
+      "date_label": "20 juil.",
+      "bloc": "base",
+      "long_run_label": "1h25 · ~10 km · 350 m D+",
+      "long_run_duration_min": 85,
+      "long_run_dplus_m": 350,
+      "long_run_distance_km": 10,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Seuil doux : 2×6 min",
+      "focus": "Première descente travaillée en fin de longue : descends contrôlé sur 4-5 min cumulées (escaliers/côte douce), effort 5/10. C'est le début du blindage des cuisses.",
+      "is_race": false
+    },
+    {
+      "number": 7,
+      "date_label": "27 juil.",
+      "bloc": "developpement",
+      "long_run_label": "1h35 · ~12 km · 420 m D+",
+      "long_run_duration_min": 95,
+      "long_run_dplus_m": 420,
+      "long_run_distance_km": 12,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Côtes : 8×1 min",
+      "focus": "Le volume grimpe. Cumule le D+ en répétant tes côtes/escaliers — vise le total, pas une seule grande montée. Teste ta nutrition sur la longue.",
+      "is_race": false
+    },
+    {
+      "number": 8,
+      "date_label": "3 août",
+      "bloc": "allegee",
+      "long_run_label": "1h15 · ~9 km · 300 m D+",
+      "long_run_duration_min": 75,
+      "long_run_dplus_m": 300,
+      "long_run_distance_km": 9,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Footing souple + 4 lignes",
+      "focus": "Deuxième coupure : on encaisse la charge avant le gros bloc. Repos, sommeil, nutrition — la récup, c'est de l'entraînement aussi.",
+      "is_race": false
+    },
+    {
+      "number": 9,
+      "date_label": "10 août",
+      "bloc": "developpement",
+      "long_run_label": "1h50 · ~14 km · 480 m D+",
+      "long_run_duration_min": 110,
+      "long_run_dplus_m": 480,
+      "long_run_distance_km": 14,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "VMA courte : 6×2 min (récup 2 min)",
+      "focus": "On introduit la VMA : du rythme pour muscler le moteur. Sur la longue, descente plus marquée et contrôlée. Power hiking systématique au-delà de 15 % de pente.",
+      "is_race": false
+    },
+    {
+      "number": 10,
+      "date_label": "17 août",
+      "bloc": "pic",
+      "long_run_label": "2h05 · ~16 km · 560 m D+",
+      "long_run_duration_min": 125,
+      "long_run_dplus_m": 560,
+      "long_run_distance_km": 16,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Côtes longues : 5×2 min",
+      "focus": "Bloc clé. La sortie longue ressemble de plus en plus à la course. Gère la fatigue : dors bien, mange assez. Matériel testé en conditions réelles.",
+      "is_race": false
+    },
+    {
+      "number": 11,
+      "date_label": "24 août",
+      "bloc": "pic",
+      "long_run_label": "2h20 · ~18 km · 640 m D+",
+      "long_run_duration_min": 140,
+      "long_run_dplus_m": 640,
+      "long_run_distance_km": 18,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "VMA : 5×3 min (récup 3 min)",
+      "focus": "Plus longue sortie de la prépa en durée. Tu approches le D+ de la course : reste régulier, marche les montées raides sans culpabiliser. La gestion fera la course.",
+      "is_race": false
+    },
+    {
+      "number": 12,
+      "date_label": "31 août",
+      "bloc": "simulateur",
+      "long_run_label": "2h35 · ~20 km · 740 m D+ (simulation course)",
+      "long_run_duration_min": 155,
+      "long_run_dplus_m": 740,
+      "long_run_distance_km": 20,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Côtes longues : 6×2 min",
+      "focus": "Sortie choc : la répétition générale, le D+ complet de la course (~740 m). Descentes contrôlées — c'est ta DERNIÈRE grosse descente, elle te protège jusqu'au jour J. Valide chaussures, sac, nutrition.",
+      "is_race": false
+    },
+    {
+      "number": 13,
+      "date_label": "7 sept.",
+      "bloc": "affutage",
+      "long_run_label": "1h40 · ~12 km · 420 m D+",
+      "long_run_duration_min": 100,
+      "long_run_dplus_m": 420,
+      "long_run_distance_km": 12,
+      "sessions_per_week": 4,
+      "sessions_label": null,
+      "quality_session": "Seuil : 2×10 min (allure course)",
+      "focus": "Début d'affûtage : volume −40 %. Une dernière descente modérée et contrôlée, puis on protège les cuisses. Le gros du travail est derrière toi.",
+      "is_race": false
+    },
+    {
+      "number": 14,
+      "date_label": "14 sept.",
+      "bloc": "affutage",
+      "long_run_label": "1h10 · ~8 km · 250 m D+",
+      "long_run_duration_min": 70,
+      "long_run_dplus_m": 250,
+      "long_run_distance_km": 8,
+      "sessions_per_week": 3,
+      "sessions_label": null,
+      "quality_session": "Lignes + côtes courtes : 5×1 min vif",
+      "focus": "Affûtage profond : jambes qui se rechargent. On garde du tonus avec quelques côtes vives courtes, zéro fatigue. Prépare ta logistique de course.",
+      "is_race": false
+    },
+    {
+      "number": 15,
+      "date_label": "21 sept.",
+      "bloc": "affutage",
+      "long_run_label": "COURSE lundi 21 sept. — 20 km / 740 m D+",
+      "long_run_duration_min": 40,
+      "long_run_dplus_m": 120,
+      "long_run_distance_km": 20,
+      "sessions_per_week": 2,
+      "sessions_label": null,
+      "quality_session": "Activation : 5×20 s lignes (veille)",
+      "focus": "Le grand jour, AurelTest ! Pars très prudent (le D+ arrive vite), marche tous les raidards, lâche les descentes roulantes. Tu n'étais pas coureur il y a 15 semaines — savoure. Mange et bois régulièrement. Bonne course !",
+      "is_race": true
+    }
+  ],
+  "exercises": [
+    {
+      "order": 1,
+      "name": "Single-Leg RDL (soulevé roumain sur une jambe)",
+      "volume": "3 × 10 / jambe, tempo contrôlé",
+      "target": "Chaîne postérieure",
+      "rationale": "Priorité n°1 : tes ischios/fessiers, sous-développés vs tes quadriceps de calisthéniste. Te propulse en montée et protège le genou en descente."
+    },
+    {
+      "order": 2,
+      "name": "Step-downs lents (escaliers)",
+      "volume": "3 × 8 / jambe, descente 3-4 s",
+      "target": "Descente",
+      "rationale": "LE geste de la descente montagne : excentrique quadriceps qui évite le quad blowout sur les 740 m D−. Tes escaliers sont parfaits pour ça."
+    },
+    {
+      "order": 3,
+      "name": "Nordic curl à la bande",
+      "volume": "3 × 6, descente lente",
+      "target": "Ischios",
+      "rationale": "Avec ta bande : excentrique ischio puissant. Rééquilibre le ratio ischios/quadriceps (économie de course + prévention) que la calisthénie néglige souvent."
+    },
+    {
+      "order": 4,
+      "name": "Hip thrust / pont fessier sur une jambe",
+      "volume": "3 × 12 / jambe",
+      "target": "Fessiers",
+      "rationale": "Active les fessiers (propulsion) sans recharger les quadriceps déjà servis par la course et tes pistols. Clé anti-dominance quad."
+    },
+    {
+      "order": 5,
+      "name": "Calf raises + Tibialis raises",
+      "volume": "3 × 15 / jambe, tempo lent",
+      "target": "Cheville",
+      "rationale": "Cheville solide pour le terrain montagneux irrégulier : poussée (mollet) + absorption/contrôle (tibial). Prévient l'entorse et la périostite du débutant."
+    },
+    {
+      "order": 6,
+      "name": "Gainage : planche + relevés de genoux suspendu (barre)",
+      "volume": "3 × 40 s planche + 3 × 8 relevés",
+      "target": "Gainage",
+      "rationale": "Stabilité du tronc en descente technique (ton atout calisthénie à entretenir). La barre de traction sert aux relevés de genoux."
+    }
+  ]
+}
