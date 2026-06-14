@@ -168,23 +168,76 @@ export interface DaySession {
   key: string
 }
 
-/** Séance type selon le jour de la semaine (0 = dimanche). */
+/** Objectif chiffré d'une sortie : temps de course (min) et/ou distance (km). */
+export interface SessionTarget {
+  min: number | null
+  km: number | null
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, v))
+}
+
+/** Distance approx. d'un footing facile à partir de sa durée (~9 km/h sur sentier). */
+function easyKm(min: number): number {
+  return Math.round((min / 60) * 9)
+}
+
+/**
+ * **Objectif chiffré par sortie**, dérivé de la semaine (la sortie longue est l'unique séance
+ * chiffrée du programme ; les autres s'échelonnent sur sa durée). Donne du sens à chaque jour :
+ * un temps de course (et une distance quand elle a du sens). `null` = pas d'objectif (repos).
+ */
+export function sessionTarget(sessKey: string, w: PlanWeek): SessionTarget {
+  switch (sessKey) {
+    case "longue":
+      return { min: w.duree, km: w.dist }
+    case "renfo": {
+      // Footing court après le circuit.
+      const min = clamp(Math.round(w.duree * 0.3), 20, 30)
+      return { min, km: easyKm(min) }
+    }
+    case "qual":
+      // Séance d'intensité : objectif en temps total (échauffement + travail + retour au calme).
+      return { min: clamp(Math.round(w.duree * 0.55), 30, 60), km: null }
+    case "easy": {
+      const min = clamp(Math.round(w.duree * 0.45), 20, 45)
+      return { min, km: easyKm(min) }
+    }
+    case "easyW": {
+      const min = clamp(Math.round(w.duree * 0.55), 25, 55)
+      return { min, km: easyKm(min) }
+    }
+    default:
+      return { min: null, km: null }
+  }
+}
+
+/** Séance type selon le jour de la semaine (0 = dimanche), avec son objectif chiffré. */
 export function sessionForDay(d: number, w: PlanWeek): DaySession {
   switch (d) {
     case 0:
       return { type: "Sortie longue", detail: w.longue, tag: "Endurance", col: "var(--moss)", key: "longue" }
     case 1:
       return { type: "Repos", detail: "Mobilité, étirements légers. On laisse le corps assimiler.", tag: "Récup", col: "var(--muted)", key: "repos1" }
-    case 2:
-      return { type: "Renfo + footing", detail: "Circuit 6 exos · 2–3 tours, puis 20–30 min footing facile.", tag: "Force", col: "var(--sky)", key: "renfo" }
-    case 3:
-      return { type: "Footing court", detail: "30–40 min très facile, optionnel selon la forme.", tag: "Souple", col: "var(--muted)", key: "easy" }
-    case 4:
-      return { type: "Séance qualité", detail: w.qual, tag: "Intensité", col: "var(--accent)", key: "qual" }
+    case 2: {
+      const t = sessionTarget("renfo", w)
+      return { type: "Renfo + footing", detail: `Circuit 6 exos · 2–3 tours, puis ~${t.min} min de footing facile (~${t.km} km), allure conversation.`, tag: "Force", col: "var(--sky)", key: "renfo" }
+    }
+    case 3: {
+      const t = sessionTarget("easy", w)
+      return { type: "Footing court", detail: `~${t.min} min très facile (~${t.km} km), allure conversation. Optionnel selon la forme.`, tag: "Souple", col: "var(--muted)", key: "easy" }
+    }
+    case 4: {
+      const t = sessionTarget("qual", w)
+      return { type: "Séance qualité", detail: `${w.qual} · ~${t.min} min en tout (échauffement + retour au calme inclus).`, tag: "Intensité", col: "var(--accent)", key: "qual" }
+    }
     case 5:
       return { type: "Repos", detail: "Récupération avant le week-end de volume.", tag: "Récup", col: "var(--muted)", key: "repos5" }
-    default:
-      return { type: "Footing libre", detail: "40–50 min en nature, allure facile, plaisir.", tag: "Souple", col: "var(--moss)", key: "easyW" }
+    default: {
+      const t = sessionTarget("easyW", w)
+      return { type: "Footing libre", detail: `~${t.min} min en nature (~${t.km} km), allure facile, plaisir.`, tag: "Souple", col: "var(--moss)", key: "easyW" }
+    }
   }
 }
 
@@ -221,17 +274,14 @@ export function kmKeyFor(week: number, sessKey: string): string {
   return sessKey === "renfo" ? `${week}-renfoRun` : `${week}-${sessKey}`
 }
 
-/** Distance prévue (km) d'une séance, si connue. */
+/** Distance prévue (km) d'une séance, si pertinente (cf. `sessionTarget`). */
 export function plannedKmFor(sessKey: string, w: PlanWeek): number | null {
-  if (sessKey === "longue") return w.dist
-  if (sessKey === "renfo") return 5
-  return null
+  return sessionTarget(sessKey, w).km
 }
 
-/** Durée prévue (minutes) d'une séance, si connue (seule la sortie longue est chiffrée dans le plan). */
+/** Durée prévue (minutes) d'une séance, si pertinente (cf. `sessionTarget`). */
 export function plannedMinFor(sessKey: string, w: PlanWeek): number | null {
-  if (sessKey === "longue") return w.duree
-  return null
+  return sessionTarget(sessKey, w).min
 }
 
 export interface WeekDay {
@@ -275,7 +325,7 @@ export function keySessions(w: PlanWeek): KeySession[] {
       kind: "renfo",
       detail: "",
       planned: null,
-      footing: "Puis 20–30 min de footing facile, sur jambes fatiguées — pas de côtes, allure conversation.",
+      footing: "Footing facile sur jambes fatiguées — pas de côtes, allure conversation.",
     },
     {
       key: "qual",

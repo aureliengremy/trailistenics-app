@@ -30,7 +30,7 @@ interface WeekDaysProps {
 }
 
 const RENFO_FOOTING =
-  "Puis 20–30 min de footing facile, sur jambes fatiguées — pas de côtes, allure conversation."
+  "Footing facile sur jambes fatiguées — pas de côtes, allure conversation."
 
 /**
  * Accordéon jour-par-jour d'une semaine (lundi → dimanche), pour l'onglet « Le plan ».
@@ -82,7 +82,7 @@ export function WeekDays({ w, exercises, prog, openDow, variant = "d", onOpenRen
                   <div className="sess-footing">
                     <div className="sess-footing-h">Puis · footing court</div>
                     <div className="sess-body-note">{RENFO_FOOTING}</div>
-                    <KmField prog={prog} dkey={kk} plannedKm={plannedKmFor("renfo", w)} />
+                    <KmField prog={prog} dkey={kk} plannedKm={plannedKmFor("renfo", w)} plannedMin={plannedMinFor("renfo", w)} />
                   </div>
                 </>
               ) : isRest ? (

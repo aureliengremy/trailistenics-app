@@ -288,7 +288,7 @@ function Today({ plan, prog, go, openRenfo }: ScreenProps) {
                       <div className="sess-footing">
                         <div className="sess-footing-h">Puis · footing court</div>
                         <div className="sess-body-note">{s.footing}</div>
-                        <KmField prog={prog} dkey={`${cur}-renfoRun`} plannedKm={5} />
+                        <KmField prog={prog} dkey={`${cur}-renfoRun`} plannedKm={plannedKmFor("renfo", w)} plannedMin={plannedMinFor("renfo", w)} />
                       </div>
                     )}
                   </>
