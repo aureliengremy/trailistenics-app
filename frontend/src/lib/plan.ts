@@ -130,15 +130,25 @@ export function weekStartDate(n: number): Date {
   return new Date(planStart.getTime() + (n - 1) * 7 * 864e5)
 }
 
-/**
- * Libellé du **premier jour (lundi)** de la semaine n, ex. « 1 juin ».
- * On recale sur le lundi même si l'ancrage tombe un autre jour (start_date = mardi).
- */
-export function weekStartLabel(n: number): string {
+/** Lundi (premier jour) de la semaine n, recalé sur le lundi même si l'ancrage tombe un autre jour. */
+export function weekMonday(n: number): Date {
   const d = weekStartDate(n)
   const backToMonday = (d.getDay() + 6) % 7 // 0=dim … 6=sam → recul jusqu'au lundi
-  const monday = new Date(d.getTime() - backToMonday * 864e5)
+  return new Date(d.getTime() - backToMonday * 864e5)
+}
+
+/**
+ * Libellé du **premier jour (lundi)** de la semaine n, ex. « 1 juin ».
+ */
+export function weekStartLabel(n: number): string {
+  const monday = weekMonday(n)
   return `${monday.getDate()} ${MONTHS_SHORT[monday.getMonth()]}`
+}
+
+/** Date calendaire du jour `dow` (0=dim … 6=sam) dans la semaine n. */
+export function weekDayDate(n: number, dow: number): Date {
+  const offset = (dow + 6) % 7 // lundi=0 … dimanche=6
+  return new Date(weekMonday(n).getTime() + offset * 864e5)
 }
 
 /** Mois (0–11) de la semaine n. */

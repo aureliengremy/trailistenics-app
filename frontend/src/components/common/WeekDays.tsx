@@ -13,6 +13,7 @@ import {
   plannedKmFor,
   plannedMinFor,
   RENFO_DOW,
+  weekDayDate,
   weekDays,
 } from "@/lib/plan"
 
@@ -56,7 +57,7 @@ export function WeekDays({ w, exercises, prog, openDow, variant = "d", onOpenRen
           <div key={dow} style={{ display: "contents" }}>
             <SessionCard
               color={sess.col}
-              day={name}
+              day={`${name} ${weekDayDate(w.n, dow).getDate()}`}
               label={sess.type}
               summary={summary}
               defaultOpen={dow === openDow}
@@ -120,7 +121,7 @@ export function WeekDays({ w, exercises, prog, openDow, variant = "d", onOpenRen
                 sessKey={key}
                 w={w}
                 dow={dow}
-                dayLabel={name}
+                dayLabel={`${name} ${weekDayDate(w.n, dow).getDate()}`}
                 prog={prog}
                 exercises={exercises}
                 defaultOpen={dow === openDow}
