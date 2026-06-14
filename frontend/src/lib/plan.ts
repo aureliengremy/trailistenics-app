@@ -73,14 +73,15 @@ export interface ChartMetric {
   label: string
   short: string
   unit: string
-  field: "duree" | "dpos" | "sea"
+  field: "duree" | "dist" | "dpos" | "sea"
   max: number
   color: string
 }
-export type MetricKey = "duree" | "denivele" | "seances"
+export type MetricKey = "duree" | "distance" | "denivele" | "seances"
 
 export const CHART_METRICS: ChartMetric[] = [
   { key: "duree", label: "Durée de la sortie longue", short: "Durée longue", unit: "min", field: "duree", max: 160, color: "#7ba05b" },
+  { key: "distance", label: "Distance de la sortie longue", short: "Distance longue", unit: "km", field: "dist", max: 22, color: "#c2562e" },
   { key: "denivele", label: "Dénivelé positif sur la longue", short: "Dénivelé D+", unit: "m D+", field: "dpos", max: 780, color: "#d98a3d" },
   { key: "seances", label: "Nombre de séances", short: "Volume hebdo", unit: "séances", field: "sea", max: 5, color: "#6fa8c4" },
 ]

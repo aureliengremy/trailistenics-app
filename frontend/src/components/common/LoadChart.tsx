@@ -33,6 +33,10 @@ function realizedFor(field: ChartMetric["field"], w: PlanWeek, s: ProgressState)
     const v = s.dur[`${w.n}-longue`]
     return v != null ? v : null
   }
+  if (field === "dist") {
+    const v = s.km[`${w.n}-longue`]
+    return v != null ? v : null
+  }
   if (field === "dpos") {
     return s.sessions[`${w.n}-longue`] ? w.dpos : null
   }
@@ -72,7 +76,7 @@ interface LoadChartProps {
 export function LoadChart({ weeks, metric, height, showY = true, sparseX = false, prog }: LoadChartProps) {
   const points: Point[] = weeks.map((w) => ({
     label: `S${w.n}`,
-    value: w[metric.field],
+    value: w[metric.field] ?? 0,
     realized: prog ? realizedFor(metric.field, w, prog.s) : null,
     w,
   }))
@@ -194,7 +198,7 @@ function TipContent({
         Semaine {w.n} · {w.date}
       </div>
       <div style={{ fontFamily: "Fraunces", fontWeight: 900, fontSize: 22, margin: "2px 0", color: "var(--ink)" }}>
-        {w[metric.field]}{" "}
+        {w[metric.field] ?? 0}{" "}
         <span style={{ fontSize: 12, fontFamily: "Archivo", fontWeight: 500, color: "var(--muted)" }}>
           {metric.unit} prévu
         </span>
