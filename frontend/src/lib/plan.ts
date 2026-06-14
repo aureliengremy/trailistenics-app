@@ -217,6 +217,12 @@ export function plannedKmFor(sessKey: string, w: PlanWeek): number | null {
   return null
 }
 
+/** Durée prévue (minutes) d'une séance, si connue (seule la sortie longue est chiffrée dans le plan). */
+export function plannedMinFor(sessKey: string, w: PlanWeek): number | null {
+  if (sessKey === "longue") return w.duree
+  return null
+}
+
 export interface WeekDay {
   dow: number
   name: string

@@ -12,6 +12,7 @@ import { KmField } from "@/components/common/KmField"
 import { LoadChart } from "@/components/common/LoadChart"
 import { RealizedBars } from "@/components/common/RealizedBars"
 import { RestTimer } from "@/components/common/RestTimer"
+import { RenfoActions } from "@/components/common/RenfoActions"
 import { Ring } from "@/components/common/Ring"
 import { SaveButton } from "@/components/common/SaveButton"
 import { SessionCard } from "@/components/common/SessionCard"
@@ -35,6 +36,7 @@ import {
   type MetricKey,
   PLANNED_DOW,
   plannedKmFor,
+  plannedMinFor,
   RENFO_DOW,
   sessionForDay,
   tint,
@@ -52,6 +54,8 @@ interface ScreenProps {
   plan: PlanData
   prog: ProgressApi
   go: (t: TabId) => void
+  /** Ouvre l'onglet Renfo focalisé sur la semaine `week` (jour mardi). */
+  openRenfo: (week: number) => void
 }
 
 const NAV: { id: TabId; label: string }[] = [
@@ -85,6 +89,16 @@ export function DesktopApp({
   onLogout: () => void
 }) {
   const [tab, setTab] = useState<TabId>("today")
+  // Semaine ciblée par l'onglet Renfo (null = semaine en cours). Réglée par « Ouvrir la page Renfo ».
+  const [renfoWeek, setRenfoWeek] = useState<number | null>(null)
+  const go = (t: TabId) => {
+    if (t === "renfo") setRenfoWeek(null)
+    setTab(t)
+  }
+  const openRenfo = (week: number) => {
+    setRenfoWeek(week)
+    setTab("renfo")
+  }
   const today = new Date()
   const cur = currentWeek(today)
   const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
@@ -108,7 +122,7 @@ export function DesktopApp({
             <button
               key={item.id}
               className={"d-navitem" + (tab === item.id ? " on" : "")}
-              onClick={() => setTab(item.id)}
+              onClick={() => go(item.id)}
             >
               <NavIcon name={item.id} on={tab === item.id} />
               <span>{item.label}</span>
@@ -152,10 +166,17 @@ export function DesktopApp({
           </div>
         </header>
         <div className="d-content">
-          {tab === "today" && <Today plan={plan} prog={prog} go={setTab} />}
-          {tab === "plan" && <Plan plan={plan} prog={prog} go={setTab} />}
-          {tab === "renfo" && <Renfo plan={plan} prog={prog} go={setTab} />}
-          {tab === "progres" && <Progres plan={plan} prog={prog} go={setTab} />}
+          {tab === "today" && <Today plan={plan} prog={prog} go={go} openRenfo={openRenfo} />}
+          {tab === "plan" && <Plan plan={plan} prog={prog} go={go} openRenfo={openRenfo} />}
+          {tab === "renfo" && (
+            <Renfo
+              plan={plan}
+              prog={prog}
+              week={renfoWeek ?? cur}
+              focusMardi={renfoWeek != null}
+            />
+          )}
+          {tab === "progres" && <Progres plan={plan} prog={prog} go={go} openRenfo={openRenfo} />}
           {tab === "admin" && <AdminView />}
         </div>
       </main>
@@ -164,7 +185,7 @@ export function DesktopApp({
 }
 
 /* ---------- AUJOURD'HUI ---------- */
-function Today({ plan, prog, go }: ScreenProps) {
+function Today({ plan, prog, go, openRenfo }: ScreenProps) {
   const today = new Date()
   const cur = currentWeek(today)
   const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
@@ -188,6 +209,12 @@ function Today({ plan, prog, go }: ScreenProps) {
           </span>
           <div className="d-today-type">{sess.type}</div>
           <div className="d-today-detail">{sess.detail}</div>
+          {sess.key === "renfo" && (
+            <div className="d-today-renfo">
+              <div className="renfo-h">Renforcement à faire</div>
+              <ExerciseChecklist exercises={plan.exercises} prog={prog} week={cur} readOnly />
+            </div>
+          )}
           <div className="d-today-actions">
             {!movedAway && (
               <button
@@ -200,20 +227,23 @@ function Today({ plan, prog, go }: ScreenProps) {
                     : "Pas été sage ? J'ai quand même couru"
                   : todayDone
                     ? "✓ Séance terminée"
-                    : "Marquer comme terminée"}
+                    : sess.key === "renfo"
+                      ? "Valider le renfo"
+                      : "Marquer comme terminée"}
               </button>
             )}
             {sess.key === "renfo" && (
-              <button className="d-btn ghost" onClick={() => go("renfo")}>
-                Ouvrir le circuit ›
+              <button className="d-btn open-renfo" onClick={() => openRenfo(cur)}>
+                Ouvrir la page Renfo ›
               </button>
             )}
           </div>
           {!movedAway && (!isRest || todayDone) && (
             <KmField
-              planned={plannedKmFor(sess.key, w)}
-              value={prog.s.km[todayKm]}
-              onChange={(v) => prog.setKm(todayKm, v)}
+              prog={prog}
+              dkey={todayKm}
+              plannedKm={plannedKmFor(sess.key, w)}
+              plannedMin={plannedMinFor(sess.key, w)}
             />
           )}
           {!isRest && <MoveControls sk={todayKey} fromDow={dow} prog={prog} />}
@@ -236,30 +266,39 @@ function Today({ plan, prog, go }: ScreenProps) {
                   movedTo != null ? `→ Reportée à ${DAY_NAMES[movedTo].toLowerCase()}` : s.summary
                 }
                 done={!!prog.s.sessions[sk]}
-                onToggleDone={() => prog.toggleSession(sk)}
+                onToggleDone={() =>
+                  s.kind === "renfo"
+                    ? prog.setRenfoComplete(cur, plan.exercises.length, !prog.s.sessions[sk])
+                    : prog.toggleSession(sk)
+                }
                 defaultOpen={sess.key === s.key}
               >
                 {s.kind === "renfo" ? (
                   <>
-                    <ExerciseChecklist exercises={plan.exercises} prog={prog} week={cur} />
+                    <div className="renfo-h">Renforcement à faire</div>
+                    <ExerciseChecklist exercises={plan.exercises} prog={prog} week={cur} readOnly />
+                    <RenfoActions
+                      week={cur}
+                      prog={prog}
+                      variant="d"
+                      exerciseCount={plan.exercises.length}
+                      onOpenRenfo={() => openRenfo(cur)}
+                    />
                     {s.footing && (
                       <div className="sess-footing">
                         <div className="sess-footing-h">Puis · footing court</div>
                         <div className="sess-body-note">{s.footing}</div>
-                        <KmField
-                          planned={5}
-                          value={prog.s.km[`${cur}-renfoRun`]}
-                          onChange={(v) => prog.setKm(`${cur}-renfoRun`, v)}
-                        />
+                        <KmField prog={prog} dkey={`${cur}-renfoRun`} plannedKm={5} />
                       </div>
                     )}
                   </>
                 ) : (
                   <>
                     <KmField
-                      planned={s.planned}
-                      value={prog.s.km[sk]}
-                      onChange={(v) => prog.setKm(sk, v)}
+                      prog={prog}
+                      dkey={sk}
+                      plannedKm={s.planned}
+                      plannedMin={plannedMinFor(s.key, w)}
                     />
                     <div className="sess-body-note">{s.detail}</div>
                   </>
@@ -317,7 +356,7 @@ function Today({ plan, prog, go }: ScreenProps) {
 }
 
 /* ---------- PLAN ---------- */
-function Plan({ plan, prog }: ScreenProps) {
+function Plan({ plan, prog, openRenfo }: ScreenProps) {
   const cur = currentWeek()
   const dow = new Date().getDay()
   const [sel, setSel] = useState(cur)
@@ -390,7 +429,7 @@ function Plan({ plan, prog }: ScreenProps) {
         <div className="d-label" style={{ marginTop: 4 }}>
           La semaine jour par jour
         </div>
-        <WeekDays w={w} exercises={plan.exercises} prog={prog} openDow={w.n === cur ? dow : RENFO_DOW} />
+        <WeekDays w={w} exercises={plan.exercises} prog={prog} openDow={w.n === cur ? dow : RENFO_DOW} variant="d" onOpenRenfo={() => openRenfo(w.n)} />
         <div className="d-detail-foot">
           <div className="d-pager">
             <button disabled={sel <= 1} onClick={() => setSel(sel - 1)} aria-label="Semaine précédente">
@@ -407,11 +446,21 @@ function Plan({ plan, prog }: ScreenProps) {
 }
 
 /* ---------- RENFO ---------- */
-function Renfo({ plan, prog }: ScreenProps) {
-  const cur = currentWeek()
+function Renfo({
+  plan,
+  prog,
+  week,
+  focusMardi,
+}: {
+  plan: PlanData
+  prog: ProgressApi
+  week: number
+  focusMardi: boolean
+}) {
+  const cur = week
   const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
   const todayDow = new Date().getDay()
-  const [day, setDay] = useState(todayDow)
+  const [day, setDay] = useState(focusMardi ? RENFO_DOW : todayDow)
   const isRenfoDay = day === RENFO_DOW
   const sess = sessionForDay(day, w)
   const done = plan.exercises.filter((_, i) => prog.s.ex[exKey(cur, i)]).length
@@ -432,7 +481,7 @@ function Renfo({ plan, prog }: ScreenProps) {
                 const on = !!prog.s.ex[exKey(cur, i)]
                 return (
                   <div key={i} className="d-ex-row">
-                    <button className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(cur, i)}>
+                    <button className={"d-ex" + (on ? " on" : "")} onClick={() => prog.toggleEx(cur, i, plan.exercises.length)}>
                       <span className="d-ex-idx">{on ? <CheckMark size={16} color="var(--bg)" /> : i + 1}</span>
                       <div className="d-ex-mid">
                         <div className="d-ex-t">
@@ -462,9 +511,10 @@ function Renfo({ plan, prog }: ScreenProps) {
               {!isRestKey(sess.key) && (
                 <div style={{ marginTop: 14 }}>
                   <KmField
-                    planned={sess.key === "longue" ? w.dist : null}
-                    value={prog.s.km[`${cur}-${sess.key}`]}
-                    onChange={(v) => prog.setKm(`${cur}-${sess.key}`, v)}
+                    prog={prog}
+                    dkey={`${cur}-${sess.key}`}
+                    plannedKm={plannedKmFor(sess.key, w)}
+                    plannedMin={plannedMinFor(sess.key, w)}
                   />
                 </div>
               )}
@@ -625,7 +675,7 @@ function Progres({ plan, prog }: ScreenProps) {
           </div>
         </div>
         <div className="d-chart-wrap">
-          <LoadChart weeks={plan.weeks} metric={metric} height={360} />
+          <LoadChart weeks={plan.weeks} metric={metric} height={360} prog={prog} />
         </div>
       </div>
     </div>

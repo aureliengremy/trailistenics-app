@@ -65,13 +65,13 @@ export function BonusSection({ week, prog }: { week: number; prog: ProgressApi }
             ))}
           </div>
           <input
-            className="bonus-in"
+            className={"bonus-in" + (type.trim() ? " filled" : "")}
             value={type}
             onChange={(e) => setType(e.target.value)}
             placeholder="Type (course, vélo, renfo…)"
             aria-label="Type de séance"
           />
-          <label className="bonus-km-in">
+          <label className={"bonus-km-in" + (km.trim() ? " filled" : "")}>
             <input
               type="number"
               inputMode="decimal"

@@ -18,6 +18,8 @@ export interface ProgressState {
   sessions: Record<string, boolean>
   /** Kilomètres réalisés, clé `${semaine}-${séance}` (ex. "1-longue"). */
   km: Record<string, number>
+  /** Durée réalisée (minutes), même clé que `km` (ex. "1-longue"). */
+  dur: Record<string, number>
   /** Séances bonus, clé = id unique. */
   bonus: Record<string, BonusSession>
   /** Séances reportées à un autre jour, clé `${semaine}-${séance}` → jour cible (0–6). */
@@ -41,9 +43,14 @@ export interface ProgressApi {
   /** Force un enregistrement immédiat en base (bouton « disquette »). */
   syncNow: () => void
   toggleWeek: (n: number) => void
-  toggleEx: (week: number, i: number) => void
+  /** Coche/décoche un exercice renfo ; synchronise le drapeau séance `${week}-renfo` (= tous cochés). */
+  toggleEx: (week: number, i: number, total: number) => void
+  /** Valide/invalide tout le renfo d'un coup (tous les exercices + le drapeau séance). */
+  setRenfoComplete: (week: number, total: number, complete: boolean) => void
   toggleSession: (k: string) => void
   setKm: (k: string, val: number | null) => void
+  /** Durée réalisée (minutes) d'une séance ; `null` efface. */
+  setDur: (k: string, val: number | null) => void
   /** Reporte une séance au jour `dow` (0–6) ; `null` annule le report. */
   setMoved: (k: string, dow: number | null) => void
   resetEx: (week: number) => void
@@ -64,6 +71,7 @@ function normalize(v: Partial<ProgressState> | null | undefined): ProgressState 
     ex: v?.ex ?? {},
     sessions: v?.sessions ?? {},
     km: v?.km ?? {},
+    dur: v?.dur ?? {},
     bonus: v?.bonus ?? {},
     moved: v?.moved ?? {},
   }
@@ -86,7 +94,7 @@ function saveLocal(key: string, s: ProgressState): void {
 }
 
 function hasData(s: ProgressState): boolean {
-  return [s.weeks, s.ex, s.sessions, s.km, s.bonus, s.moved].some(
+  return [s.weeks, s.ex, s.sessions, s.km, s.dur, s.bonus, s.moved].some(
     (m) => Object.keys(m).length > 0,
   )
 }
@@ -221,10 +229,21 @@ export function useProgress(userId: string | null): ProgressApi {
     syncStatus,
     syncNow,
     toggleWeek: (n) => setS((p) => ({ ...p, weeks: { ...p.weeks, [n]: !p.weeks[n] } })),
-    toggleEx: (week, i) =>
+    toggleEx: (week, i, total) =>
       setS((p) => {
         const k = exKey(week, i)
-        return { ...p, ex: { ...p.ex, [k]: !p.ex[k] } }
+        const ex = { ...p.ex, [k]: !p.ex[k] }
+        const allDone = total > 0 && Array.from({ length: total }).every((_, j) => ex[exKey(week, j)])
+        return { ...p, ex, sessions: { ...p.sessions, [`${week}-renfo`]: allDone } }
+      }),
+    setRenfoComplete: (week, total, complete) =>
+      setS((p) => {
+        const ex = { ...p.ex }
+        for (let i = 0; i < total; i++) {
+          if (complete) ex[exKey(week, i)] = true
+          else delete ex[exKey(week, i)]
+        }
+        return { ...p, ex, sessions: { ...p.sessions, [`${week}-renfo`]: complete } }
       }),
     toggleSession: (k) => setS((p) => ({ ...p, sessions: { ...p.sessions, [k]: !p.sessions[k] } })),
     setKm: (k, val) =>
@@ -233,6 +252,13 @@ export function useProgress(userId: string | null): ProgressApi {
         if (val == null || Number.isNaN(val)) delete km[k]
         else km[k] = val
         return { ...p, km }
+      }),
+    setDur: (k, val) =>
+      setS((p) => {
+        const dur = { ...p.dur }
+        if (val == null || Number.isNaN(val)) delete dur[k]
+        else dur[k] = val
+        return { ...p, dur }
       }),
     setMoved: (k, dow) =>
       setS((p) => {
@@ -245,7 +271,9 @@ export function useProgress(userId: string | null): ProgressApi {
       setS((p) => {
         const ex = { ...p.ex }
         for (let i = 0; i < 6; i++) delete ex[exKey(week, i)]
-        return { ...p, ex }
+        const sessions = { ...p.sessions }
+        delete sessions[`${week}-renfo`]
+        return { ...p, ex, sessions }
       }),
     addBonus: (b) =>
       setS((p) => {
@@ -258,6 +286,6 @@ export function useProgress(userId: string | null): ProgressApi {
         delete bonus[id]
         return { ...p, bonus }
       }),
-    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, bonus: {}, moved: {} }),
+    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, dur: {}, bonus: {}, moved: {} }),
   }
 }

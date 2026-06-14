@@ -30,27 +30,48 @@ export function ExerciseLinks({ order, name, variant }: ExerciseLinksProps) {
 
   return (
     <div className={`${variant}-ex-links`}>
-      <button type="button" className={`${variant}-ex-link`} onClick={() => setMode("images")}>
-        <ImageIcon size={14} /> Image
+      <button
+        type="button"
+        className={`${variant}-ex-link`}
+        onClick={() => setMode("images")}
+        aria-label={`Voir des images de ${name}`}
+        title="Voir des images"
+      >
+        <ImageIcon size={16} />
+        <span className="ex-link-label">Image</span>
       </button>
-      <button type="button" className={`${variant}-ex-link`} onClick={() => setMode("video")}>
-        <Play size={14} /> Vidéo
+      <button
+        type="button"
+        className={`${variant}-ex-link`}
+        onClick={() => setMode("video")}
+        aria-label={`Voir une vidéo de ${name}`}
+        title="Voir une vidéo"
+      >
+        <Play size={16} />
+        <span className="ex-link-label">Vidéo</span>
       </button>
 
       <Modal open={mode === "images"} onClose={() => setMode(null)} title={name}>
-        <div className="modal-gallery">
-          {media.images.map((src, i) => (
-            <img
-              key={i}
-              src={src}
-              alt={`${name} — vue ${i + 1}`}
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.style.display = "none"
-              }}
-            />
-          ))}
-        </div>
+        {media.images.length > 0 ? (
+          <div className="modal-gallery">
+            {media.images.map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt={`${name} — vue ${i + 1}`}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none"
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="modal-note">
+            Pas d'aperçu intégré au poids du corps pour cet exercice — ouvre la recherche d'images
+            ci-dessous (filtrée « sans matériel »).
+          </p>
+        )}
         <a className="modal-ext" href={imagesSearchUrl(media.query)} target="_blank" rel="noreferrer">
           Ouvrir dans Google Images ↗
         </a>

@@ -1,7 +1,8 @@
 import {
   Area,
-  AreaChart,
   CartesianGrid,
+  ComposedChart,
+  Line,
   ReferenceArea,
   ResponsiveContainer,
   Tooltip,
@@ -10,12 +11,34 @@ import {
   type TooltipProps,
 } from "recharts"
 
+import type { ProgressApi, ProgressState } from "@/hooks/useProgress"
 import { type ChartMetric, type PlanWeek, pointColor } from "@/lib/plan"
 
 interface Point {
   label: string
   value: number
+  realized: number | null
   w: PlanWeek
+}
+
+/**
+ * Valeur **réalisée** d'une semaine pour la métrique courante, à partir des chiffres saisis :
+ * - durée → durée de la sortie longue saisie (min) ;
+ * - dénivelé → D+ prévu si la sortie longue est validée (pas de saisie de D+) ;
+ * - séances → nombre de séances cochées dans la semaine.
+ * `null` quand rien n'est réalisé (la ligne s'interrompt proprement).
+ */
+function realizedFor(field: ChartMetric["field"], w: PlanWeek, s: ProgressState): number | null {
+  if (field === "duree") {
+    const v = s.dur[`${w.n}-longue`]
+    return v != null ? v : null
+  }
+  if (field === "dpos") {
+    return s.sessions[`${w.n}-longue`] ? w.dpos : null
+  }
+  // seances : nombre de séances cochées cette semaine
+  const n = Object.entries(s.sessions).filter(([k, v]) => v && k.startsWith(`${w.n}-`)).length
+  return n > 0 ? n : null
 }
 
 /** Plages contiguës de semaines pic/simulateur (bande rouille de fond). */
@@ -42,20 +65,33 @@ interface LoadChartProps {
   showY?: boolean
   /** Affiche une étiquette X sur deux (mobile compact). */
   sparseX?: boolean
+  /** Si fourni, trace une seconde courbe « réalisé » (chiffres saisis) + légende. */
+  prog?: ProgressApi
 }
 
-export function LoadChart({ weeks, metric, height, showY = true, sparseX = false }: LoadChartProps) {
+export function LoadChart({ weeks, metric, height, showY = true, sparseX = false, prog }: LoadChartProps) {
   const points: Point[] = weeks.map((w) => ({
     label: `S${w.n}`,
     value: w[metric.field],
+    realized: prog ? realizedFor(metric.field, w, prog.s) : null,
     w,
   }))
   const ranges = heavyRanges(points)
 
   return (
     <div className="chart-host" style={{ height }}>
+      {prog && (
+        <div className="chart-legend">
+          <span className="chart-leg">
+            <span className="chart-leg-line" style={{ background: metric.color }} /> Prévu
+          </span>
+          <span className="chart-leg">
+            <span className="chart-leg-line dashed" /> Réalisé
+          </span>
+        </div>
+      )}
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={points} margin={{ top: 14, right: 10, left: showY ? -6 : 4, bottom: 4 }}>
+        <ComposedChart data={points} margin={{ top: 14, right: 10, left: showY ? -6 : 4, bottom: 4 }}>
           <defs>
             <linearGradient id={`grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={metric.color} stopOpacity={0.3} />
@@ -85,7 +121,7 @@ export function LoadChart({ weeks, metric, height, showY = true, sparseX = false
               width={38}
             />
           )}
-          <Tooltip cursor={{ stroke: "var(--line)" }} content={<TipContent metric={metric} />} />
+          <Tooltip cursor={{ stroke: "var(--line)" }} content={<TipContent metric={metric} showRealized={!!prog} />} />
 
           <Area
             type="monotone"
@@ -98,7 +134,22 @@ export function LoadChart({ weeks, metric, height, showY = true, sparseX = false
             isAnimationActive
             animationDuration={600}
           />
-        </AreaChart>
+
+          {prog && (
+            <Line
+              type="monotone"
+              dataKey="realized"
+              stroke="var(--ink)"
+              strokeWidth={2}
+              strokeDasharray="5 4"
+              dot={{ r: 3, fill: "var(--ink)", strokeWidth: 0 }}
+              activeDot={{ r: 5, stroke: "var(--panel)", strokeWidth: 2 }}
+              connectNulls={false}
+              isAnimationActive
+              animationDuration={600}
+            />
+          )}
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   )
@@ -119,7 +170,12 @@ function BlocDot(props: { cx?: number; cy?: number; payload?: Point }) {
   )
 }
 
-function TipContent({ metric, active, payload }: TooltipProps<number, string> & { metric: ChartMetric }) {
+function TipContent({
+  metric,
+  showRealized,
+  active,
+  payload,
+}: TooltipProps<number, string> & { metric: ChartMetric; showRealized: boolean }) {
   if (!active || !payload || payload.length === 0) return null
   const p = payload[0].payload as Point
   const w = p.w
@@ -140,10 +196,15 @@ function TipContent({ metric, active, payload }: TooltipProps<number, string> & 
       <div style={{ fontFamily: "Fraunces", fontWeight: 900, fontSize: 22, margin: "2px 0", color: "var(--ink)" }}>
         {w[metric.field]}{" "}
         <span style={{ fontSize: 12, fontFamily: "Archivo", fontWeight: 500, color: "var(--muted)" }}>
-          {metric.unit}
+          {metric.unit} prévu
         </span>
       </div>
-      <div style={{ fontSize: 12, fontWeight: 700, color: pointColor(w) }}>{w.bloc}</div>
+      {showRealized && (
+        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--ink)" }}>
+          {p.realized != null ? `${p.realized} ${metric.unit} réalisé` : "— non réalisé"}
+        </div>
+      )}
+      <div style={{ fontSize: 12, fontWeight: 700, color: pointColor(w), marginTop: 2 }}>{w.bloc}</div>
     </div>
   )
 }

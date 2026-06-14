@@ -1,5 +1,6 @@
 import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
 import { KmField } from "@/components/common/KmField"
+import { RenfoActions } from "@/components/common/RenfoActions"
 import { SessionCard } from "@/components/common/SessionCard"
 import { ArrivalCard, arrivalsForDay, MoveControls } from "@/components/common/SessionMove"
 import type { ProgressApi } from "@/hooks/useProgress"
@@ -10,6 +11,7 @@ import {
   type PlanExercise,
   type PlanWeek,
   plannedKmFor,
+  plannedMinFor,
   RENFO_DOW,
   weekDays,
 } from "@/lib/plan"
@@ -20,6 +22,10 @@ interface WeekDaysProps {
   prog: ProgressApi
   /** Jour ouvert par défaut (0 = dimanche). */
   openDow?: number
+  /** Variante de style des boutons (desktop/mobile). */
+  variant?: "d" | "m"
+  /** Si fourni, affiche un bouton « Ouvrir la page Renfo » dans la journée renfo. */
+  onOpenRenfo?: () => void
 }
 
 const RENFO_FOOTING =
@@ -31,7 +37,7 @@ const RENFO_FOOTING =
  * reportée s'affiche sur son jour cible ; les jours de repos permettent de déclarer une
  * sortie quand même courue. Mêmes clés que l'écran « Aujourd'hui » (comptées dans Progrès).
  */
-export function WeekDays({ w, exercises, prog, openDow }: WeekDaysProps) {
+export function WeekDays({ w, exercises, prog, openDow, variant = "d", onOpenRenfo }: WeekDaysProps) {
   return (
     <div className="sess-list">
       {weekDays(w).map(({ dow, name, sess }) => {
@@ -55,7 +61,13 @@ export function WeekDays({ w, exercises, prog, openDow }: WeekDaysProps) {
               summary={summary}
               defaultOpen={dow === openDow}
               done={movedTo == null ? done : undefined}
-              onToggleDone={movedTo == null ? () => prog.toggleSession(sk) : undefined}
+              onToggleDone={
+                movedTo != null
+                  ? undefined
+                  : dow === RENFO_DOW
+                    ? () => prog.setRenfoComplete(w.n, exercises.length, !done)
+                    : () => prog.toggleSession(sk)
+              }
             >
               {movedTo != null ? (
                 <div className="sess-body-note">
@@ -63,26 +75,20 @@ export function WeekDays({ w, exercises, prog, openDow }: WeekDaysProps) {
                 </div>
               ) : dow === RENFO_DOW ? (
                 <>
-                  <ExerciseChecklist exercises={exercises} prog={prog} week={w.n} />
+                  <div className="renfo-h">Renforcement à faire</div>
+                  <ExerciseChecklist exercises={exercises} prog={prog} week={w.n} readOnly />
+                  <RenfoActions week={w.n} prog={prog} variant={variant} exerciseCount={exercises.length} onOpenRenfo={onOpenRenfo} />
                   <div className="sess-footing">
                     <div className="sess-footing-h">Puis · footing court</div>
                     <div className="sess-body-note">{RENFO_FOOTING}</div>
-                    <KmField
-                      planned={plannedKmFor("renfo", w)}
-                      value={prog.s.km[kk]}
-                      onChange={(v) => prog.setKm(kk, v)}
-                    />
+                    <KmField prog={prog} dkey={kk} plannedKm={plannedKmFor("renfo", w)} />
                   </div>
                 </>
               ) : isRest ? (
                 <>
                   <div className="sess-body-note">{sess.detail}</div>
                   {done ? (
-                    <KmField
-                      planned={null}
-                      value={prog.s.km[kk]}
-                      onChange={(v) => prog.setKm(kk, v)}
-                    />
+                    <KmField prog={prog} dkey={kk} />
                   ) : (
                     <div className="sess-moveline">
                       <button
@@ -99,9 +105,10 @@ export function WeekDays({ w, exercises, prog, openDow }: WeekDaysProps) {
                 <>
                   <div className="sess-body-note">{sess.detail}</div>
                   <KmField
-                    planned={plannedKmFor(sess.key, w)}
-                    value={prog.s.km[kk]}
-                    onChange={(v) => prog.setKm(kk, v)}
+                    prog={prog}
+                    dkey={kk}
+                    plannedKm={plannedKmFor(sess.key, w)}
+                    plannedMin={plannedMinFor(sess.key, w)}
                   />
                 </>
               )}

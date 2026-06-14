@@ -10,6 +10,7 @@ import {
   type PlanExercise,
   type PlanWeek,
   plannedKmFor,
+  plannedMinFor,
   sessionByKey,
 } from "@/lib/plan"
 
@@ -92,7 +93,11 @@ export function ArrivalCard({
       label={sess.type}
       summary={`Reportée de ${DAY_NAMES[PLANNED_DOW[sessKey]].toLowerCase()}`}
       done={!!prog.s.sessions[sk]}
-      onToggleDone={() => prog.toggleSession(sk)}
+      onToggleDone={() =>
+        sessKey === "renfo"
+          ? prog.setRenfoComplete(w.n, exercises.length, !prog.s.sessions[sk])
+          : prog.toggleSession(sk)
+      }
       defaultOpen={defaultOpen}
     >
       {sessKey === "renfo" ? (
@@ -101,9 +106,10 @@ export function ArrivalCard({
         <div className="sess-body-note">{sess.detail}</div>
       )}
       <KmField
-        planned={plannedKmFor(sessKey, w)}
-        value={prog.s.km[kk]}
-        onChange={(v) => prog.setKm(kk, v)}
+        prog={prog}
+        dkey={kk}
+        plannedKm={plannedKmFor(sessKey, w)}
+        plannedMin={plannedMinFor(sessKey, w)}
       />
       <MoveControls sk={sk} fromDow={dow} prog={prog} />
     </SessionCard>

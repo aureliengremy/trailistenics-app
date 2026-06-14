@@ -259,7 +259,8 @@ button {
 }
 .d-grid-plan {
   display: grid;
-  grid-template-columns: 1fr 420px;
+  /* Liste des semaines 1/3, détail 2/3 (uniquement côte à côte ; empilé ≤ 1080px). */
+  grid-template-columns: 1fr 2fr;
   gap: 28px;
   align-items: start;
 }
@@ -762,20 +763,23 @@ button {
 .d-ex-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: none;
-  border: 0;
-  padding: 0;
+  gap: 6px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px 14px;
   cursor: pointer;
   font-family: "Archivo";
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   letter-spacing: 0.02em;
-  color: var(--muted);
-  transition: color 0.16s;
+  color: var(--ink);
+  transition: color 0.16s, border-color 0.16s, background 0.16s;
 }
 .d-ex-link:hover {
   color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .d-chip {
   display: inline-block;
@@ -1558,19 +1562,21 @@ button {
 .m-ex-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: none;
-  border: 0;
-  padding: 4px 2px;
+  justify-content: center;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 12px;
   cursor: pointer;
-  font-family: "Archivo";
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--muted);
+  color: var(--ink);
 }
 .m-ex-link:active {
   color: var(--accent);
+  border-color: var(--accent);
+}
+/* Mobile : icône seule dans le bouton (pas de libellé texte). */
+.m-ex-link .ex-link-label {
+  display: none;
 }
 
 /* ---------- MODAL (média renfo) ---------- */
@@ -1658,6 +1664,57 @@ button {
   width: 100%;
   height: 100%;
   border: 0;
+}
+.modal-note {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Boutons d'action d'une carte renfo (valider + ouvrir la page Renfo) */
+.renfo-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.renfo-cta .d-btn,
+.renfo-cta .m-btn {
+  flex: 1 1 auto;
+}
+.renfo-cta .m-btn {
+  margin-top: 0;
+}
+
+/* Bouton « Ouvrir la page Renfo » : action secondaire bien visible (teinte ciel). */
+.d-btn.open-renfo,
+.m-btn.open-renfo {
+  background: color-mix(in srgb, var(--sky) 18%, transparent);
+  border: 1px solid var(--sky);
+  color: var(--sky);
+  font-weight: 700;
+}
+.d-btn.open-renfo:hover,
+.m-btn.open-renfo:hover {
+  background: color-mix(in srgb, var(--sky) 30%, transparent);
+  color: var(--ink);
+}
+
+/* Liste d'exos renfo intégrée dans la carte « À faire aujourd'hui » */
+.d-today-renfo,
+.m-today-renfo {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+.d-today-renfo-h,
+.m-today-renfo-h {
+  font-family: "Fraunces";
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--sky);
+  margin-bottom: 6px;
 }
 .modal-ext {
   display: inline-block;
@@ -1834,9 +1891,40 @@ button {
 /* Conteneur du graphique Recharts (commun) — laisse Recharts gérer le responsive. */
 .chart-host {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.chart-host .recharts-responsive-container {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .recharts-surface {
   overflow: visible;
+}
+/* Légende Prévu / Réalisé du graphe de charge */
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding: 0 4px 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+.chart-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chart-leg-line {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
+.chart-leg-line.dashed {
+  height: 0;
+  background: transparent !important;
+  border-top: 2px dashed var(--ink);
 }
 
 /* ===========================================================================
@@ -2050,8 +2138,42 @@ button {
   color: var(--ink);
   transition: 0.16s;
 }
-.exck-row:hover {
+.exck-row:not(.readonly):hover {
   border-color: var(--moss-d);
+}
+/* Aperçu (lecture seule) : aucune affordance cliquable. */
+.exck-row.readonly {
+  cursor: default;
+}
+.exck-num {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: color-mix(in oklab, var(--moss) 16%, transparent);
+  color: var(--moss);
+  font-family: "Fraunces";
+  font-weight: 700;
+  font-size: 13px;
+}
+.renfo-h {
+  font-family: "Fraunces";
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--sky);
+  margin: 2px 0 8px;
+}
+/* Exercice validé → bordure verte (cohérent avec le km-field). */
+.exck-row.on {
+  border-color: var(--moss);
+  background: color-mix(in srgb, var(--moss) 9%, var(--bg2));
+}
+.exck-row.on .exck-num {
+  background: var(--moss);
+  color: var(--bg);
 }
 .exck-row.on .exck-t {
   color: var(--muted);
@@ -2098,6 +2220,21 @@ button {
   border: 1px solid var(--line);
   border-radius: 11px;
   padding: 12px 14px;
+  transition: border-color 0.16s, background 0.16s;
+}
+/* Saisie effectuée → bordure « validée » (vert). */
+.km-field.filled {
+  border-color: var(--moss);
+  background: color-mix(in srgb, var(--moss) 9%, var(--bg2));
+}
+.km-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Chaque champ (durée / km) se teinte en vert dès qu'il a une valeur. */
+.km-in.on input {
+  border-color: var(--moss);
 }
 .km-l {
   font-size: 11px;
@@ -2844,6 +2981,7 @@ button {
   font-family: "Archivo";
   font-size: 14px;
   width: 100%;
+  transition: border-color 0.16s;
 }
 .bonus-in:focus {
   outline: none;
@@ -2857,6 +2995,11 @@ button {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0 14px;
+  transition: border-color 0.16s;
+}
+.bonus-km-in.filled,
+.bonus-in.filled {
+  border-color: var(--moss);
 }
 .bonus-km-in input {
   flex: 1;
