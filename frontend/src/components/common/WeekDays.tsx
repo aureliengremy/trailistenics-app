@@ -121,7 +121,7 @@ export function WeekDays({ w, exercises, prog, openDow, variant = "d", onOpenRen
                 sessKey={key}
                 w={w}
                 dow={dow}
-                dayLabel={`${name} ${weekDayDate(w.n, dow).getDate()}`}
+                dayLabel="↪ Reporté"
                 prog={prog}
                 exercises={exercises}
                 defaultOpen={dow === openDow}
