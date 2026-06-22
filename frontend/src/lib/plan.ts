@@ -120,9 +120,15 @@ export function setPlanAnchor(startISO: string | null, weekCount: number): void 
   planWeekCount = weekCount > 0 ? weekCount : 13
 }
 
-/** Numéro de la semaine en cours d'après la date du jour et l'ancrage du programme. */
+/**
+ * Numéro de la semaine en cours (ou à venir si la semaine est passée).
+ * Calé sur le **lundi** de la semaine 1 — donc aligné sur les semaines affichées (lundi→dimanche).
+ * La bascule se fait le lundi : dès que le dimanche d'une semaine est passé, on est sur la suivante.
+ */
 export function currentWeek(today: Date = new Date()): number {
-  const diff = Math.floor((today.getTime() - planStart.getTime()) / (7 * 864e5))
+  const monday1 = weekMonday(1).getTime()
+  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
+  const diff = Math.floor((t - monday1) / (7 * 864e5))
   return Math.max(1, Math.min(planWeekCount, diff + 1))
 }
 
