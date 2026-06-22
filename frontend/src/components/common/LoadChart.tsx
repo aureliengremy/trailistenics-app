@@ -11,7 +11,7 @@ import {
   type TooltipProps,
 } from "recharts"
 
-import type { ProgressApi, ProgressState } from "@/hooks/useProgress"
+import type { ProgressApi } from "@/hooks/useProgress"
 import { type ChartMetric, type PlanWeek, pointColor } from "@/lib/plan"
 
 interface Point {
@@ -19,30 +19,6 @@ interface Point {
   value: number
   realized: number | null
   w: PlanWeek
-}
-
-/**
- * Valeur **réalisée** d'une semaine pour la métrique courante, à partir des chiffres saisis :
- * - durée → durée de la sortie longue saisie (min) ;
- * - dénivelé → D+ prévu si la sortie longue est validée (pas de saisie de D+) ;
- * - séances → nombre de séances cochées dans la semaine.
- * `null` quand rien n'est réalisé (la ligne s'interrompt proprement).
- */
-function realizedFor(field: ChartMetric["field"], w: PlanWeek, s: ProgressState): number | null {
-  if (field === "duree") {
-    const v = s.dur[`${w.n}-longue`]
-    return v != null ? v : null
-  }
-  if (field === "dist") {
-    const v = s.km[`${w.n}-longue`]
-    return v != null ? v : null
-  }
-  if (field === "dpos") {
-    return s.sessions[`${w.n}-longue`] ? w.dpos : null
-  }
-  // seances : nombre de séances cochées cette semaine
-  const n = Object.entries(s.sessions).filter(([k, v]) => v && k.startsWith(`${w.n}-`)).length
-  return n > 0 ? n : null
 }
 
 /** Plages contiguës de semaines pic/simulateur (bande rouille de fond). */
@@ -76,8 +52,8 @@ interface LoadChartProps {
 export function LoadChart({ weeks, metric, height, showY = true, sparseX = false, prog }: LoadChartProps) {
   const points: Point[] = weeks.map((w) => ({
     label: `S${w.n}`,
-    value: w[metric.field] ?? 0,
-    realized: prog ? realizedFor(metric.field, w, prog.s) : null,
+    value: metric.planned(w),
+    realized: prog ? metric.realized(w, prog.s) : null,
     w,
   }))
   const ranges = heavyRanges(points)
@@ -198,7 +174,7 @@ function TipContent({
         Semaine {w.n} · {w.date}
       </div>
       <div style={{ fontFamily: "Fraunces", fontWeight: 900, fontSize: 22, margin: "2px 0", color: "var(--ink)" }}>
-        {w[metric.field] ?? 0}{" "}
+        {metric.planned(w)}{" "}
         <span style={{ fontSize: 12, fontFamily: "Archivo", fontWeight: 500, color: "var(--muted)" }}>
           {metric.unit} prévu
         </span>

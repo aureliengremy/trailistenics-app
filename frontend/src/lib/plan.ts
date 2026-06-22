@@ -1,5 +1,6 @@
 /** Adaptateur API → forme « plan » utilisée par les écrans Suivi, + constantes. */
 
+import type { ProgressState } from "@/hooks/useProgress"
 import type { Bloc, Exercise, Week } from "@/types"
 
 /** Forme d'une semaine telle que consommée par les composants Suivi. */
@@ -67,23 +68,72 @@ export function blocMaps(blocs: Bloc[]): {
   return { colorByKey, tagByKey }
 }
 
-/** Métriques commutables du graphique de charge (identiques au design). */
+/** Métrique commutable du graphe de charge : valeur prévue (programme) et réalisée (saisies). */
 export interface ChartMetric {
   key: MetricKey
   label: string
   short: string
   unit: string
-  field: "duree" | "dist" | "dpos" | "sea"
   max: number
   color: string
+  /** Valeur prévue par le programme pour la semaine. */
+  planned: (w: PlanWeek) => number
+  /** Valeur réalisée d'après les chiffres saisis (null = rien de réalisé). */
+  realized: (w: PlanWeek, s: ProgressState) => number | null
 }
 export type MetricKey = "duree" | "distance" | "denivele" | "seances"
 
+/** Sorties courues d'une semaine type (pour le total hebdo prévu). */
+const RUN_KEYS = ["renfo", "easy", "qual", "easyW", "longue"]
+
+/** Somme des saisies (km ou durée) de toutes les sorties d'une semaine. */
+function sumWeek(map: Record<string, number>, n: number): number {
+  let total = 0
+  for (const [k, v] of Object.entries(map)) if (k.startsWith(`${n}-`)) total += v
+  return total
+}
+
+/** Distance hebdo prévue (km) = somme des objectifs de chaque sortie. */
+function weekPlannedKm(w: PlanWeek): number {
+  return Math.round(RUN_KEYS.reduce((a, k) => a + (sessionTarget(k, w).km ?? 0), 0))
+}
+/** Temps de course hebdo prévu (min) = somme des objectifs de chaque sortie. */
+function weekPlannedMin(w: PlanWeek): number {
+  return RUN_KEYS.reduce((a, k) => a + (sessionTarget(k, w).min ?? 0), 0)
+}
+/** Distance hebdo réalisée (km) = somme des distances saisies. */
+function weekRealizedKm(w: PlanWeek, s: ProgressState): number | null {
+  const t = sumWeek(s.km, w.n)
+  return t > 0 ? Math.round(t * 10) / 10 : null
+}
+/** Temps de course hebdo réalisé (min) = somme des durées saisies. */
+function weekRealizedMin(w: PlanWeek, s: ProgressState): number | null {
+  const t = sumWeek(s.dur, w.n)
+  return t > 0 ? Math.round(t) : null
+}
+/** Nombre de séances cochées dans la semaine. */
+function weekRealizedSessions(w: PlanWeek, s: ProgressState): number | null {
+  const n = Object.entries(s.sessions).filter(([k, v]) => v && k.startsWith(`${w.n}-`)).length
+  return n > 0 ? n : null
+}
+
 export const CHART_METRICS: ChartMetric[] = [
-  { key: "duree", label: "Durée de la sortie longue", short: "Durée longue", unit: "min", field: "duree", max: 160, color: "#7ba05b" },
-  { key: "distance", label: "Distance de la sortie longue", short: "Distance longue", unit: "km", field: "dist", max: 22, color: "#c2562e" },
-  { key: "denivele", label: "Dénivelé positif sur la longue", short: "Dénivelé D+", unit: "m D+", field: "dpos", max: 780, color: "#d98a3d" },
-  { key: "seances", label: "Nombre de séances", short: "Volume hebdo", unit: "séances", field: "sea", max: 5, color: "#6fa8c4" },
+  {
+    key: "duree", label: "Temps de course hebdo", short: "Temps hebdo", unit: "min", max: 380, color: "#7ba05b",
+    planned: weekPlannedMin, realized: weekRealizedMin,
+  },
+  {
+    key: "distance", label: "Distance hebdo", short: "Distance hebdo", unit: "km", max: 55, color: "#c2562e",
+    planned: weekPlannedKm, realized: weekRealizedKm,
+  },
+  {
+    key: "denivele", label: "Dénivelé positif sur la longue", short: "Dénivelé D+", unit: "m D+", max: 780, color: "#d98a3d",
+    planned: (w) => w.dpos, realized: (w, s) => (s.sessions[`${w.n}-longue`] ? w.dpos : null),
+  },
+  {
+    key: "seances", label: "Nombre de séances", short: "Volume hebdo", unit: "séances", max: 5, color: "#6fa8c4",
+    planned: (w) => w.sea, realized: weekRealizedSessions,
+  },
 ]
 
 /** Couleur d'un point selon son bloc (course = rouille). */
@@ -203,9 +253,11 @@ export function sessionTarget(sessKey: string, w: PlanWeek): SessionTarget {
       const min = clamp(Math.round(w.duree * 0.3), 20, 30)
       return { min, km: easyKm(min) }
     }
-    case "qual":
+    case "qual": {
       // Séance d'intensité : objectif en temps total (échauffement + travail + retour au calme).
-      return { min: clamp(Math.round(w.duree * 0.55), 30, 60), km: null }
+      const min = clamp(Math.round(w.duree * 0.55), 30, 60)
+      return { min, km: easyKm(min) }
+    }
     case "easy": {
       const min = clamp(Math.round(w.duree * 0.45), 20, 45)
       return { min, km: easyKm(min) }
