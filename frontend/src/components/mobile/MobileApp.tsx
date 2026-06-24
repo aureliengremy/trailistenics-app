@@ -311,7 +311,7 @@ function Plan({
   return (
     <div className="m-screen">
       <p className="m-intro">
-        13 semaines, de la reprise à l'affûtage. Touche une semaine pour le détail.
+        {plan.weeks.length} semaines, de la reprise à l'affûtage. Touche une semaine pour le détail.
       </p>
       <div className="m-weeks">
         {plan.weeks.map((w) => {
@@ -404,8 +404,8 @@ function WeekDetailM({
         <button disabled={n <= 1} onClick={() => setSel(n - 1)}>
           ‹ S{n - 1 || ""}
         </button>
-        <button disabled={n >= 13} onClick={() => setSel(n + 1)}>
-          S{n + 1 > 13 ? "" : n + 1} ›
+        <button disabled={n >= plan.weeks.length} onClick={() => setSel(n + 1)}>
+          S{n + 1 > plan.weeks.length ? "" : n + 1} ›
         </button>
       </div>
     </div>
@@ -516,6 +516,7 @@ function Progres({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
   const [scope, setScope] = useState<Scope>("global")
   const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
   const cur = currentWeek()
+  const total = plan.weeks.length
   const weekNums = scopeWeeks(scope, plan.weeks)
   const st = realizedStats(plan.weeks, prog.s, weekNums)
   const bars = exPerWeek(plan.weeks, prog.s)
@@ -525,16 +526,16 @@ function Progres({ plan, prog }: { plan: PlanData; prog: ProgressApi }) {
   return (
     <div className="m-screen">
       <div className="m-hero-prog">
-        <Ring pct={weeksDone / 13} size={104} stroke={9} variant="m">
+        <Ring pct={weeksDone / total} size={104} stroke={9} variant="m">
           <div className="m-ring-big">
             {weeksDone}
-            <span>/13</span>
+            <span>/{total}</span>
           </div>
         </Ring>
         <div>
           <div className="m-hp-k">Semaines validées</div>
-          <div className="m-hp-v">{Math.round((weeksDone / 13) * 100)}% du plan</div>
-          <div className="m-hp-s">Tu es en semaine {cur} · {13 - cur} restantes</div>
+          <div className="m-hp-v">{Math.round((weeksDone / total) * 100)}% du plan</div>
+          <div className="m-hp-s">Tu es en semaine {cur} · {Math.max(0, total - cur)} restantes</div>
         </div>
       </div>
 

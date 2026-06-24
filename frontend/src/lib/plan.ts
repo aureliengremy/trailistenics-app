@@ -83,8 +83,14 @@ export interface ChartMetric {
 }
 export type MetricKey = "duree" | "distance" | "denivele" | "seances"
 
-/** Sorties courues d'une semaine type (pour le total hebdo prévu). */
-const RUN_KEYS = ["renfo", "easy", "qual", "easyW", "longue"]
+/** Sorties courues d'une semaine, par ordre de priorité (la longue, puis la qualité, etc.). */
+const RUN_PRIORITY = ["longue", "qual", "renfo", "easyW", "easy"]
+
+/** Les `sessions_per_week` sorties prévues de la semaine (les N premières de la priorité). */
+function weekRunKeys(w: PlanWeek): string[] {
+  const n = Math.max(1, Math.min(RUN_PRIORITY.length, w.sea))
+  return RUN_PRIORITY.slice(0, n)
+}
 
 /** Somme des saisies (km ou durée) de toutes les sorties d'une semaine. */
 function sumWeek(map: Record<string, number>, n: number): number {
@@ -93,13 +99,13 @@ function sumWeek(map: Record<string, number>, n: number): number {
   return total
 }
 
-/** Distance hebdo prévue (km) = somme des objectifs de chaque sortie. */
+/** Distance hebdo prévue (km) = somme des objectifs des sorties prévues (selon séances/sem). */
 function weekPlannedKm(w: PlanWeek): number {
-  return Math.round(RUN_KEYS.reduce((a, k) => a + (sessionTarget(k, w).km ?? 0), 0))
+  return Math.round(weekRunKeys(w).reduce((a, k) => a + (sessionTarget(k, w).km ?? 0), 0))
 }
-/** Temps de course hebdo prévu (min) = somme des objectifs de chaque sortie. */
+/** Temps de course hebdo prévu (min) = somme des objectifs des sorties prévues (selon séances/sem). */
 function weekPlannedMin(w: PlanWeek): number {
-  return RUN_KEYS.reduce((a, k) => a + (sessionTarget(k, w).min ?? 0), 0)
+  return weekRunKeys(w).reduce((a, k) => a + (sessionTarget(k, w).min ?? 0), 0)
 }
 /** Distance hebdo réalisée (km) = somme des distances saisies. */
 function weekRealizedKm(w: PlanWeek, s: ProgressState): number | null {

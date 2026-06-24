@@ -103,6 +103,7 @@ export function DesktopApp({
   const cur = currentWeek(today)
   const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
   const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
+  const total = plan.weeks.length
   const dow = today.getDay()
   const nav = user?.role === "admin" ? [...NAV, ADMIN_NAV] : NAV
   const pending = useAdminPending(user)
@@ -135,12 +136,12 @@ export function DesktopApp({
           ))}
         </nav>
         <div className="d-sidefoot">
-          <Ring pct={weeksDone / 13} size={52} stroke={6}>
+          <Ring pct={weeksDone / total} size={52} stroke={6}>
             <div className="d-ring-sm">{weeksDone}</div>
           </Ring>
           <div>
             <div className="d-sf-k">Progression</div>
-            <div className="d-sf-v">{weeksDone} / 13 semaines</div>
+            <div className="d-sf-v">{weeksDone} / {total} semaines</div>
           </div>
         </div>
         <AccountMenu user={user} onLogout={onLogout} variant="d" />
@@ -317,7 +318,7 @@ function Today({ plan, prog, go, openRenfo }: ScreenProps) {
           <div>
             <div className="d-sc-k">Semaine en cours</div>
             <div className="d-sc-n">
-              {cur} <span>/ 13</span>
+              {cur} <span>/ {plan.weeks.length}</span>
             </div>
             <div className="d-sc-bloc" style={{ color: w.color }}>
               {w.bloc} · {w.tag}
@@ -435,7 +436,7 @@ function Plan({ plan, prog, openRenfo }: ScreenProps) {
             <button disabled={sel <= 1} onClick={() => setSel(sel - 1)} aria-label="Semaine précédente">
               ‹
             </button>
-            <button disabled={sel >= 13} onClick={() => setSel(sel + 1)} aria-label="Semaine suivante">
+            <button disabled={sel >= plan.weeks.length} onClick={() => setSel(sel + 1)} aria-label="Semaine suivante">
               ›
             </button>
           </div>
@@ -584,6 +585,7 @@ function Progres({ plan, prog }: ScreenProps) {
   const metric = CHART_METRICS.find((m) => m.key === metricKey)!
   const cur = currentWeek()
   const weeksDone = Object.values(prog.s.weeks).filter(Boolean).length
+  const total = plan.weeks.length
 
   const weekNums = scopeWeeks(scope, plan.weeks)
   const st = realizedStats(plan.weeks, prog.s, weekNums)
@@ -600,17 +602,17 @@ function Progres({ plan, prog }: ScreenProps) {
     <div>
       <div className="d-prog-hero">
         <div className="d-ph-ring">
-          <Ring pct={weeksDone / 13} size={120} stroke={10}>
+          <Ring pct={weeksDone / total} size={120} stroke={10}>
             <div className="d-ring-big">
               {weeksDone}
-              <span>/13</span>
+              <span>/{total}</span>
             </div>
           </Ring>
           <div>
             <div className="d-ph-k">Semaines validées</div>
-            <div className="d-ph-v">{Math.round((weeksDone / 13) * 100)}% du plan accompli</div>
+            <div className="d-ph-v">{Math.round((weeksDone / total) * 100)}% du plan accompli</div>
             <div className="d-ph-s">
-              Tu es en semaine {cur} · {13 - cur} restantes · jour J : 740 m D+
+              Tu es en semaine {cur} · {Math.max(0, total - cur)} restantes · jour J : 740 m D+
             </div>
           </div>
         </div>
