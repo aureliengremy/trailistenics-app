@@ -82,6 +82,8 @@ exécute toute la chaîne et **connecte les sorties** : il pose le questionnaire
 | [`prompts/02-generation-calisthenie-bas-corps.md`](prompts/02-generation-calisthenie-bas-corps.md) | **Prompt 2** (étape calisthénie) → artefact `02-calisthenie.json`. |
 | [`prompts/03-generation-hybride.md`](prompts/03-generation-hybride.md) | **Prompt 3** (fusion) → programme final de l'app. |
 | `generated/<slug>/` | Sorties d'un run : les 2 artefacts + le programme final (`.md` + `.json`). |
+| [`integrations/strava.md`](integrations/strava.md) | **Exploratoire** — faisabilité d'une intégration Strava (récupérer les runs → pré-remplir le « réalisé »), features envisageables. |
+| [`integrations/garmin.md`](integrations/garmin.md) | **Exploratoire** — faisabilité d'une intégration Garmin (programme partenaire B2B, push-first) + comparatif avec Strava. |
 
 ---
 
