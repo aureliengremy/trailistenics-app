@@ -5,7 +5,6 @@ import { AccountMenu } from "@/components/common/AccountMenu"
 import { BonusSection } from "@/components/common/BonusSection"
 import { CheckMark } from "@/components/common/Check"
 import { DaySelector } from "@/components/common/DaySelector"
-import { ExerciseChecklist } from "@/components/common/ExerciseChecklist"
 import { ExerciseLinks } from "@/components/common/ExerciseMedia"
 import { NavIcon, type TabId } from "@/components/common/Icons"
 import { KmField } from "@/components/common/KmField"
@@ -13,12 +12,12 @@ import { LoadChart } from "@/components/common/LoadChart"
 import { RealizedBars } from "@/components/common/RealizedBars"
 import { RestTimer } from "@/components/common/RestTimer"
 import { Ring } from "@/components/common/Ring"
-import { SessionCard } from "@/components/common/SessionCard"
-import { RenfoActions } from "@/components/common/RenfoActions"
 import { SaveButton } from "@/components/common/SaveButton"
-import { MoveControls, MovedSessions } from "@/components/common/SessionMove"
 import { ThemeToggle } from "@/components/common/ThemeToggle"
 import { WeekDays } from "@/components/common/WeekDays"
+import { DaySessionDetail } from "@/components/common/DaySessionDetail"
+import { WeekObjectives } from "@/components/common/WeekObjectives"
+import { WeekStrip } from "@/components/common/WeekStrip"
 import { useAdminPending } from "@/hooks/useAdminPending"
 import type { PlanData } from "@/hooks/usePlan"
 import type { ProgressApi } from "@/hooks/useProgress"
@@ -30,16 +29,14 @@ import {
   currentWeek,
   DAY_NAMES,
   isRestKey,
-  keySessions,
-  kmKeyFor,
   MONTHS_SHORT,
   type MetricKey,
-  PLANNED_DOW,
   plannedKmFor,
   plannedMinFor,
   RENFO_DOW,
   sessionForDay,
   tint,
+  weekRealizedSessions,
 } from "@/lib/plan"
 import {
   exPerWeek,
@@ -133,7 +130,7 @@ export function MobileApp({
 function Today({
   plan,
   prog,
-  go,
+  go: _go,
   openRenfo,
 }: {
   plan: PlanData
@@ -144,139 +141,42 @@ function Today({
   const today = new Date()
   const cur = currentWeek(today)
   const w = plan.weeks.find((x) => x.n === cur) ?? plan.weeks[0]
-  const dow = today.getDay()
-  const sess = sessionForDay(dow, w)
-  const todayKey = cur + "-" + sess.key
-  const isRest = isRestKey(sess.key)
-  const movedAway = prog.s.moved[todayKey] != null
-  const todayDone = !!prog.s.sessions[todayKey]
-  const todayKm = kmKeyFor(cur, sess.key)
-  const sessions = keySessions(w)
-  const doneCount = sessions.filter((s) => prog.s.sessions[`${cur}-${s.key}`]).length
+  const todayDow = today.getDay()
+  const [selDow, setSelDow] = useState(todayDow)
+  const sessDone = weekRealizedSessions(w, prog.s) ?? 0
 
   return (
     <div className="m-screen">
       <div className="m-greet">
         <div>
           <div className="m-kick">
-            {DAY_NAMES[dow]} · {today.getDate()} {MONTHS_SHORT[today.getMonth()]}
+            {DAY_NAMES[todayDow]} · {today.getDate()} {MONTHS_SHORT[today.getMonth()]} · S{cur}/{plan.weeks.length}
           </div>
           <h2 className="m-h2">Semaine {cur}</h2>
           <div className="m-bloc" style={{ color: w.color }}>
             {w.bloc} · {w.tag}
           </div>
         </div>
-        <Ring pct={doneCount / 3} size={64} variant="m">
+        <Ring pct={w.sea ? sessDone / w.sea : 0} size={64} variant="m">
           <div className="m-ring-n">
-            {doneCount}
-            <span>/3</span>
+            {sessDone}
+            <span>/{w.sea}</span>
           </div>
         </Ring>
       </div>
 
-      <div className="m-label">À faire aujourd'hui</div>
-      <div className={"m-today" + (isRest ? " rest" : "")}>
-        <div className="m-today-top">
-          <span className="m-tag" style={{ background: tint(sess.col), color: sess.col }}>
-            {isRest && todayDone ? "Couru quand même" : sess.tag}
-          </span>
-          {!isRest && <span className="m-today-day">{DAY_NAMES[dow]}</span>}
-        </div>
-        <div className="m-today-type">{sess.type}</div>
-        <div className="m-today-detail">{sess.detail}</div>
-        {sess.key === "renfo" && (
-          <div className="m-today-renfo">
-            <div className="renfo-h">Renforcement à faire</div>
-            <ExerciseChecklist exercises={plan.exercises} prog={prog} week={cur} readOnly />
-          </div>
-        )}
-        {!movedAway && (
-          <button
-            className={"m-btn" + (todayDone ? " done" : "")}
-            onClick={() => prog.toggleSession(todayKey)}
-          >
-            {isRest
-              ? todayDone
-                ? "✓ Couru quand même"
-                : "Pas été sage ? J'ai quand même couru"
-              : todayDone
-                ? "✓ Séance terminée"
-                : sess.key === "renfo"
-                  ? "Valider le renfo"
-                  : "Marquer comme terminée"}
-          </button>
-        )}
-        {sess.key === "renfo" && (
-          <button className="m-btn open-renfo" onClick={() => openRenfo(cur)}>
-            Ouvrir la page Renfo ›
-          </button>
-        )}
-        {!movedAway && (!isRest || todayDone) && (
-          <KmField
-            prog={prog}
-            dkey={todayKm}
-            plannedKm={plannedKmFor(sess.key, w)}
-            plannedMin={plannedMinFor(sess.key, w)}
-          />
-        )}
-        {!isRest && <MoveControls sk={todayKey} fromDow={dow} prog={prog} />}
-      </div>
+      <div className="m-label">Objectifs de la semaine</div>
+      <WeekObjectives w={w} prog={prog} variant="m" />
 
-      <MovedSessions w={w} dow={dow} prog={prog} exercises={plan.exercises} variant="m" />
+      <div className="m-label">La semaine</div>
+      <WeekStrip w={w} prog={prog} selected={selDow} today={todayDow} onSelect={setSelDow} variant="m" />
 
-      <div className="m-label">Les 3 séances clés de la semaine</div>
+      <div className="m-label">{selDow === todayDow ? "Aujourd'hui" : "Ce jour-là"}</div>
       <div className="sess-list">
-        {sessions.map((s) => {
-          const sk = `${cur}-${s.key}`
-          const movedTo = prog.s.moved[sk]
-          return (
-            <SessionCard
-              key={s.key}
-              color={s.col}
-              day={s.day}
-              label={s.label}
-              summary={
-                movedTo != null ? `→ Reportée à ${DAY_NAMES[movedTo].toLowerCase()}` : s.summary
-              }
-              done={!!prog.s.sessions[sk]}
-              onToggleDone={() =>
-                s.kind === "renfo"
-                  ? prog.setRenfoComplete(cur, plan.exercises.length, !prog.s.sessions[sk])
-                  : prog.toggleSession(sk)
-              }
-              defaultOpen={sess.key === s.key}
-            >
-              {s.kind === "renfo" ? (
-                <>
-                  <div className="renfo-h">Renforcement à faire</div>
-                  <ExerciseChecklist exercises={plan.exercises} prog={prog} week={cur} readOnly />
-                  <RenfoActions week={cur} prog={prog} variant="m" exerciseCount={plan.exercises.length} onOpenRenfo={() => openRenfo(cur)} />
-                  {s.footing && (
-                    <div className="sess-footing">
-                      <div className="sess-footing-h">Puis · footing court</div>
-                      <div className="sess-body-note">{s.footing}</div>
-                      <KmField prog={prog} dkey={`${cur}-renfoRun`} plannedKm={plannedKmFor("renfo", w)} plannedMin={plannedMinFor("renfo", w)} />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <KmField prog={prog} dkey={sk} plannedKm={s.planned} plannedMin={plannedMinFor(s.key, w)} />
-                  <div className="sess-body-note">{s.detail}</div>
-                </>
-              )}
-              <MoveControls sk={sk} fromDow={PLANNED_DOW[s.key]} prog={prog} />
-            </SessionCard>
-          )
-        })}
+        <DaySessionDetail w={w} dow={selDow} exercises={plan.exercises} prog={prog} variant="m" defaultOpen onOpenRenfo={() => openRenfo(cur)} />
       </div>
 
       <BonusSection week={cur} prog={prog} />
-
-      <p className="m-note">{w.focus}</p>
-      <button className="m-link" onClick={() => go("plan")}>
-        Voir tout le plan ›
-      </button>
     </div>
   )
 }
