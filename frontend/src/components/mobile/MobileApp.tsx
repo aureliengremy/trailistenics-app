@@ -172,7 +172,7 @@ function Today({
 
       <div className="m-label">{selDow === todayDow ? "Aujourd'hui" : "Ce jour-là"}</div>
       <div className="sess-list">
-        <DaySessionDetail w={w} dow={selDow} exercises={plan.exercises} prog={prog} variant="m" defaultOpen onOpenRenfo={() => openRenfo(cur)} />
+        <DaySessionDetail key={selDow} w={w} dow={selDow} exercises={plan.exercises} prog={prog} variant="m" defaultOpen onOpenRenfo={() => openRenfo(cur)} />
       </div>
 
       <BonusSection week={cur} prog={prog} />

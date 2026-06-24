@@ -210,7 +210,7 @@ function Today({ plan, prog, go, openRenfo }: ScreenProps) {
 
       <div className="d-label">{selDow === todayDow ? "Aujourd'hui" : "Ce jour-là"}</div>
       <div className="sess-list">
-        <DaySessionDetail w={w} dow={selDow} exercises={plan.exercises} prog={prog} variant="d" defaultOpen onOpenRenfo={() => openRenfo(cur)} />
+        <DaySessionDetail key={selDow} w={w} dow={selDow} exercises={plan.exercises} prog={prog} variant="d" defaultOpen onOpenRenfo={() => openRenfo(cur)} />
       </div>
 
       <BonusSection week={cur} prog={prog} />
