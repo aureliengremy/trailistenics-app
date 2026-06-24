@@ -130,7 +130,6 @@ export function MobileApp({
 function Today({
   plan,
   prog,
-  go: _go,
   openRenfo,
 }: {
   plan: PlanData
