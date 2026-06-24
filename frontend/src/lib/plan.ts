@@ -100,25 +100,25 @@ function sumWeek(map: Record<string, number>, n: number): number {
 }
 
 /** Distance hebdo prévue (km) = somme des objectifs des sorties prévues (selon séances/sem). */
-function weekPlannedKm(w: PlanWeek): number {
+export function weekPlannedKm(w: PlanWeek): number {
   return Math.round(weekRunKeys(w).reduce((a, k) => a + (sessionTarget(k, w).km ?? 0), 0))
 }
 /** Temps de course hebdo prévu (min) = somme des objectifs des sorties prévues (selon séances/sem). */
-function weekPlannedMin(w: PlanWeek): number {
+export function weekPlannedMin(w: PlanWeek): number {
   return weekRunKeys(w).reduce((a, k) => a + (sessionTarget(k, w).min ?? 0), 0)
 }
 /** Distance hebdo réalisée (km) = somme des distances saisies. */
-function weekRealizedKm(w: PlanWeek, s: ProgressState): number | null {
+export function weekRealizedKm(w: PlanWeek, s: ProgressState): number | null {
   const t = sumWeek(s.km, w.n)
   return t > 0 ? Math.round(t * 10) / 10 : null
 }
 /** Temps de course hebdo réalisé (min) = somme des durées saisies. */
-function weekRealizedMin(w: PlanWeek, s: ProgressState): number | null {
+export function weekRealizedMin(w: PlanWeek, s: ProgressState): number | null {
   const t = sumWeek(s.dur, w.n)
   return t > 0 ? Math.round(t) : null
 }
 /** Nombre de séances cochées dans la semaine. */
-function weekRealizedSessions(w: PlanWeek, s: ProgressState): number | null {
+export function weekRealizedSessions(w: PlanWeek, s: ProgressState): number | null {
   const n = Object.entries(s.sessions).filter(([k, v]) => v && k.startsWith(`${w.n}-`)).length
   return n > 0 ? n : null
 }
