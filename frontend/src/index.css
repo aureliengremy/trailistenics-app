@@ -3348,3 +3348,25 @@ button {
 .m-wk-ob-l, .d-wk-ob-l {
   font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: 2px;
 }
+
+/* ===== Tableau de bord Aujourd'hui : bande des 7 jours ===== */
+.m-wk-strip, .d-wk-strip { display: flex; gap: 4px; }
+.m-wk-day, .d-wk-day {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: transparent; border: 1px solid transparent; border-radius: 9px;
+  padding: 6px 2px; cursor: pointer; color: var(--muted); transition: border-color .15s, background .15s;
+  font-family: inherit;
+}
+.m-wk-day:hover, .d-wk-day:hover { background: var(--panel2); }
+.m-wk-day.sel, .d-wk-day.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.wk-day-d { font-size: 10px; letter-spacing: .02em; }
+.m-wk-day.today .wk-day-d, .d-wk-day.today .wk-day-d { color: var(--accent); font-weight: 700; }
+.wk-day-n { font-size: 11px; color: var(--ink); font-family: "Fraunces"; font-weight: 600; }
+.wk-day-ic {
+  width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); font-size: 13px; font-weight: 700; color: var(--day-col, var(--muted));
+  border-color: color-mix(in srgb, var(--day-col, var(--line)) 60%, var(--line));
+}
+.m-wk-day.rest .wk-day-ic, .d-wk-day.rest .wk-day-ic { color: var(--line); border-color: var(--line); }
+.m-wk-day.done .wk-day-ic, .d-wk-day.done .wk-day-ic { background: var(--moss); border-color: var(--moss); color: var(--bg); }
+.m-wk-day.moved .wk-day-ic, .d-wk-day.moved .wk-day-ic { color: var(--ocre); border-color: var(--ocre-d); }
