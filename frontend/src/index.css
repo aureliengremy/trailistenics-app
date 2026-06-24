@@ -3370,3 +3370,13 @@ button {
 .m-wk-day.rest .wk-day-ic, .d-wk-day.rest .wk-day-ic { color: var(--line); border-color: var(--line); }
 .m-wk-day.done .wk-day-ic, .d-wk-day.done .wk-day-ic { background: var(--moss); border-color: var(--moss); color: var(--bg); }
 .m-wk-day.moved .wk-day-ic, .d-wk-day.moved .wk-day-ic { color: var(--ocre); border-color: var(--ocre-d); }
+
+/* ===== Tableau de bord Aujourd'hui (desktop) ===== */
+.d-dash { max-width: 760px; }
+.d-dash-head {
+  display: grid; grid-template-columns: auto 1fr; gap: 18px 20px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px; margin-bottom: 8px;
+}
+.d-dash-head-txt { min-width: 0; }
+.d-dash-h { font-family: "Fraunces"; font-size: 22px; font-weight: 700; color: var(--ink); margin: 2px 0; }
+.d-dash-obj { grid-column: 1 / -1; }
