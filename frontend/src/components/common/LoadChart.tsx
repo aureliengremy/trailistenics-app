@@ -38,7 +38,7 @@ function heavyRanges(points: Point[]): Array<{ x1: string; x2: string }> {
   return ranges
 }
 
-interface LoadChartProps {
+export interface LoadChartProps {
   weeks: PlanWeek[]
   metric: ChartMetric
   height: number
