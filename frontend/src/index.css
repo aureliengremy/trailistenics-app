@@ -3380,3 +3380,6 @@ button {
 .d-dash-head-txt { min-width: 0; }
 .d-dash-h { font-family: "Fraunces"; font-size: 22px; font-weight: 700; color: var(--ink); margin: 2px 0; }
 .d-dash-obj { grid-column: 1 / -1; }
+
+/* ===== KmField : 3 champs (min · km · D+) — retour à la ligne sur petit écran ===== */
+.km-inputs { flex-wrap: wrap; justify-content: flex-end; }

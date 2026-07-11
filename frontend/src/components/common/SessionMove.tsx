@@ -9,6 +9,7 @@ import {
   PLANNED_DOW,
   type PlanExercise,
   type PlanWeek,
+  plannedDposFor,
   plannedKmFor,
   plannedMinFor,
   sessionByKey,
@@ -110,6 +111,7 @@ export function ArrivalCard({
         dkey={kk}
         plannedKm={plannedKmFor(sessKey, w)}
         plannedMin={plannedMinFor(sessKey, w)}
+        plannedDpos={plannedDposFor(sessKey, w)}
       />
       <MoveControls sk={sk} fromDow={dow} prog={prog} />
     </SessionCard>
