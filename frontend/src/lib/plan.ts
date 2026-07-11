@@ -99,6 +99,21 @@ function sumWeek(map: Record<string, number>, n: number): number {
   return total
 }
 
+/** Somme des km des séances bonus de la semaine `n`. */
+function sumBonusKm(s: ProgressState, n: number): number {
+  return Object.values(s.bonus).reduce((a, b) => a + (b.week === n && b.km != null ? b.km : 0), 0)
+}
+
+/** Somme du D+ des séances bonus de la semaine `n`. */
+function sumBonusDpos(s: ProgressState, n: number): number {
+  return Object.values(s.bonus).reduce((a, b) => a + (b.week === n && b.dpos != null ? b.dpos : 0), 0)
+}
+
+/** D+ hebdo prévu (m) — le D+ planifié vit sur la sortie longue. */
+export function weekPlannedDpos(w: PlanWeek): number {
+  return w.dpos
+}
+
 /** Distance hebdo prévue (km) = somme des objectifs des sorties prévues (selon séances/sem). */
 export function weekPlannedKm(w: PlanWeek): number {
   return Math.round(weekRunKeys(w).reduce((a, k) => a + (sessionTarget(k, w).km ?? 0), 0))
@@ -107,14 +122,19 @@ export function weekPlannedKm(w: PlanWeek): number {
 export function weekPlannedMin(w: PlanWeek): number {
   return weekRunKeys(w).reduce((a, k) => a + (sessionTarget(k, w).min ?? 0), 0)
 }
-/** Distance hebdo réalisée (km) = somme des distances saisies. */
+/** Distance hebdo réalisée (km) = somme des distances saisies + km des bonus. */
 export function weekRealizedKm(w: PlanWeek, s: ProgressState): number | null {
-  const t = sumWeek(s.km, w.n)
+  const t = sumWeek(s.km, w.n) + sumBonusKm(s, w.n)
   return t > 0 ? Math.round(t * 10) / 10 : null
 }
 /** Temps de course hebdo réalisé (min) = somme des durées saisies. */
 export function weekRealizedMin(w: PlanWeek, s: ProgressState): number | null {
   const t = sumWeek(s.dur, w.n)
+  return t > 0 ? Math.round(t) : null
+}
+/** D+ hebdo réalisé (m) = somme des D+ saisis + D+ des bonus. */
+export function weekRealizedDpos(w: PlanWeek, s: ProgressState): number | null {
+  const t = sumWeek(s.dpos, w.n) + sumBonusDpos(s, w.n)
   return t > 0 ? Math.round(t) : null
 }
 /** Nombre de séances cochées dans la semaine. */
@@ -123,22 +143,38 @@ export function weekRealizedSessions(w: PlanWeek, s: ProgressState): number | nu
   return n > 0 ? n : null
 }
 
+/**
+ * Réalisé pour le graphe : semaine passée sans saisie → 0 (la courbe plonge,
+ * honnête) ; semaine en cours sans saisie → null (pas de plongeon un lundi
+ * matin) ; semaine future → null (pas de courbe).
+ */
+function realizedForChart(
+  sum: (w: PlanWeek, s: ProgressState) => number | null,
+): (w: PlanWeek, s: ProgressState) => number | null {
+  return (w, s) => {
+    const cur = currentWeek()
+    if (w.n > cur) return null
+    const v = sum(w, s)
+    return w.n < cur ? (v ?? 0) : v
+  }
+}
+
 export const CHART_METRICS: ChartMetric[] = [
   {
     key: "duree", label: "Temps de course hebdo", short: "Temps hebdo", unit: "min", max: 380, color: "#7ba05b",
-    planned: weekPlannedMin, realized: weekRealizedMin,
+    planned: weekPlannedMin, realized: realizedForChart(weekRealizedMin),
   },
   {
     key: "distance", label: "Distance hebdo", short: "Distance hebdo", unit: "km", max: 55, color: "#c2562e",
-    planned: weekPlannedKm, realized: weekRealizedKm,
+    planned: weekPlannedKm, realized: realizedForChart(weekRealizedKm),
   },
   {
-    key: "denivele", label: "Dénivelé positif sur la longue", short: "Dénivelé D+", unit: "m D+", max: 780, color: "#d98a3d",
-    planned: (w) => w.dpos, realized: (w, s) => (s.sessions[`${w.n}-longue`] ? w.dpos : null),
+    key: "denivele", label: "Dénivelé positif hebdo", short: "Dénivelé D+", unit: "m D+", max: 780, color: "#d98a3d",
+    planned: weekPlannedDpos, realized: realizedForChart(weekRealizedDpos),
   },
   {
     key: "seances", label: "Nombre de séances", short: "Volume hebdo", unit: "séances", max: 5, color: "#6fa8c4",
-    planned: (w) => w.sea, realized: weekRealizedSessions,
+    planned: (w) => w.sea, realized: realizedForChart(weekRealizedSessions),
   },
 ]
 
@@ -346,6 +382,11 @@ export function plannedKmFor(sessKey: string, w: PlanWeek): number | null {
 /** Durée prévue (minutes) d'une séance, si pertinente (cf. `sessionTarget`). */
 export function plannedMinFor(sessKey: string, w: PlanWeek): number | null {
   return sessionTarget(sessKey, w).min
+}
+
+/** D+ prévu (m) d'une séance : seul l'objectif de la longue existe. */
+export function plannedDposFor(sessKey: string, w: PlanWeek): number | null {
+  return sessKey === "longue" ? w.dpos : null
 }
 
 export interface WeekDay {
