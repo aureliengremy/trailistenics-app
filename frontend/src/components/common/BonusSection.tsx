@@ -11,6 +11,7 @@ export function BonusSection({ week, prog }: { week: number; prog: ProgressApi }
   const [day, setDay] = useState(new Date().getDay())
   const [type, setType] = useState("")
   const [km, setKm] = useState("")
+  const [dpos, setDpos] = useState("")
 
   const bonuses = Object.entries(prog.s.bonus).filter(([, b]) => b.week === week)
 
@@ -20,9 +21,11 @@ export function BonusSection({ week, prog }: { week: number; prog: ProgressApi }
       day,
       type: type.trim() || "Séance bonus",
       km: km.trim() === "" ? null : Number(km),
+      dpos: dpos.trim() === "" ? null : Number(dpos),
     })
     setType("")
     setKm("")
+    setDpos("")
     setOpen(false)
   }
 
@@ -38,6 +41,7 @@ export function BonusSection({ week, prog }: { week: number; prog: ProgressApi }
               <span className="bonus-day">{DAY_NAMES[b.day]}</span>
               <span className="bonus-type">{b.type}</span>
               {b.km != null && <span className="bonus-km">{b.km} km</span>}
+              {b.dpos != null && <span className="bonus-km">{b.dpos} m D+</span>}
               <button
                 type="button"
                 className="bonus-x"
@@ -83,6 +87,19 @@ export function BonusSection({ week, prog }: { week: number; prog: ProgressApi }
               aria-label="Kilomètres"
             />
             <span>km</span>
+          </label>
+          <label className={"bonus-km-in" + (dpos.trim() ? " filled" : "")}>
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              step="1"
+              value={dpos}
+              onChange={(e) => setDpos(e.target.value)}
+              placeholder="0"
+              aria-label="Dénivelé positif (mètres)"
+            />
+            <span>m D+</span>
           </label>
           <div className="bonus-actions">
             <button type="button" className="bonus-add" onClick={add}>
