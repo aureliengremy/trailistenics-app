@@ -8,6 +8,8 @@ export interface BonusSession {
   day: number // 0 = dimanche … 6 = samedi
   type: string
   km: number | null
+  /** Dénivelé positif réalisé (m), optionnel. */
+  dpos?: number | null
 }
 
 /** État de progression (semaines, exos par semaine, séances, km, séances bonus). */
@@ -20,6 +22,8 @@ export interface ProgressState {
   km: Record<string, number>
   /** Durée réalisée (minutes), même clé que `km` (ex. "1-longue"). */
   dur: Record<string, number>
+  /** Dénivelé positif réalisé (m), même clé que `km` (ex. "1-longue"). */
+  dpos: Record<string, number>
   /** Séances bonus, clé = id unique. */
   bonus: Record<string, BonusSession>
   /** Séances reportées à un autre jour, clé `${semaine}-${séance}` → jour cible (0–6). */
@@ -51,6 +55,8 @@ export interface ProgressApi {
   setKm: (k: string, val: number | null) => void
   /** Durée réalisée (minutes) d'une séance ; `null` efface. */
   setDur: (k: string, val: number | null) => void
+  /** Dénivelé positif réalisé (m) d'une séance ; `null` efface. */
+  setDpos: (k: string, val: number | null) => void
   /** Reporte une séance au jour `dow` (0–6) ; `null` annule le report. */
   setMoved: (k: string, dow: number | null) => void
   resetEx: (week: number) => void
@@ -72,6 +78,7 @@ function normalize(v: Partial<ProgressState> | null | undefined): ProgressState 
     sessions: v?.sessions ?? {},
     km: v?.km ?? {},
     dur: v?.dur ?? {},
+    dpos: v?.dpos ?? {},
     bonus: v?.bonus ?? {},
     moved: v?.moved ?? {},
   }
@@ -94,7 +101,7 @@ function saveLocal(key: string, s: ProgressState): void {
 }
 
 function hasData(s: ProgressState): boolean {
-  return [s.weeks, s.ex, s.sessions, s.km, s.dur, s.bonus, s.moved].some(
+  return [s.weeks, s.ex, s.sessions, s.km, s.dur, s.dpos, s.bonus, s.moved].some(
     (m) => Object.keys(m).length > 0,
   )
 }
@@ -260,6 +267,13 @@ export function useProgress(userId: string | null): ProgressApi {
         else dur[k] = val
         return { ...p, dur }
       }),
+    setDpos: (k, val) =>
+      setS((p) => {
+        const dpos = { ...p.dpos }
+        if (val == null || Number.isNaN(val)) delete dpos[k]
+        else dpos[k] = val
+        return { ...p, dpos }
+      }),
     setMoved: (k, dow) =>
       setS((p) => {
         const moved = { ...p.moved }
@@ -286,6 +300,6 @@ export function useProgress(userId: string | null): ProgressApi {
         delete bonus[id]
         return { ...p, bonus }
       }),
-    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, dur: {}, bonus: {}, moved: {} }),
+    reset: () => setS({ weeks: {}, ex: {}, sessions: {}, km: {}, dur: {}, dpos: {}, bonus: {}, moved: {} }),
   }
 }

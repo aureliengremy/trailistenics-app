@@ -36,6 +36,9 @@ import {
   RENFO_DOW,
   sessionForDay,
   tint,
+  weekPlannedDpos,
+  weekPlannedKm,
+  weekPlannedMin,
   weekRealizedSessions,
 } from "@/lib/plan"
 import {
@@ -288,14 +291,30 @@ function WeekDetailM({
           <div className="m-dv">{w.qual}</div>
         </div>
         <div className="m-dbox half">
-          <div className="m-dk">Séances / sem</div>
-          <div className="m-dv">{w.sea}</div>
+          <div className="m-dk">Distance totale</div>
+          <div className="m-dv">{weekPlannedKm(w)} km</div>
         </div>
         <div className="m-dbox half">
-          <div className="m-dk">D+ sur la longue</div>
-          <div className="m-dv">{w.dpos} m</div>
+          <div className="m-dk">Temps de course</div>
+          <div className="m-dv">{weekPlannedMin(w)} min</div>
+        </div>
+        <div className="m-dbox half">
+          <div className="m-dk">Dénivelé D+</div>
+          <div className="m-dv">{weekPlannedDpos(w)} m</div>
+        </div>
+        <div className="m-dbox half">
+          <div className="m-dk">Séances</div>
+          <div className="m-dv">
+            {w.sea} <span style={{ fontSize: 12, color: "var(--muted)" }}>dont renfo</span>
+          </div>
         </div>
       </div>
+      {w.n <= cur && (
+        <>
+          <div className="m-label">Avancement</div>
+          <WeekObjectives w={w} prog={prog} variant="m" />
+        </>
+      )}
       <p className="m-note">{w.focus}</p>
       <div className="m-label">La semaine jour par jour</div>
       <WeekDays w={w} exercises={plan.exercises} prog={prog} openDow={w.n === cur ? dow : RENFO_DOW} variant="m" onOpenRenfo={() => openRenfo(w.n)} />

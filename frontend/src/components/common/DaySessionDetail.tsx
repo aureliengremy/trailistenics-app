@@ -10,6 +10,7 @@ import {
   kmKeyFor,
   type PlanExercise,
   type PlanWeek,
+  plannedDposFor,
   plannedKmFor,
   plannedMinFor,
   RENFO_DOW,
@@ -115,6 +116,7 @@ export function DaySessionDetail({
               dkey={kk}
               plannedKm={plannedKmFor(sess.key, w)}
               plannedMin={plannedMinFor(sess.key, w)}
+              plannedDpos={plannedDposFor(sess.key, w)}
             />
           </>
         )}
