@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/neonauth/:path*", "destination": "/api/neonauth/:path*" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/neonauth/:path*", "destination": "/api/neonauth?path=:path*" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

@@ -24,8 +24,16 @@ Faire transiter l'auth par le domaine de l'app ; le cookie devient first-party, 
 persisté par tous les navigateurs. Aucun changement backend (Render vérifie les JWT via
 JWKS directement chez Neon).
 
-1. **`frontend/vercel.json`** — rewrite proxy AVANT le catch-all SPA :
-   `/neonauth/:path*` → `https://ep-damp-pond-aq32vtdp.neonauth.c-8.us-east-1.aws.neon.tech/neondb/auth/:path*`.
+1. **Proxy = fonction serverless** `frontend/api/neonauth.js` (appris en implémentant :
+   la rewrite externe « pure » transmet notre Host → Neon répond `INVALID_HOSTNAME`, et le
+   routage des fonctions à segments dynamiques ne couvre pas les chemins profonds type
+   `sign-in/email`). `frontend/vercel.json` réécrit `/neonauth/:path*` →
+   `/api/neonauth?path=:path*` AVANT le catch-all SPA, qui devient `/((?!api/).*)`
+   (lookahead négatif pour ne plus avaler `/api/*`). La fonction refait la requête vers
+   `https://ep-….neon.tech/neondb/auth/<path>` (Host correct, déduit de l'URL par fetch)
+   et relaie le `Set-Cookie` tel quel.
+   **Déploiement : `vercel build --prod && vercel deploy --prebuilt --prod`** — le build
+   distant de ce projet Vite n'embarque pas le dossier `api/` ; le prébuilt si.
 2. **`VITE_NEON_AUTH_URL` = `/neonauth`** (env Vercel production + `.env` local).
 3. **Résolution d'URL relative** : `auth-client.ts` exporte la base résolue
    (`window.location.origin + valeur` si elle commence par `/`) ; `api.ts` la réutilise pour
