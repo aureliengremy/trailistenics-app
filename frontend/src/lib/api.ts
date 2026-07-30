@@ -1,7 +1,8 @@
+import { NEON_AUTH_BASE } from "@/lib/auth-client"
 import type { AdminUser, Program } from "@/types"
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000"
-const AUTH_URL = import.meta.env.VITE_NEON_AUTH_URL as string | undefined
+const AUTH_URL = NEON_AUTH_BASE || undefined
 
 /** Erreur HTTP enrichie du code de statut (utile pour distinguer 401/409…). */
 export class ApiError extends Error {
