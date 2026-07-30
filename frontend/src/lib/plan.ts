@@ -389,6 +389,14 @@ export function plannedDposFor(sessKey: string, w: PlanWeek): number | null {
   return sessKey === "longue" ? w.dpos : null
 }
 
+/** Km prévus par sortie de la semaine, ordonnés lundi → dimanche (détail du résumé hebdo). */
+export function weekKmBreakdown(w: PlanWeek): Array<{ dow: number; km: number }> {
+  return weekRunKeys(w)
+    .map((k) => ({ dow: PLANNED_DOW[k], km: sessionTarget(k, w).km }))
+    .filter((x): x is { dow: number; km: number } => x.km != null)
+    .sort((a, b) => (a.dow === 0 ? 7 : a.dow) - (b.dow === 0 ? 7 : b.dow))
+}
+
 export interface WeekDay {
   dow: number
   name: string
