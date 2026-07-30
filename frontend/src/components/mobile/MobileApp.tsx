@@ -36,6 +36,7 @@ import {
   RENFO_DOW,
   sessionForDay,
   tint,
+  weekKmBreakdown,
   weekPlannedDpos,
   weekPlannedKm,
   weekPlannedMin,
@@ -282,14 +283,6 @@ function WeekDetailM({
         {w.bloc}
       </h2>
       <div className="m-dboxes">
-        <div className="m-dbox">
-          <div className="m-dk">Sortie longue · dimanche</div>
-          <div className="m-dv">{w.longue}</div>
-        </div>
-        <div className="m-dbox">
-          <div className="m-dk">Qualité · jeudi</div>
-          <div className="m-dv">{w.qual}</div>
-        </div>
         <div className="m-dbox half">
           <div className="m-dk">Distance totale</div>
           <div className="m-dv">{weekPlannedKm(w)} km</div>
@@ -308,6 +301,20 @@ function WeekDetailM({
             {w.sea} <span style={{ fontSize: 12, color: "var(--muted)" }}>dont renfo</span>
           </div>
         </div>
+        <div className="m-dbox">
+          <div className="m-dk">Sortie longue · dimanche</div>
+          <div className="m-dv">{w.longue}</div>
+        </div>
+        <div className="m-dbox">
+          <div className="m-dk">Qualité · jeudi</div>
+          <div className="m-dv">{w.qual}</div>
+        </div>
+      </div>
+      <div className="wk-breakdown">
+        Par sortie :{" "}
+        {weekKmBreakdown(w)
+          .map((x) => `${DAY_NAMES[x.dow].slice(0, 3).toLowerCase()} ~${x.km} km`)
+          .join(" · ")}
       </div>
       {w.n <= cur && (
         <>

@@ -3387,3 +3387,6 @@ button {
 /* ===== WeekObjectives à 4 stats : grille 2×2 sur mobile ===== */
 .m-wk-obj { flex-wrap: wrap; }
 .m-wk-ob { flex: 1 1 calc(50% - 4px); }
+
+/* ===== Détail de semaine : répartition des km par sortie ===== */
+.wk-breakdown { font-size: 12px; color: var(--muted); margin: -2px 0 12px; }

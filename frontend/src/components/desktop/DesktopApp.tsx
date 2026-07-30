@@ -36,6 +36,7 @@ import {
   RENFO_DOW,
   sessionForDay,
   tint,
+  weekKmBreakdown,
   weekPlannedDpos,
   weekPlannedKm,
   weekPlannedMin,
@@ -275,14 +276,6 @@ function Plan({ plan, prog, openRenfo }: ScreenProps) {
         </span>
         <h3 className="d-detail-h">{w.bloc}</h3>
         <div className="d-dboxes">
-          <div className="d-dbox">
-            <div className="d-dk">Sortie longue · dimanche</div>
-            <div className="d-dv">{w.longue}</div>
-          </div>
-          <div className="d-dbox">
-            <div className="d-dk">Qualité · jeudi</div>
-            <div className="d-dv">{w.qual}</div>
-          </div>
           <div className="d-dbox half">
             <div className="d-dk">Distance totale</div>
             <div className="d-dv">{weekPlannedKm(w)} km</div>
@@ -301,6 +294,20 @@ function Plan({ plan, prog, openRenfo }: ScreenProps) {
               {w.sea} <span style={{ fontSize: 12, color: "var(--muted)" }}>dont renfo</span>
             </div>
           </div>
+          <div className="d-dbox">
+            <div className="d-dk">Sortie longue · dimanche</div>
+            <div className="d-dv">{w.longue}</div>
+          </div>
+          <div className="d-dbox">
+            <div className="d-dk">Qualité · jeudi</div>
+            <div className="d-dv">{w.qual}</div>
+          </div>
+        </div>
+        <div className="wk-breakdown">
+          Par sortie :{" "}
+          {weekKmBreakdown(w)
+            .map((x) => `${DAY_NAMES[x.dow].slice(0, 3).toLowerCase()} ~${x.km} km`)
+            .join(" · ")}
         </div>
         {w.n <= cur && (
           <>
