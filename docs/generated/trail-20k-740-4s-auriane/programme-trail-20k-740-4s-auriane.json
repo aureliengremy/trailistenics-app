@@ -94,7 +94,7 @@
       "long_run_distance_km": 16,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "Côtes : 6×1 min (récup en descendant)",
+      "quality_session": "Côtes : 6×1 min vif (RPE 8/10), récup : redescente en trot",
       "focus": "Prise de contact, Auriane. On réveille le D+ sans forcer et on place une première descente contrôlée en fin de longue (5-6 × 1 min, effort 6/10) pour amorcer la protection des cuisses.",
       "is_race": false
     },
@@ -108,7 +108,7 @@
       "long_run_distance_km": 20,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "VMA : 5×3 min (récup 3 min)",
+      "quality_session": "VMA : 5×3 min (RPE 9/10), récup 3 min trot",
       "focus": "La semaine clé. Sortie choc dimanche : on simule la course (~600 m D+), power hiking dès que ça monte raide, descentes contrôlées (pas de chrono). C'est ta DERNIÈRE grosse descente — elle te protège jusqu'au jour J. Teste chaussures et nutrition.",
       "is_race": false
     },
@@ -122,7 +122,7 @@
       "long_run_distance_km": 13,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Seuil : 2×10 min (allure course)",
+      "quality_session": "Seuil : 2×10 min allure course (RPE 7/10), récup 3 min trot",
       "focus": "On lève le pied : volume −45 %. Le travail est fait, on garde juste un peu de jus avec un seuil court à allure course. Pas de grosse descente cette semaine — la protection de S2 tient encore.",
       "is_race": false
     },
@@ -136,7 +136,7 @@
       "long_run_distance_km": 6,
       "sessions_per_week": 2,
       "sessions_label": null,
-      "quality_session": "Lignes droites : 6×20 s (activation)",
+      "quality_session": "Lignes droites : 6×20 s rapides (RPE 9/10), récup : retour en marche",
       "focus": "Dernière ligne droite. Jambes fraîches, mental léger. Deux sorties très courtes avec quelques lignes pour rester vive, puis COURSE dimanche 12 juillet : 20 km / 740 m D+. Pars prudente, marche les raidards, lâche les descentes roulantes.",
       "is_race": true
     }

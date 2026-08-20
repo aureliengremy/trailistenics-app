@@ -144,7 +144,7 @@
       "long_run_distance_km": null,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Initiation : 8×(1 min course / 1 min marche)",
+      "quality_session": "Initiation : 8×(1 min course RPE 5/10 / 1 min marche) — la marche est la récup",
       "focus": "On démarre tout en douceur, AurelTest. Tu ne cours pas encore : ce sont tes tendons qu'on réveille, pas ton souffle. Marche/course, et marche dès que ça monte. Le confort prime sur la vitesse.",
       "is_race": false
     },
@@ -158,7 +158,7 @@
       "long_run_distance_km": null,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Initiation : 8×(2 min course / 1 min marche)",
+      "quality_session": "Initiation : 8×(2 min course RPE 5–6/10 / 1 min marche) — la marche est la récup",
       "focus": "On allonge un peu les portions courues. Si une douleur tendineuse apparaît, on lève le pied : à ce stade, mieux vaut trop peu que trop.",
       "is_race": false
     },
@@ -172,7 +172,7 @@
       "long_run_distance_km": 7,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Côtes en marche rapide : 6×1 min",
+      "quality_session": "Côtes en marche rapide : 6×1 min (RPE 6/10), récup : redescente tranquille",
       "focus": "Premières côtes, en marchant vite (power hiking) : c'est exactement le geste de la montagne. Pas d'accès montagne ? Une côte du quartier ou des escaliers, répétés.",
       "is_race": false
     },
@@ -186,7 +186,7 @@
       "long_run_distance_km": 6,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Footing souple continu 20 min",
+      "quality_session": "Footing souple continu 20 min (RPE 3–4/10), aucune intensité",
       "focus": "Semaine allégée : on assimile. Essaie 20 min de course continue très facile — ta première vraie sortie sans marcher. On récupère pour repartir plus fort.",
       "is_race": false
     },
@@ -200,7 +200,7 @@
       "long_run_distance_km": 9,
       "sessions_per_week": 4,
       "sessions_label": "3 → 4",
-      "quality_session": "Côtes : 6×30 s (course)",
+      "quality_session": "Côtes : 6×30 s allure course (RPE 8/10), récup : redescente en marche",
       "focus": "On passe à 4 séances : ton corps est prêt. La course devient continue sur le plat, marche dans les raidards. Le renfo du mardi devient régulier.",
       "is_race": false
     },
@@ -214,7 +214,7 @@
       "long_run_distance_km": 10,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "Seuil doux : 2×6 min",
+      "quality_session": "Seuil doux : 2×6 min (RPE 6–7/10), récup 3 min trot",
       "focus": "Première descente travaillée en fin de longue : descends contrôlé sur 4-5 min cumulées (escaliers/côte douce), effort 5/10. C'est le début du blindage des cuisses.",
       "is_race": false
     },
@@ -228,7 +228,7 @@
       "long_run_distance_km": 12,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "Côtes : 8×1 min",
+      "quality_session": "Côtes : 8×1 min vif (RPE 8/10), récup : redescente en trot",
       "focus": "Le volume grimpe. Cumule le D+ en répétant tes côtes/escaliers — vise le total, pas une seule grande montée. Teste ta nutrition sur la longue.",
       "is_race": false
     },
@@ -242,7 +242,7 @@
       "long_run_distance_km": 9,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Footing souple + 4 lignes",
+      "quality_session": "Footing souple (RPE 3–4/10) + 4 lignes droites ~20 s (RPE 9/10), récup : retour en marche",
       "focus": "Deuxième coupure : on encaisse la charge avant le gros bloc. Repos, sommeil, nutrition — la récup, c'est de l'entraînement aussi.",
       "is_race": false
     },
@@ -256,7 +256,7 @@
       "long_run_distance_km": 14,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "VMA courte : 6×2 min (récup 2 min)",
+      "quality_session": "VMA courte : 6×2 min (RPE 9/10), récup 2 min trot",
       "focus": "On introduit la VMA : du rythme pour muscler le moteur. Sur la longue, descente plus marquée et contrôlée. Power hiking systématique au-delà de 15 % de pente.",
       "is_race": false
     },
@@ -270,7 +270,7 @@
       "long_run_distance_km": 16,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "Côtes longues : 5×2 min",
+      "quality_session": "Côtes longues : 5×2 min soutenu (RPE 8/10), récup : redescente en trot",
       "focus": "Bloc clé. La sortie longue ressemble de plus en plus à la course. Gère la fatigue : dors bien, mange assez. Matériel testé en conditions réelles.",
       "is_race": false
     },
@@ -284,7 +284,7 @@
       "long_run_distance_km": 18,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "VMA : 5×3 min (récup 3 min)",
+      "quality_session": "VMA : 5×3 min (RPE 9/10), récup 3 min trot",
       "focus": "Plus longue sortie de la prépa en durée. Tu approches le D+ de la course : reste régulier, marche les montées raides sans culpabiliser. La gestion fera la course.",
       "is_race": false
     },
@@ -298,7 +298,7 @@
       "long_run_distance_km": 20,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "Côtes longues : 6×2 min",
+      "quality_session": "Côtes longues : 6×2 min soutenu (RPE 8/10), récup : redescente en trot",
       "focus": "Sortie choc : la répétition générale, le D+ complet de la course (~740 m). Descentes contrôlées — c'est ta DERNIÈRE grosse descente, elle te protège jusqu'au jour J. Valide chaussures, sac, nutrition.",
       "is_race": false
     },
@@ -312,7 +312,7 @@
       "long_run_distance_km": 12,
       "sessions_per_week": 4,
       "sessions_label": null,
-      "quality_session": "Seuil : 2×10 min (allure course)",
+      "quality_session": "Seuil : 2×10 min allure course (RPE 7/10), récup 3 min trot",
       "focus": "Début d'affûtage : volume −40 %. Une dernière descente modérée et contrôlée, puis on protège les cuisses. Le gros du travail est derrière toi.",
       "is_race": false
     },
@@ -326,7 +326,7 @@
       "long_run_distance_km": 8,
       "sessions_per_week": 3,
       "sessions_label": null,
-      "quality_session": "Lignes + côtes courtes : 5×1 min vif",
+      "quality_session": "Lignes + côtes courtes : 5×1 min vif (RPE 8/10), récup : 1 min 30 marche/trot",
       "focus": "Affûtage profond : jambes qui se rechargent. On garde du tonus avec quelques côtes vives courtes, zéro fatigue. Prépare ta logistique de course.",
       "is_race": false
     },
@@ -340,7 +340,7 @@
       "long_run_distance_km": 20,
       "sessions_per_week": 2,
       "sessions_label": null,
-      "quality_session": "Activation : 5×20 s lignes (veille)",
+      "quality_session": "Activation veille de course : 5×20 s rapides (RPE 9/10), récup : retour en marche",
       "focus": "Le grand jour, AurelTest ! Pars très prudent (le D+ arrive vite), marche tous les raidards, lâche les descentes roulantes. Tu n'étais pas coureur il y a 15 semaines — savoure. Mange et bois régulièrement. Bonne course !",
       "is_race": true
     }

@@ -41,19 +41,19 @@ Vise les **durées** plutôt que les distances exactes : le D+ ralentit l'allure
 
 | Sem. | Date | Bloc | Sortie longue (dimanche) | Qualité (jeudi) | Séances/sem | Focus |
 | --- | --- | --- | --- | --- | :---: | --- |
-| **1** | 2 juin | Reprise | 1h10 · ~11 km · 250 m D+ | Côtes : 6×1 min | 3 | Réveil en douceur. Endurance facile, on marche dès que ça monte raide. |
-| **2** | 9 juin | Reprise | 1h15 · ~12 km · 300 m D+ | Seuil : 2×12 min | 3 | On installe la routine. Footing du seuil sur faux-plat. |
-| **3** | 16 juin | Base | 1h20 · ~13 km · 350 m D+ | Côtes : 8×1 min | 3 → 4 | Passage vers 4 séances selon la forme. Le renfo du mardi devient régulier. |
-| **4** | 23 juin | **Allégée** | 1h00 · ~10 km · 250 m D+ | Seuil : 2×10 min | 3 | Semaine de récup. Le corps assimile — ne la saute pas. |
-| **5** | 30 juin | Base | 1h30 · ~14 km · 400 m D+ | Côtes : 8×1 min + descente | 4 | On commence le travail de descente sur la longue. Sentiers en pente choisis exprès. |
-| **6** | 7 juil. | Développement | 1h40 · ~15 km · 450 m D+ | Seuil : 3×10 min | 4 | Le volume grimpe. Teste ta nutrition sur la longue. |
-| **7** | 14 juil. | Développement | 1h50 · ~16 km · 500 m D+ | Côtes : 10×1 min | 4 | Première vraie longue. Power hiking dans les passages raides. |
-| **8** | 21 juil. | **Allégée** | 1h15 · ~12 km · 300 m D+ | Seuil : 2×12 min | 3 | Deuxième coupure. Tu encaisses la charge avant le gros bloc. |
-| **9** | 28 juil. | Pic de charge | 2h00 · ~17 km · 550 m D+ | Côtes longues : 5×2 min | 4 | Le bloc clé. Matériel testé en conditions réelles. |
-| **10** | 4 août | Pic de charge | 2h15 · ~18 km · 600 m D+ | Seuil : 3×12 min | 4 | Volume maximal. Gère la fatigue, dors bien. |
-| **11** | 11 août | Simulateur | 2h30 · ~15 km · ~700 m D+ (sortie choc) | Côtes : 6×2 min (léger) | 4 | Sortie choc à J-3 semaines : le D+ max que tu trouves. Évalue ton rythme en descente technique. |
-| **12** | 18 août | Affûtage | 1h15 · ~12 km · 350 m D+ | Côtes : 5×1 min vif | 3 | Réduction ~50 % du volume. On garde du tonus, pas de fatigue. |
-| **13** | 25 août | Affûtage | 45 min relâché + lignes → **COURSE** 🏁 | Repos / 20 min footing | 2 | Dernière ligne droite. Jambes fraîches, frais mental. La course t'attend. |
+| **1** | 2 juin | Reprise | 1h10 · ~11 km · 250 m D+ | Lignes droites : 6×20 s rapides (RPE 9/10), récup : retour en marche | 3 | Réveil en douceur. Endurance facile, on marche dès que ça monte raide. |
+| **2** | 9 juin | Reprise | 1h15 · ~12 km · 300 m D+ | Côtes : 6×30 s allure course (RPE 8/10), récup : redescente en marche | 3 | On installe la routine. Footing du seuil sur faux-plat. |
+| **3** | 16 juin | Base | 1h20 · ~13 km · 350 m D+ | Côtes : 6×1 min vif (RPE 8/10), récup : redescente en trot | 3 → 4 | Passage vers 4 séances selon la forme. Le renfo du mardi devient régulier. |
+| **4** | 23 juin | **Allégée** | 1h00 · ~10 km · 250 m D+ | Seuil doux : 2×6 min (RPE 6–7/10), récup 3 min trot | 3 | Semaine de récup. Le corps assimile — ne la saute pas. |
+| **5** | 30 juin | Base | 1h30 · ~14 km · 400 m D+ | Côtes : 8×1 min vif (RPE 8/10), récup : redescente en trot — 3 dernières descentes appuyées (RPE 6/10) | 4 | On commence le travail de descente sur la longue. Sentiers en pente choisis exprès. |
+| **6** | 7 juil. | Développement | 1h40 · ~15 km · 450 m D+ | Seuil : 3×10 min (RPE 7/10), récup 3 min trot | 4 | Le volume grimpe. Teste ta nutrition sur la longue. |
+| **7** | 14 juil. | Développement | 1h50 · ~16 km · 500 m D+ | Côtes : 10×1 min vif (RPE 8/10), récup : redescente en trot | 4 | Première vraie longue. Power hiking dans les passages raides. |
+| **8** | 21 juil. | **Allégée** | 1h15 · ~12 km · 300 m D+ | Seuil : 2×12 min (RPE 7/10), récup 3 min trot | 3 | Deuxième coupure. Tu encaisses la charge avant le gros bloc. |
+| **9** | 28 juil. | Pic de charge | 2h00 · ~17 km · 550 m D+ | Côtes longues : 5×2 min soutenu (RPE 8/10), récup : redescente en trot | 4 | Le bloc clé. Matériel testé en conditions réelles. |
+| **10** | 4 août | Pic de charge | 2h15 · ~18 km · 600 m D+ | Seuil : 3×12 min (RPE 7/10), récup 3 min trot | 4 | Volume maximal. Gère la fatigue, dors bien. |
+| **11** | 11 août | Simulateur | 2h30 · ~15 km · ~700 m D+ (sortie choc) | Côtes : 6×2 min contrôlé (RPE 6–7/10), récup : redescente en trot | 4 | Sortie choc à J-3 semaines : le D+ max que tu trouves. Évalue ton rythme en descente technique. |
+| **12** | 18 août | Affûtage | 1h15 · ~12 km · 350 m D+ | Côtes : 5×1 min vif (RPE 8/10), récup : redescente en trot | 3 | Réduction ~50 % du volume. On garde du tonus, pas de fatigue. |
+| **13** | 25 août | Affûtage | 45 min relâché + lignes → **COURSE** 🏁 | Repos, ou 20 min de footing très facile (RPE 3/10) | 2 | Dernière ligne droite. Jambes fraîches, frais mental. La course t'attend. |
 
 ### Lecture des blocs
 
