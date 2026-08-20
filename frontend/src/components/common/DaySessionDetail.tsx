@@ -110,7 +110,21 @@ export function DaySessionDetail({
           </>
         ) : (
           <>
-            <div className="sess-body-note">{sess.detail}</div>
+            {sess.phases ? (
+              <div className="qual-phases">
+                {sess.phases.map((p) => (
+                  <div key={p.label}>
+                    <div className="qual-phase-l">{p.label}</div>
+                    <div className="qual-phase-t">{p.text}</div>
+                  </div>
+                ))}
+                <div className="qual-rpe">
+                  RPE = effort perçu sur 10 · 7 = phrases courtes · 8 = 3–4 mots · 9 = quasi max
+                </div>
+              </div>
+            ) : (
+              <div className="sess-body-note">{sess.detail}</div>
+            )}
             <KmField
               prog={prog}
               dkey={kk}
