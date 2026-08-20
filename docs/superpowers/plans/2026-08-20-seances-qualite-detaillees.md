@@ -133,8 +133,9 @@ assert not overlap, overlap
 # Contrainte de colonne String(128).
 too_long = [v for v in list(REWRITES.values()) + [r[1] for r in REFERENCE_RERAMP.values()] if len(v) > 128]
 assert not too_long, too_long
-# Toute valeur porte une intensité chiffrée.
-missing = [v for v in REWRITES.values() if '(RPE' not in v]
+# Toute valeur porte une intensité chiffrée (les libellés « Initiation » la portent
+# à l'intérieur de la parenthèse de répétitions : on cherche RPE, pas '(RPE').
+missing = [v for v in REWRITES.values() if 'RPE' not in v]
 assert not missing, missing
 # Les libellés attendus par la re-rampe sont bien des SORTIES de conversion.
 vals = set(REWRITES.values())
