@@ -44,6 +44,10 @@ manquant, semaines vides…), signale-le et arrête proprement.
 - **Garde le squelette trail tel quel** : reprends `blocs` et `weeks` de `01-trail.json` (mêmes
   durées, D+, qualité, taper). Tu peux **enrichir `focus`/`quality_session`** pour mentionner la
   descente, sans changer les chiffres de charge.
+- Les `quality_session` héritées de l'artefact trail conservent le **format obligatoire**
+  (allure + `(RPE X/10)` + récup, ≤ 128 caractères) et le **barème de progressivité** du
+  contrat de sortie. Ne jamais y ajouter l'échauffement ni le retour au calme : l'app les
+  affiche.
 - **Injecte le circuit renfo** de `02-calisthenie.json` dans `exercises` du programme final
   (calé au niveau déduit). Garde la **chaîne postérieure prioritaire** et **les step-downs**.
 - **Place le renfo dans la semaine** (règles doc 03 §2/§6) :

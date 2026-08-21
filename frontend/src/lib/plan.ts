@@ -264,6 +264,8 @@ export interface DaySession {
   tag: string
   col: string
   key: string
+  /** Séance qualité : décomposition en phases (échauffement / corps / retour au calme). */
+  phases?: Array<{ label: string; text: string }>
 }
 
 /** Objectif chiffré d'une sortie : temps de course (min) et/ou distance (km). */
@@ -330,7 +332,26 @@ export function sessionForDay(d: number, w: PlanWeek): DaySession {
     }
     case 4: {
       const t = sessionTarget("qual", w)
-      return { type: "Séance qualité", detail: `${w.qual} · ~${t.min} min en tout (échauffement + retour au calme inclus).`, tag: "Intensité", col: "var(--accent)", key: "qual" }
+      // Les phases (échauffement / retour au calme) n'ont de sens que devant une vraie
+      // séance d'intensité : un repos, un footing souple ou une initiation marche/course
+      // ne s'échauffent pas 10 min. On les détecte par l'absence de RPE ≥ 6.
+      const hasIntensity = /RPE\s*[6-9]/.test(w.qual)
+      return {
+        type: "Séance qualité",
+        detail: `${w.qual} · ~${t.min} min en tout (échauffement + retour au calme inclus).`,
+        tag: "Intensité",
+        col: "var(--accent)",
+        key: "qual",
+        ...(hasIntensity
+          ? {
+              phases: [
+                { label: "Échauffement", text: "~10 min de footing progressif (RPE 3–4/10)" },
+                { label: "Corps de séance", text: w.qual },
+                { label: "Retour au calme", text: "~10 min très facile (RPE 3/10)" },
+              ],
+            }
+          : {}),
+      }
     }
     case 5:
       return { type: "Repos", detail: "Récupération avant le week-end de volume.", tag: "Récup", col: "var(--muted)", key: "repos5" }

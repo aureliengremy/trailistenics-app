@@ -3390,3 +3390,11 @@ button {
 
 /* ===== Détail de semaine : répartition des km par sortie ===== */
 .wk-breakdown { font-size: 12px; color: var(--muted); margin: -2px 0 12px; }
+
+/* ===== Séance qualité : phases (échauffement · corps · retour au calme) ===== */
+.qual-phases { display: flex; flex-direction: column; gap: 8px; }
+.qual-phase-l {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+}
+.qual-phase-t { font-size: 14px; color: var(--ink); }
+.qual-rpe { margin-top: 2px; font-size: 11px; font-style: italic; color: var(--muted); }

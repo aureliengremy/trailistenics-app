@@ -133,8 +133,9 @@ assert not overlap, overlap
 # Contrainte de colonne String(128).
 too_long = [v for v in list(REWRITES.values()) + [r[1] for r in REFERENCE_RERAMP.values()] if len(v) > 128]
 assert not too_long, too_long
-# Toute valeur porte une intensité chiffrée.
-missing = [v for v in REWRITES.values() if '(RPE' not in v]
+# Toute valeur porte une intensité chiffrée (les libellés « Initiation » la portent
+# à l'intérieur de la parenthèse de répétitions : on cherche RPE, pas '(RPE').
+missing = [v for v in REWRITES.values() if 'RPE' not in v]
 assert not missing, missing
 # Les libellés attendus par la re-rampe sont bien des SORTIES de conversion.
 vals = set(REWRITES.values())
@@ -183,7 +184,7 @@ Run (depuis la racine du dépôt, avec le venv backend actif) :
 
 ```bash
 python - <<'PY'
-import json, pathlib, sys
+import json, pathlib, re, sys
 sys.path.insert(0, "backend")
 from app.quality_sessions import REWRITES, REFERENCE_RERAMP
 
@@ -196,12 +197,15 @@ targets = [
 ]
 
 # 1. Conversion (allure + RPE + récup) sur les 4 fichiers.
+#    UN SEUL passage via re.sub : 17 valeurs de REWRITES contiennent leur propre libellé
+#    d'origine en sous-texte (« Côtes : 8×1 min » ⊂ « Côtes : 8×1 min vif (RPE 8/10)… »).
+#    Un enchaînement de str.replace re-substituerait à l'intérieur du texte déjà converti
+#    et corromprait le résultat ; re.sub ne relit jamais ce qu'il vient d'écrire.
+pattern = re.compile("|".join(re.escape(k) for k in sorted(REWRITES, key=len, reverse=True)))
 for rel in targets:
     p = ROOT / rel
     text = p.read_text(encoding="utf-8")
-    for old in sorted(REWRITES, key=len, reverse=True):
-        text = text.replace(old, REWRITES[old])
-    p.write_text(text, encoding="utf-8")
+    p.write_text(pattern.sub(lambda m: REWRITES[m.group(0)], text), encoding="utf-8")
 
 # 2. Re-rampe du plan de référence, dans le .md uniquement (la semaine et le libellé sont
 #    sur la même ligne : `| **1** | 2 juin | … | <libellé> | 3 | … |`).

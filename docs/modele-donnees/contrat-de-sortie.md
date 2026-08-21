@@ -92,7 +92,7 @@ Tiré de `backend/app/models/{bloc,week,exercise}.py` et des schémas Pydantic
 | `long_run_distance_km` | int \| null | distance approx. en km (null si non pertinent) | `17` |
 | `sessions_per_week` | int | nombre de séances de la semaine | `4` |
 | `sessions_label` | string \| null | libellé alternatif (ex. transition) | `"3 → 4"` ou `null` |
-| `quality_session` | string | ≤ 128, séance qualité de la semaine | `"Côtes longues : 5×2 min"` |
+| `quality_session` | string | ≤ 128, séance qualité de la semaine | `"Côtes longues : 5×2 min soutenu (RPE 8/10), récup : redescente en trot"` |
 | `focus` | string (text) | phrase d'intention de la semaine (ton app) | `"Le bloc clé. Matériel testé en conditions réelles."` |
 | `is_race` | bool | `true` uniquement la semaine de course | `false` |
 
@@ -107,6 +107,51 @@ Tiré de `backend/app/models/{bloc,week,exercise}.py` et des schémas Pydantic
 - Chaque `week.bloc` référence un `bloc.key` existant.
 - Les nombres (durée, D+, distance) suivent les règles de progression de
   [`01-trail-periodisation.md`](../methodologie/01-trail-periodisation.md) (≤ ~10 %/sem, déloads, taper).
+
+### `quality_session` — format obligatoire
+
+`Famille : NxDurée allure (RPE X/10), récup : …` — 128 caractères maximum.
+
+- **L'intensité est toujours chiffrée** sur l'échelle RPE (effort perçu /10) :
+  3–4 = très facile (conversation) · 5–6 = modéré · **7 = seuil** (phrases courtes) ·
+  **8 = côtes** (3–4 mots) · **9 = VMA / lignes** (quasi max) · 10 = jamais.
+- **La récupération est toujours précisée** (« récup : redescente en trot »,
+  « récup 3 min trot », « la marche est la récup »…).
+- **L'échauffement et le retour au calme n'y figurent pas** : l'app les affiche
+  automatiquement (~10 min chacun).
+
+### Progressivité de l'intensité — barème par niveau
+
+Niveau déduit de l'intake (`court_deja`, `course.volume_hebdo_km`, `course.experience_trail`).
+« Volume utile » = temps cumulé à RPE ≥ 7 dans la séance.
+
+| Niveau | 1ʳᵉ séance qualité (volume utile) | Plafond en semaine de pic |
+|---|---|---|
+| `court_deja = false` | **0 min** — marche/course alternée (RPE 5–6) pendant ≥ 2 semaines | 8–10 min |
+| débutant (< 20 km/sem) | 2–3 min (lignes 20 s, côtes 30 s) | 12–15 min |
+| intermédiaire (20–40 km/sem) | 5–6 min | 20–25 min |
+| confirmé (> 40 km/sem) | 8–10 min | 30 min |
+
+Règles associées :
+- progression du volume utile **≤ ~15 %/semaine**, **jamais de doublement** d'une semaine à
+  l'autre ;
+- les **intervalles VO2max (VMA, RPE 9, séries de 2 min et plus)** sont interdits avant la
+  4ᵉ semaine pour un profil débutant ou `court_deja = false`. Les **lignes droites de 20 s**
+  sont elles autorisées dès la première semaine : leur RPE est élevé (9) mais l'effort est
+  neuromusculaire et le volume utile quasi nul — c'est la porte d'entrée recommandée vers
+  l'intensité.
+
+> **Comment mesurer le volume utile.** Il se compare **par famille** (seuil entre semaines de
+> seuil, côtes entre semaines de côtes, VMA entre semaines de VMA), jamais d'une famille à
+> l'autre : 30 min de seuil (RPE 7) et 30 min de côtes (RPE 8) ne représentent pas la même
+> charge. La règle « ≤ ~15 %/sem » et le plafond du pic s'appliquent donc à la progression
+> **au sein d'une même famille**.
+
+> **Portée.** Ce barème encadre les **programmes nouvellement générés**.
+> `exemple-programme-740.json` illustre le **format de sortie et la structure des entités**
+> (blocs, semaines, exercices), pas le calibrage de progressivité : c'est un plan écrit à la
+> main, antérieur à ce barème, dont la progression du seuil est plus agressive que ce que le
+> barème autorise pour un profil intermédiaire. Ne t'en sers pas comme référence de dosage.
 
 ### 3.3 `exercise` — circuit de renforcement
 
