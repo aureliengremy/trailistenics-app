@@ -62,7 +62,7 @@ Applique la **synthèse opérationnelle** de `01-trail-periodisation.md` :
   + côtes spécifiques D+) ; pic = côtes longues spécifiques course ; **affûtage = garder UNE séance
   d'intervalles VO2max raccourcie** (maintien de l'intensité, jambes vives). Sur objectif **court
   (≤ 21 km)**, la VMA pèse davantage ; sur ultra, elle reste présente mais minoritaire.
-  > Inscris explicitement ces séances dans `weeks[].quality_session` (ex. « VMA : 5×3 min (récup 3 min) »),
+  > Inscris explicitement ces séances dans `weeks[].quality_session` (ex. « VMA : 5×3 min (RPE 9/10), récup 3 min trot »),
   > pas seulement « côtes/seuil ». Adapte le volume au niveau selon le **barème de progressivité** du contrat de sortie
   > (§ « Progressivité de l'intensité ») : volume utile de départ, plafond au pic,
   > progression ≤ ~15 %/sem, pas de RPE 9 avant la 4ᵉ semaine pour un débutant.

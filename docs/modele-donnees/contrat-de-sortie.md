@@ -92,7 +92,7 @@ Tiré de `backend/app/models/{bloc,week,exercise}.py` et des schémas Pydantic
 | `long_run_distance_km` | int \| null | distance approx. en km (null si non pertinent) | `17` |
 | `sessions_per_week` | int | nombre de séances de la semaine | `4` |
 | `sessions_label` | string \| null | libellé alternatif (ex. transition) | `"3 → 4"` ou `null` |
-| `quality_session` | string | ≤ 128, séance qualité de la semaine | `"Côtes longues : 5×2 min"` |
+| `quality_session` | string | ≤ 128, séance qualité de la semaine | `"Côtes longues : 5×2 min soutenu (RPE 8/10), récup : redescente en trot"` |
 | `focus` | string (text) | phrase d'intention de la semaine (ton app) | `"Le bloc clé. Matériel testé en conditions réelles."` |
 | `is_race` | bool | `true` uniquement la semaine de course | `false` |
 
