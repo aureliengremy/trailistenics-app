@@ -42,7 +42,7 @@ Vise les **durées** plutôt que les distances exactes : le D+ ralentit l'allure
 | Sem. | Date | Bloc | Sortie longue (dimanche) | Qualité (jeudi) | Séances/sem | Focus |
 | --- | --- | --- | --- | --- | :---: | --- |
 | **1** | 2 juin | Reprise | 1h10 · ~11 km · 250 m D+ | Lignes droites : 6×20 s rapides (RPE 9/10), récup : retour en marche | 3 | Réveil en douceur. Endurance facile, on marche dès que ça monte raide. |
-| **2** | 9 juin | Reprise | 1h15 · ~12 km · 300 m D+ | Côtes : 6×30 s allure course (RPE 8/10), récup : redescente en marche | 3 | On installe la routine. Footing du seuil sur faux-plat. |
+| **2** | 9 juin | Reprise | 1h15 · ~12 km · 300 m D+ | Côtes : 6×30 s allure course (RPE 8/10), récup : redescente en marche | 3 | On installe la routine. Premières accélérations en côte, sans forcer. |
 | **3** | 16 juin | Base | 1h20 · ~13 km · 350 m D+ | Côtes : 6×1 min vif (RPE 8/10), récup : redescente en trot | 3 → 4 | Passage vers 4 séances selon la forme. Le renfo du mardi devient régulier. |
 | **4** | 23 juin | **Allégée** | 1h00 · ~10 km · 250 m D+ | Seuil doux : 2×6 min (RPE 6–7/10), récup 3 min trot | 3 | Semaine de récup. Le corps assimile — ne la saute pas. |
 | **5** | 30 juin | Base | 1h30 · ~14 km · 400 m D+ | Côtes : 8×1 min vif (RPE 8/10), récup : redescente en trot — 3 dernières descentes appuyées (RPE 6/10) | 4 | On commence le travail de descente sur la longue. Sentiers en pente choisis exprès. |

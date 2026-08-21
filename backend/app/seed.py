@@ -41,7 +41,7 @@ WEEKS = [
      "Réveil en douceur. Endurance facile, on marche dès que ça monte raide.", False),
     (2, "9 juin", "reprise", "1h15 · ~12 km · 300 m D+", 75, 300, 12,
      3, None, "Côtes : 6×30 s allure course (RPE 8/10), récup : redescente en marche",
-     "On installe la routine. Footing du seuil sur faux-plat.", False),
+     "On installe la routine. Premières accélérations en côte, sans forcer.", False),
     (3, "16 juin", "base", "1h20 · ~13 km · 350 m D+", 80, 350, 13,
      3, "3 → 4", "Côtes : 6×1 min vif (RPE 8/10), récup : redescente en trot",
      "Passage vers 4 séances selon la forme. Le renfo du mardi devient régulier.", False),

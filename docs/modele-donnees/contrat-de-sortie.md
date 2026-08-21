@@ -135,8 +135,23 @@ Niveau déduit de l'intake (`court_deja`, `course.volume_hebdo_km`, `course.expe
 Règles associées :
 - progression du volume utile **≤ ~15 %/semaine**, **jamais de doublement** d'une semaine à
   l'autre ;
-- **RPE 9 (VMA, lignes rapides) interdit avant la 4ᵉ semaine** pour un profil débutant ou
-  `court_deja = false`.
+- les **intervalles VO2max (VMA, RPE 9, séries de 2 min et plus)** sont interdits avant la
+  4ᵉ semaine pour un profil débutant ou `court_deja = false`. Les **lignes droites de 20 s**
+  sont elles autorisées dès la première semaine : leur RPE est élevé (9) mais l'effort est
+  neuromusculaire et le volume utile quasi nul — c'est la porte d'entrée recommandée vers
+  l'intensité.
+
+> **Comment mesurer le volume utile.** Il se compare **par famille** (seuil entre semaines de
+> seuil, côtes entre semaines de côtes, VMA entre semaines de VMA), jamais d'une famille à
+> l'autre : 30 min de seuil (RPE 7) et 30 min de côtes (RPE 8) ne représentent pas la même
+> charge. La règle « ≤ ~15 %/sem » et le plafond du pic s'appliquent donc à la progression
+> **au sein d'une même famille**.
+
+> **Portée.** Ce barème encadre les **programmes nouvellement générés**.
+> `exemple-programme-740.json` illustre le **format de sortie et la structure des entités**
+> (blocs, semaines, exercices), pas le calibrage de progressivité : c'est un plan écrit à la
+> main, antérieur à ce barème, dont la progression du seuil est plus agressive que ce que le
+> barème autorise pour un profil intermédiaire. Ne t'en sers pas comme référence de dosage.
 
 ### 3.3 `exercise` — circuit de renforcement
 

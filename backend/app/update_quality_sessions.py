@@ -32,28 +32,33 @@ def main() -> int:
 
         # 1. Conversion (allure + RPE + récup) — libellé courant, ou converti s'il est connu.
         converted: dict[int, str] = {
-            id(week): REWRITES.get(week.quality_session or "", week.quality_session or "")
+            week.id: REWRITES.get(week.quality_session or "", week.quality_session or "")
             for week in weeks
         }
 
         # 2. Re-rampe : uniquement pour un programme dont les semaines 1–4 (converties)
-        #    portent la signature du plan de référence.
-        by_program: dict[int | None, dict[int, str]] = defaultdict(dict)
+        #    portent la signature du plan de référence. Les semaines sans `program_id`
+        #    (orphelines) sont exclues : les regrouper dans un même seau `None` mélangerait
+        #    des semaines de programmes différents et pourrait déclencher une re-rampe à tort.
+        #    Elles reçoivent quand même la conversion REWRITES normale ci-dessus.
+        by_program: dict[int, dict[int, str]] = defaultdict(dict)
         for week in weeks:
-            by_program[week.program_id][week.number] = converted[id(week)]
+            if week.program_id is None:
+                continue
+            by_program[week.program_id][week.number] = converted[week.id]
         reference_programs = {
             pid for pid, labels in by_program.items() if matches_reference(labels)
         }
         for week in weeks:
             if week.program_id in reference_programs:
                 reramp = REFERENCE_RERAMP.get(week.number)
-                if reramp is not None and converted[id(week)] == reramp[0]:
-                    converted[id(week)] = reramp[1]
+                if reramp is not None and converted[week.id] == reramp[0]:
+                    converted[week.id] = reramp[1]
 
         changes: list[tuple[Week, str, str]] = [
-            (week, week.quality_session, converted[id(week)])
+            (week, week.quality_session, converted[week.id])
             for week in weeks
-            if week.quality_session and converted[id(week)] != week.quality_session
+            if week.quality_session and converted[week.id] != week.quality_session
         ]
 
         for week, old, new in changes:
@@ -61,7 +66,7 @@ def main() -> int:
             print(f"      - {old}")
             print(f"      + {new}")
         print(f"\n{len(changes)} semaine(s) à mettre à jour sur {len(weeks)}.")
-        print(f"Plan(s) de référence re-rampé(s) : {sorted(p for p in reference_programs if p)}")
+        print(f"Plan(s) de référence re-rampé(s) : {sorted(reference_programs)}")
 
         if args.apply:
             for week, _old, new in changes:
