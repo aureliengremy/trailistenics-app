@@ -32,3 +32,6 @@ dist-ssr/
 
 # --- Docker volumes (si bind local) ---
 pgdata/
+
+# SQL de migration ponctuelle généré (regénérable depuis app/quality_sessions.py)
+neon-seances-qualite.sql
