@@ -108,6 +108,36 @@ Tiré de `backend/app/models/{bloc,week,exercise}.py` et des schémas Pydantic
 - Les nombres (durée, D+, distance) suivent les règles de progression de
   [`01-trail-periodisation.md`](../methodologie/01-trail-periodisation.md) (≤ ~10 %/sem, déloads, taper).
 
+### `quality_session` — format obligatoire
+
+`Famille : NxDurée allure (RPE X/10), récup : …` — 128 caractères maximum.
+
+- **L'intensité est toujours chiffrée** sur l'échelle RPE (effort perçu /10) :
+  3–4 = très facile (conversation) · 5–6 = modéré · **7 = seuil** (phrases courtes) ·
+  **8 = côtes** (3–4 mots) · **9 = VMA / lignes** (quasi max) · 10 = jamais.
+- **La récupération est toujours précisée** (« récup : redescente en trot »,
+  « récup 3 min trot », « la marche est la récup »…).
+- **L'échauffement et le retour au calme n'y figurent pas** : l'app les affiche
+  automatiquement (~10 min chacun).
+
+### Progressivité de l'intensité — barème par niveau
+
+Niveau déduit de l'intake (`court_deja`, `course.volume_hebdo_km`, `course.experience_trail`).
+« Volume utile » = temps cumulé à RPE ≥ 7 dans la séance.
+
+| Niveau | 1ʳᵉ séance qualité (volume utile) | Plafond en semaine de pic |
+|---|---|---|
+| `court_deja = false` | **0 min** — marche/course alternée (RPE 5–6) pendant ≥ 2 semaines | 8–10 min |
+| débutant (< 20 km/sem) | 2–3 min (lignes 20 s, côtes 30 s) | 12–15 min |
+| intermédiaire (20–40 km/sem) | 5–6 min | 20–25 min |
+| confirmé (> 40 km/sem) | 8–10 min | 30 min |
+
+Règles associées :
+- progression du volume utile **≤ ~15 %/semaine**, **jamais de doublement** d'une semaine à
+  l'autre ;
+- **RPE 9 (VMA, lignes rapides) interdit avant la 4ᵉ semaine** pour un profil débutant ou
+  `court_deja = false`.
+
 ### 3.3 `exercise` — circuit de renforcement
 
 | Champ | Type | Contrainte | Exemple |

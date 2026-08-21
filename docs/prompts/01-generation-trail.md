@@ -63,7 +63,10 @@ Applique la **synthèse opérationnelle** de `01-trail-periodisation.md` :
   d'intervalles VO2max raccourcie** (maintien de l'intensité, jambes vives). Sur objectif **court
   (≤ 21 km)**, la VMA pèse davantage ; sur ultra, elle reste présente mais minoritaire.
   > Inscris explicitement ces séances dans `weeks[].quality_session` (ex. « VMA : 5×3 min (récup 3 min) »),
-  > pas seulement « côtes/seuil ». Adapte le volume au niveau (débutant : commence à 4–5 min total utiles).
+  > pas seulement « côtes/seuil ». Adapte le volume au niveau selon le **barème de progressivité** du contrat de sortie
+  > (§ « Progressivité de l'intensité ») : volume utile de départ, plafond au pic,
+  > progression ≤ ~15 %/sem, pas de RPE 9 avant la 4ᵉ semaine pour un débutant.
+  > Chaque `quality_session` respecte le **format obligatoire** : allure + `(RPE X/10)` + récup.
 - **Sortie longue** : progression **≤ ~10 %/sem** (durée, distance, **D+**), jamais > 3 sem de
   hausse d'affilée, **déload** ~3:1 (−40 à −60 %), pas de volume + intensité la même semaine ;
   surveille le pic d'une seule sortie (≤ +10 % vs la plus longue des 30 j).
